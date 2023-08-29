@@ -1,0 +1,53 @@
+{
+  "name": "starfield",
+  "version": "0.1.0",
+  "description": "Vortex Extension for Starfield",
+  "author": "Nexus Mods",
+  "private": true,
+  "main": "./dist/index.ts",
+  "type": "module",
+  "config": {
+    "extensionName": "Game: Starfield",
+    "issueTracker": "https://github.com/lordvoldem0rt/game-hogwartslegacy/issues"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "prettier": "npx prettier src test --check",
+    "prettier:fix": "prettier --config .prettierrc src/**/*.ts --write",
+    "build": "npx webpack && node createinfojson.js",
+    "deploy": "npx webpack && node createinfojson.js && node copyplugin.js",
+    "copyplugin": "node copyplugin.js",
+    "format": "npm run prettier:fix && npm run lint:fix"
+  },
+  "license": "GPLV3",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.0.27",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "bluebird": "^3.7.2",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "prettier": "^2.8.3",
+    "react": "^18.2.0",
+    "semver": "^7.3.8",
+    "strongly-typed-events": "^3.0.9",
+    "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.9.5",
+    "vortex-api": "Nexus-Mods/vortex-api",
+    "vortex-ext-common": "^0.4.0",
+    "webpack": "^5.57.1",
+    "webpack-cli": "^4.8.0"
+  },
+  "dependencies": {
+    "react-bootstrap": "^0.33.0",
+    "react-redux": "^8.0.5",
+    "redux-act": "^1.8.0"
+  }
+}
