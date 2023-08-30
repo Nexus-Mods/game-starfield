@@ -16,10 +16,11 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "prettier": "npx prettier src test --check",
     "prettier:fix": "prettier --config .prettierrc src/**/*.ts --write",
-    "build": "npx webpack && node createinfojson.js",
-    "deploy": "npx webpack && node createinfojson.js && node copyplugin.js",
+    "build": "npx webpack && node createinfojson.js && npm run pack",
+    "deploy": "npx webpack && node createinfojson.js && npm run copyplugin && npm run pack",
     "copyplugin": "node copyplugin.js",
-    "format": "npm run prettier:fix && npm run lint:fix"
+    "format": "npm run prettier:fix && npm run lint:fix",
+    "pack": "node packageplugin.js"
   },
   "license": "GPLV3",
   "devDependencies": {
@@ -46,6 +47,7 @@
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
+    "archiver": "^6.0.0",
     "react-bootstrap": "^0.33.0",
     "react-redux": "^8.0.5",
     "redux-act": "^1.8.0"

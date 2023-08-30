@@ -4,7 +4,7 @@ This is a **placeholder extension** for [Vortex](https://www.nexusmods.com/about
 
 # Features
 
-- 
+- Will find out as soon as we have mods to manage
 
 # Installation
 
