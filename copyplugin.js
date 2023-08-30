@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const VORTEX_PLUGINS = path.join(process.env.APPDATA, "vortex_devel", "plugins");
+const VORTEX_PLUGINS = path.join(process.env.APPDATA, "Vortex", "plugins");
 
 //console.log("__dirname=" + __dirname);
 //console.log("__filename=" + __filename);
