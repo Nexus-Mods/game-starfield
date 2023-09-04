@@ -1,14 +1,5 @@
-import path from "path";
-import {
-  actions,
-  fs,
-  log,
-  selectors,
-  types,
-  util,
-} from "vortex-api";
-import * as VortexUtils from "./VortexUtils";
-import { IProps } from "./types";
+import { types } from "vortex-api";
+import { testSupported, install } from './installers/starfield-default-installer'
 
 // IDs for different stores and nexus
 import { GAME_ID, STEAMAPP_ID, XBOX_ID } from './common';
@@ -34,7 +25,13 @@ function main(context: types.IExtensionContext) {
       'Starfield.exe',
     ],
     requiresLauncher: requiresLauncher,
+    details: {
+      supportsSymlinks: false,
+      steamAppId: parseInt(STEAMAPP_ID)
+    }
   });
+
+  context.registerInstaller('starfield-default-installer', 25, testSupported, install);
 
   context.once(() => {
     //
