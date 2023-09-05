@@ -16,7 +16,7 @@ Afterwards, restart Vortex and you can begin installing supported Starfield mods
 
 # Game detection
 
-The Hogwarts Legacy game extension enables Vortex to automatically locate installs from the Steam and Xbox apps.
+The Starfield game extension enables Vortex to automatically locate installs from the Steam and Xbox apps.
 
 It is also possible to manually set the game folder if the auto detection doesn't find the correct installation. A valid Starfield game folder contains:
 
