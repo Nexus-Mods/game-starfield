@@ -1,8 +1,24 @@
 import { types } from "vortex-api";
-import { testSupported, install } from './installers/starfield-default-installer'
+import { testSupported, install } from './installers/starfield-default-installer';
 
 // IDs for different stores and nexus
-import { GAME_ID, STEAMAPP_ID, XBOX_ID } from './common';
+import { GAME_ID, SFSE_EXE, STEAMAPP_ID, XBOX_ID } from './common';
+
+const supportedTools: types.ITool[] = [
+  {
+    id: 'sfse',
+    name: 'Starfield Script Extender',
+    executable: () => SFSE_EXE,
+    logo: 'sfse.png',
+    requiredFiles: [
+      SFSE_EXE
+    ],
+    shortName: 'SFSE',
+    relative: true,
+    defaultPrimary: true,
+    exclusive: true,
+  }
+]
 
 
 const gameFinderQuery = {
@@ -24,6 +40,7 @@ function main(context: types.IExtensionContext) {
     requiredFiles: [
       'Starfield.exe',
     ],
+    supportedTools,
     requiresLauncher: requiresLauncher,
     details: {
       supportsSymlinks: false,
