@@ -47,14 +47,24 @@ function main(context: types.IExtensionContext) {
       steamAppId: parseInt(STEAMAPP_ID)
     }
   });
-
+  const getSFDocPath = (game) => {
+    const winapi = require('winapi-bindings');
+    var docPath = winapi.RegGetValue('HKEY_CURRENT_USER','Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders','Personal');
+        return docPath.value+'\\My Games\\Starfield';
+  };
+  
   context.registerInstaller('starfield-default-installer', 25, testSupported, install);
+  context.registerModType('Starfield Data Mod', 25, (gameId) => gameId === GAME_ID, getSFDocPath, testData);
 
   context.once(() => {
     //
   });
 
   return true;
+}
+
+function testData(instructions) {
+    return Promise.resolve(instructions.find(instruction => !!instruction.destination && instruction.destination.toLowerCase().startsWith('Data')) !== undefined);
 }
 
 async function requiresLauncher(gamePath: string, store?: string) {
