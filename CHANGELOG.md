@@ -18,3 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Now supports mods without a "Data" top level folder. 
 - Supports use of "root", "Starfield" or "Starfield root" folders to signal Vortex to extract the files to the game root folder. 
 - Attempt to support ASI plugins (although they need to have a "Plugins" level to be installed properly).
+
+## [0.3.0] - 2023-09-07
+
+- Fixed a mistake in the code which lead root folder files to be deployed to the Data folder.
