@@ -90,7 +90,7 @@ async function install(
         return p;
     }, []);
 
-    // We have an ESP/ESM/BA2/ESL/etc so anything on that level can go into the data folder.
+    // We have a .dll, .ini, .exe, so we assume files go in the root folder
     if (rootFiles.length) return installGameFolderFiles(rootFiles);
 
     // END GAME FOLDER FILES
@@ -212,11 +212,11 @@ function installGameFolderFiles(rootFiles: string[]): types.IInstallResult {
     const idx = rootFiles[0].indexOf(path.basename(rootFiles[0]));
     const baseFolder = idx !== 0 ? rootFiles[0].substring(0, idx) : '';
 
-    // Map everything in that folder to "Data".
+    // Map everything in that folder to the game root
     const dataFilesInstructions: types.IInstruction[] = rootFiles.map((f: string) => ({
         type: 'copy',
         source: f,
-        destination: path.join('Data', baseFolder !== '' ? f.substring(idx) : f)
+        destination: baseFolder !== '' ? f.substring(idx) : f
     }));
     
     
