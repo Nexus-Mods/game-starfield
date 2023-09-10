@@ -8,7 +8,7 @@
   "type": "module",
   "config": {
     "extensionName": "Game: Starfield",
-    "issueTracker": "https://github.com/lordvoldem0rt/game-hogwartslegacy/issues"
+    "issueTracker": "https://github.com/Nexus-Mods/game-starfield/issues"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -24,6 +24,7 @@
   },
   "license": "GPLV3",
   "devDependencies": {
+    "@types/ini": "^1.3.31",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.27",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
@@ -48,6 +49,7 @@
   },
   "dependencies": {
     "archiver": "^6.0.0",
+    "ini": "^4.1.1",
     "react-bootstrap": "^0.33.0",
     "react-redux": "^8.0.5",
     "redux-act": "^1.8.0"
