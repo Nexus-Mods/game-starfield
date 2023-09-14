@@ -22,3 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.3.0] - 2023-09-07
 
 - Fixed a mistake in the code which lead root folder files to be deployed to the Data folder.
+
+## [0.3.1] - 2023-09-14
+
+- Fixed an issue installing replacers where the folder name matches a plugin (e.g. Starfield.esm). This allows mods such as [this](https://www.nexusmods.com/starfield/mods/2176/?tab=files) to install correctly. 

@@ -21,7 +21,7 @@ async function install(
 ): Promise<types.IInstallResult> {
 
     // Filter out folders as this breaks the installer.
-    files = files.filter(f => path.extname(f) !== '');
+    files = files.filter(f => path.extname(f) !== '' && !f.endsWith(path.sep));
     
     // SFSE INSTALL
     const SFSE = files.find(f => f.toLowerCase().endsWith(SFSE_EXE))
