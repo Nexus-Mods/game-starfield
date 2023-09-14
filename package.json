@@ -1,6 +1,6 @@
 {
   "name": "starfield",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Vortex Extension for Starfield",
   "author": "Nexus Mods",
   "private": true,
@@ -16,7 +16,8 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "prettier": "npx prettier src test --check",
     "prettier:fix": "prettier --config .prettierrc src/**/*.ts --write",
-    "build": "npx webpack && node createinfojson.js && npm run pack",
+    "copyassets": "copyfiles -f ./src/assets/* ./dist/",
+    "build": "npx webpack && npm run copyassets && node createinfojson.js && npm run pack",
     "deploy": "npx webpack && node createinfojson.js && npm run copyplugin && npm run pack",
     "copyplugin": "node copyplugin.js",
     "format": "npm run prettier:fix && npm run lint:fix",
@@ -48,6 +49,7 @@
   },
   "dependencies": {
     "archiver": "^6.0.0",
+    "copyfiles": "^2.1.1",
     "react-bootstrap": "^0.33.0",
     "react-redux": "^8.0.5",
     "redux-act": "^1.8.0"

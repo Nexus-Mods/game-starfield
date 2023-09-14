@@ -51,3 +51,7 @@ export const ROOT_FOLDERS = [
 ];
 
 export const SFSE_EXE = 'sfse_loader.exe';
+
+export const SFCUSTOM_INI = 'StarfieldCustom.ini';
+
+export const SFCUSTOM_INI_TEXT = '[Archive]\nbInvalidateOlderFiles=1\nsResourceDataDirsFinal=\n\n';

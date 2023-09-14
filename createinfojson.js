@@ -39,16 +39,16 @@ async function start() {
 
   // try to copy gameart.jpg
 
-  const file = "gameart.jpg";
-  const source = path.join(__dirname, file);
-  const destination = path.join(distFolder, file);
+  // const file = "gameart.jpg";
+  // const source = path.join(__dirname, file);
+  // const destination = path.join(distFolder, file);
 
-  try {
-    await fs.copyFile(source, destination);
-    console.log(`${file} was copied to ${destination}`);
-  } catch (error) {
-    console.log(`The file could not be copied. ${error}`);
-  }
+  // try {
+  //   await fs.copyFile(source, destination);
+  //   console.log(`${file} was copied to ${destination}`);
+  // } catch (error) {
+  //   console.log(`The file could not be copied. ${error}`);
+  // }
 
   /*
   // try to load info.json if it exists
