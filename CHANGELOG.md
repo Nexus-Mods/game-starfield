@@ -30,3 +30,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - A StarfieldCustom.ini will be created with minimal values if is not already present. 
 - Symlink support has been re-enabled as this appears to work (it didn't in Fallout 4/Skyrim).
 - Add a warning when installing Starfield Script Extender on Xbox Game Pass. 
+- Fixed an issue with files that start with "Starfield", "Root" or "Starfield Root" being extracted to the wrong place. 

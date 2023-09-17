@@ -36,7 +36,8 @@ async function install(
     let topLevelNoParent: string[] = [];
     // filter down to files that have any of the parent directories.
     const topLevel: string[] = TOP_LEVEL_COMPATIBILITY_FOLDERS.reduce((p, c) => {
-        const list = files.filter(f => f.toLowerCase().startsWith(c.toLowerCase()));
+        const prefix = `${c.toLowerCase()}${path.sep}` //e.g. "root/"
+        const list = files.filter(f => f.toLowerCase().startsWith(prefix));
         if (list.length) {
             const noParent = list.map(f => f.toLowerCase().replace(c, ''));
             topLevelNoParent = [...topLevelNoParent, ...noParent];
