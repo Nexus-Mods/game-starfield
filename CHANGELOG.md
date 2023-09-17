@@ -22,12 +22,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.3.0] - 2023-09-07
 
 - Fixed a mistake in the code which lead root folder files to be deployed to the Data folder.
-
-## [0.4.0] - 2023-09-14
-
+- Fixed an issue with files that start with "Starfield", "Root" or "Starfield Root" being extracted to the wrong place. 
 - Fixed an issue installing replacers where the folder name matches a plugin (e.g. Starfield.esm). This allows mods such as [this](https://www.nexusmods.com/starfield/mods/2176/?tab=files) to install correctly. 
+
+
+## [0.4.0] - 2023-09-17
+
 - Anything in the Documents/My Games/Starfield/Data will be automatically moved to the game installation Data folder and a junction created that tricks the game into using that folder for all textures. 
 - A StarfieldCustom.ini will be created with minimal values if is not already present. 
 - Symlink support has been re-enabled as this appears to work (it didn't in Fallout 4/Skyrim).
 - Add a warning when installing Starfield Script Extender on Xbox Game Pass. 
-- Fixed an issue with files that start with "Starfield", "Root" or "Starfield Root" being extracted to the wrong place. 

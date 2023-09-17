@@ -1,6 +1,6 @@
 import { types } from "vortex-api";
 import { testSupported, install } from './installers/starfield-default-installer';
-import setup from './setup';
+// import setup from './setup';
 
 // IDs for different stores and nexus
 import { GAME_ID, SFSE_EXE, STEAMAPP_ID, XBOX_ID } from './common';
@@ -42,7 +42,7 @@ function main(context: types.IExtensionContext) {
     requiredFiles: [
       'Starfield.exe',
     ],
-    setup,
+    // setup,
     supportedTools,
     requiresLauncher: requiresLauncher,
     details: {
