@@ -1,4 +1,4 @@
-import { log, types } from 'vortex-api'
+import { log, types, util } from 'vortex-api'
 import { DATA_EXTENSIONS, DATA_SUBFOLDERS, GAME_ID, ROOT_EXTENSIONS, ROOT_FOLDERS, SFSE_EXE, TOP_LEVEL_COMPATIBILITY_FOLDERS } from '../common';
 import path from 'path';
 
@@ -11,6 +11,7 @@ function testSupported(files: string[], gameId: string): Promise<types.ISupporte
 }
 
 async function install(
+    api: types.IExtensionApi,
     files: string[], 
     // destinationPath: string, 
     // gameId: string, 
@@ -21,11 +22,11 @@ async function install(
 ): Promise<types.IInstallResult> {
 
     // Filter out folders as this breaks the installer.
-    files = files.filter(f => path.extname(f) !== '');
+    files = files.filter(f => path.extname(f) !== '' && !f.endsWith(path.sep));
     
     // SFSE INSTALL
     const SFSE = files.find(f => f.toLowerCase().endsWith(SFSE_EXE))
-    if (SFSE) return installSFSE(files, SFSE);
+    if (SFSE) return installSFSE(api, files, SFSE);
     // END SFSE INSTALL
 
     // EXPLICIT ROOT FOLDER(S)
@@ -35,7 +36,8 @@ async function install(
     let topLevelNoParent: string[] = [];
     // filter down to files that have any of the parent directories.
     const topLevel: string[] = TOP_LEVEL_COMPATIBILITY_FOLDERS.reduce((p, c) => {
-        const list = files.filter(f => f.toLowerCase().startsWith(c.toLowerCase()));
+        const prefix = `${c.toLowerCase()}${path.sep}` //e.g. "root/"
+        const list = files.filter(f => f.toLowerCase().startsWith(prefix));
         if (list.length) {
             const noParent = list.map(f => f.toLowerCase().replace(c, ''));
             topLevelNoParent = [...topLevelNoParent, ...noParent];
@@ -117,8 +119,29 @@ async function install(
 }
 
 /* Install Starfield Script Extender */
-function installSFSE(files: string[], SFSE: string): types.IInstallResult {
-    // TODO: Warn SFSE doesn't work with the Xbox release. 
+async function installSFSE(api: types.IExtensionApi, files: string[], SFSE: string): Promise<types.IInstallResult> {
+    // Warn SFSE doesn't work with the Xbox release. 
+    const discovery = api.getState().settings?.gameMode?.discovered?.[GAME_ID];
+    if (discovery?.store && discovery?.store !== 'steam') {
+        const userChoice = await api.showDialog(
+            'info', 
+            'Starfield Script Extender is not compatible', 
+            {
+                text: 'Starfield Script Extender is only compatible with the Steam release of the game, but you are playing on a different platform.'+
+                '\n\nYou may continue to install this mod but it is not likely to work correctly.'
+            },
+            [
+                {
+                    label: 'Cancel',
+                },
+                {
+                    label: 'Continue',
+                }
+            ]
+        )
+
+        if (userChoice.action === 'Cancel') throw new util.UserCanceled();
+    }
 
     // Install all files at the same level as SFSE to the root folder
     const idx = SFSE.toLowerCase().indexOf(SFSE_EXE);

@@ -1,11 +1,14 @@
 import { log, types, util, fs } from "vortex-api";
 import { testSupported, install } from './installers/starfield-default-installer';
+import { isStarfield, openAppDataPath, openSettingsPath } from './util';
+import setup from './setup';
 
 import { parse, stringify } from 'ini';
 import path from 'path';
 
 // IDs for different stores and nexus
 import { GAME_ID, SFSE_EXE, STEAMAPP_ID, XBOX_ID } from './common';
+
 
 const supportedTools: types.ITool[] = [
   {
@@ -20,6 +23,21 @@ const supportedTools: types.ITool[] = [
     relative: true,
     defaultPrimary: true,
     exclusive: true,
+  },
+  {
+    id: 'bethini-starfield',
+    name: 'Bethini Pie',
+    executable: () => 'Bethini.exe',
+    logo: 'Bethini.ico',
+    requiredFiles: [ 'Bethini.exe' ],
+  },
+  {
+    id: 'xedit-sf',
+    name: 'SFEdit',
+    executable: () => 'xEdit.exe',
+    logo: 'tes5edit.png',
+    requiredFiles: [],
+    parameters: ['-sf1', '-view']
   }
 ]
 
@@ -123,10 +141,10 @@ function main(context: types.IExtensionContext) {
     requiredFiles: [
       'Starfield.exe',
     ],
+    setup,
     supportedTools,
     requiresLauncher: requiresLauncher,
     details: {
-      supportsSymlinks: false,
       steamAppId: parseInt(STEAMAPP_ID)
     },
     setup: util.toBlue(async (discovery) => {
@@ -136,7 +154,12 @@ function main(context: types.IExtensionContext) {
     }),
   });
 
-  context.registerInstaller('starfield-default-installer', 25, testSupported, install);
+  context.registerInstaller('starfield-default-installer', 25, testSupported, (files) => install(context.api, files));
+
+  context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
+
+  context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
+                      
 
   context.once(() => {
     //
