@@ -8,7 +8,7 @@
   "type": "module",
   "config": {
     "extensionName": "Game: Starfield",
-    "issueTracker": "https://github.com/lordvoldem0rt/game-hogwartslegacy/issues"
+    "issueTracker": "https://github.com/Nexus-Mods/game-starfield/issues"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
