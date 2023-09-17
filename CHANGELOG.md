@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Fixed a mistake in the code which lead root folder files to be deployed to the Data folder.
 - Fixed an issue with files that start with "Starfield", "Root" or "Starfield Root" being extracted to the wrong place. 
 - Fixed an issue installing replacers where the folder name matches a plugin (e.g. Starfield.esm). This allows mods such as [this](https://www.nexusmods.com/starfield/mods/2176/?tab=files) to install correctly. 
+- Added toolbar option to open the Settings and AppData folders. 
 
 
 ## [0.4.0] - 2023-09-17

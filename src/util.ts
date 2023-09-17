@@ -1,4 +1,5 @@
-import { fs, log } from "vortex-api";
+import { fs, log, selectors, types, util } from "vortex-api";
+import { GAME_ID } from './common';
 import path from "path";
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
@@ -44,3 +45,22 @@ export async function mergeFolderContents(source: string, destination: string, o
 
   await fs.rmdirAsync(source);
 }
+
+export const isStarfield = (context: types.IExtensionContext, gameId: string | string[] | undefined = undefined) => {
+  if (gameId !== undefined) {
+    return (gameId === GAME_ID);
+  }
+  const state = context.api.getState();
+  const gameMode = selectors.activeGameId(state);
+  return (gameMode === GAME_ID);
+};
+
+export const openSettingsPath = () => {
+  const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield');
+  util.opn(docPath).catch(() => null);
+};
+
+export const openAppDataPath = () => {
+  const docPath = path.join(util.getVortexPath('localAppData'), 'Starfield');
+  util.opn(docPath).catch(() => null);
+};

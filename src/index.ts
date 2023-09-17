@@ -1,5 +1,6 @@
 import { types } from "vortex-api";
 import { testSupported, install } from './installers/starfield-default-installer';
+import { isStarfield, openAppDataPath, openSettingsPath } from './util';
 // import setup from './setup';
 
 // IDs for different stores and nexus
@@ -51,6 +52,11 @@ function main(context: types.IExtensionContext) {
   });
 
   context.registerInstaller('starfield-default-installer', 25, testSupported, (files) => install(context.api, files));
+
+  context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
+
+  context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
+                      
 
   context.once(() => {
     //
