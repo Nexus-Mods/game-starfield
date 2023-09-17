@@ -20,6 +20,21 @@ const supportedTools: types.ITool[] = [
     relative: true,
     defaultPrimary: true,
     exclusive: true,
+  },
+  {
+    id: 'bethini-starfield',
+    name: 'Bethini Pie',
+    executable: () => 'Bethini.exe',
+    logo: 'Bethini.ico',
+    requiredFiles: [ 'Bethini.exe' ],
+  },
+  {
+    id: 'xedit-sf',
+    name: 'SFEdit',
+    executable: () => 'xEdit.exe',
+    logo: 'tes5edit.png',
+    requiredFiles: [],
+    parameters: ['-sf1', '-view']
   }
 ]
 
