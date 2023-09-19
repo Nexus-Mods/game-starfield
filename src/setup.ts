@@ -33,6 +33,7 @@ export default async function setup(discovery: types.IDiscoveryResult, context: 
       // Check to see if it's already a symlink.
       if (!dataFolderStat.isSymbolicLink()) {
         await mergeFolderContents(myGamesData, gameDataFolder, true);
+        await fs.renameAsync(myGamesData, `${myGamesData} - Backup`);
         // await fs.moveAsync(myGamesData, gameDataFolder, { overwrite: false });
       }
       else {
@@ -44,10 +45,7 @@ export default async function setup(discovery: types.IDiscoveryResult, context: 
       log('debug', 'My Games folder for Starfield does not contain a "Data" folder yet.')
     }
     // Create a symlink to trick the game into using the game data folder. 
-    if (createSymlink) {
-      await fs.renameAsync(myGamesData, `${myGamesData} - Backup`);
-      await fs.symlinkAsync(gameDataFolder, myGamesData, 'junction')
-    }
+    if (createSymlink) await fs.symlinkAsync(gameDataFolder, myGamesData, 'junction')
   }
   catch(err) {
     log('error', 'Error checking for My Games Data path for Starfield', err);
