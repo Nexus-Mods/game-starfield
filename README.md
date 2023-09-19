@@ -1,10 +1,8 @@
 # Vortex Extension for Starfield
 
-This is a **placeholder extension** for [Vortex](https://www.nexusmods.com/about/vortex/) to add support for Starfield. This is available for the PC on [Xbox & Game Pass](https://www.xbox.com/en-GB/games/starfield) and [Steam](https://store.steampowered.com/app/1716740/Starfield/).
+This is an extension for [Vortex](https://www.nexusmods.com/about/vortex/) to add support for Starfield. This is available for the PC on [Xbox & Game Pass](https://www.xbox.com/en-GB/games/starfield) and [Steam](https://store.steampowered.com/app/1716740/Starfield/).
 
 # Features
-
-- Will find out as soon as we have mods to manage
 
 # Installation
 
@@ -30,19 +28,7 @@ By default, Vortex will deploy files to the game's root folder and extracts the 
 
 # See also
 
-<!--- [Source Code (GitHub)](https://github.com/insomnious/game-halothemasterchiefcollection)-->
-
 - [Download the Extension (Nexus Mods)](https://www.nexusmods.com/site/mods/634)
 - [Mods for Starfield (Nexus Mods)](https://www.nexusmods.com/starfield)
 - [Download Vortex (Nexus Mods)](https://www.nexusmods.com/about/vortex/)
 - [Vortex Knowledge Base (Nexus Mods)](https://wiki.nexusmods.com/index.php/Category:Vortex)
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
-
-## [0.1.0] - 2023-08-29
-
-Initial release for basic mod support
