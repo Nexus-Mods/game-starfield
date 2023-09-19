@@ -1,4 +1,4 @@
-import { types, util } from "vortex-api";
+import { types } from "vortex-api";
 import { testSupported, install } from './installers/starfield-default-installer';
 import { isStarfield, openAppDataPath, openSettingsPath } from './util';
 import setup from './setup';
@@ -58,9 +58,7 @@ function main(context: types.IExtensionContext) {
     requiredFiles: [
       'Starfield.exe',
     ],
-    setup: util.toBlue(async (discovery) => {
-      await setup(discovery, context);
-    }),
+    setup: (discovery) => setup(discovery, context),
     supportedTools,
     requiresLauncher: requiresLauncher,
     details: {

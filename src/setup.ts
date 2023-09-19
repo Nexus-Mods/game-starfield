@@ -33,6 +33,7 @@ export default async function setup(discovery: types.IDiscoveryResult, context: 
       // Check to see if it's already a symlink.
       if (!dataFolderStat.isSymbolicLink()) {
         await mergeFolderContents(myGamesData, gameDataFolder, true);
+        await fs.renameAsync(myGamesData, `${myGamesData} - Backup`);
         // await fs.moveAsync(myGamesData, gameDataFolder, { overwrite: false });
       }
       else {
@@ -67,6 +68,15 @@ async function startLooseFilesCheck(context: types.IExtensionContext, iniPath: s
     // Load ini and parse as object
     let iniContent = (await fs.readFileAsync(iniPath,'utf-8')) ?? '';
     let ini = parse(iniContent);
+
+    // Check that Photo mode images are being re-routed.
+    if (ini?.General?.sPhotoModeFolder !== 'Photos') {
+      if (!ini.General) {
+            ini.General = {}
+      }
+
+      ini.General.sPhotoModeFolder = 'Photos';
+    }
 
     if (ini?.Archive?.bInvalidateOlderFiles !== '1' || ini?.Archive?.sResourceDataDirsFinal !== '') {
 

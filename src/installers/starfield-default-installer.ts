@@ -122,17 +122,23 @@ async function install(
 async function installSFSE(api: types.IExtensionApi, files: string[], SFSE: string): Promise<types.IInstallResult> {
     // Warn SFSE doesn't work with the Xbox release. 
     const discovery = api.getState().settings?.gameMode?.discovered?.[GAME_ID];
-    if (discovery?.store && discovery?.store !== 'steam') {
+    if ((discovery?.store && discovery?.store !== 'steam') || !discovery.path.toLowerCase().includes('steamapps')) {
+        const platform = discovery.store 
+            ? discovery.store.charAt(0).toUpperCase() + discovery.store.slice(1) 
+            : 'Unknown (The location was set manually in the Games tab to a non-Steamapps folder)';
+
         const userChoice = await api.showDialog(
             'info', 
             'Starfield Script Extender is not compatible', 
             {
-                text: 'Starfield Script Extender is only compatible with the Steam release of the game, but you are playing on a different platform.'+
+                text: 'Starfield Script Extender is only compatible with the Steam release of the game, but it looks like you are playing on a different platform.'+
+                `\n\nDetected Platform: ${platform}`+
                 '\n\nYou may continue to install this mod but it is not likely to work correctly.'
             },
             [
                 {
                     label: 'Cancel',
+                    default: true
                 },
                 {
                     label: 'Continue',

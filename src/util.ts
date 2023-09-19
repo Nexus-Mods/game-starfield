@@ -22,28 +22,28 @@ export async function mergeFolderContents(source: string, destination: string, o
       }
       // We can move the entire folder over. 
       else {
-        await fs.moveAsync(sourceFilePath, path.join(destination, sourceFile));
+        await fs.copyAsync(sourceFilePath, path.join(destination, sourceFile), { force: true });
       }
-      await fs.rmdirAsync(sourceFilePath)
+      // await fs.rmdirAsync(sourceFilePath)
       continue;
     }
     // Otherwise we're dealing with a file. 
     else if (stats.isFile()) {
       // If the file doesn't exist, merge it over. 
       if (!destinationMatch || overwrite) {
-        await fs.moveAsync(sourceFilePath, path.join(destination, destinationMatch), { overwrite: true });
+        await fs.copyAsync(sourceFilePath, path.join(destination, destinationMatch), { overwrite: true });
         continue;
       }
       else {
         log('debug', 'Did not copy file as it already exists', { source: sourceFilePath, destination: path.join(destination, destinationMatch) })
-        await fs.unlinkAsync(sourceFilePath);
+        // await fs.unlinkAsync(sourceFilePath);
         continue;
       }
     }
     else return log('warn', 'Did not remove file as it is neither a file nor folder', sourceFilePath);
   }
 
-  await fs.rmdirAsync(source);
+  // await fs.rmdirAsync(source);
 }
 
 export const isStarfield = (context: types.IExtensionContext, gameId: string | string[] | undefined = undefined) => {

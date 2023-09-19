@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Symlink support has been re-enabled as this appears to work (it didn't in Fallout 4/Skyrim).
 - Add a warning when installing Starfield Script Extender on Xbox Game Pass. 
 - Fixed installing EXEs to the game root incorrectly. 
+- Warn the user if they try to install SKSE to a non-Steam version of Starfield. 
 
 ## [0.3.0] - 2023-09-17
 
