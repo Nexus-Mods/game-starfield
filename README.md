@@ -32,3 +32,7 @@ By default, Vortex will deploy files to the game's root folder and extracts the 
 - [Mods for Starfield (Nexus Mods)](https://www.nexusmods.com/starfield)
 - [Download Vortex (Nexus Mods)](https://www.nexusmods.com/about/vortex/)
 - [Vortex Knowledge Base (Nexus Mods)](https://wiki.nexusmods.com/index.php/Category:Vortex)
+
+# Thanks
+
+- [BOTLANNER](https://github.com/BOTLANNER)
