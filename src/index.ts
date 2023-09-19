@@ -1,7 +1,8 @@
-import { types } from "vortex-api";
+import { types, util } from "vortex-api";
 import { testSupported, install } from './installers/starfield-default-installer';
 import { isStarfield, openAppDataPath, openSettingsPath } from './util';
 import setup from './setup';
+
 
 // IDs for different stores and nexus
 import { GAME_ID, SFSE_EXE, STEAMAPP_ID, XBOX_ID } from './common';
@@ -38,7 +39,6 @@ const supportedTools: types.ITool[] = [
   }
 ]
 
-
 const gameFinderQuery = {
   steam: [ { id: STEAMAPP_ID, prefer: 0 } ],
   xbox: [ { id: XBOX_ID } ],
@@ -58,7 +58,9 @@ function main(context: types.IExtensionContext) {
     requiredFiles: [
       'Starfield.exe',
     ],
-    setup,
+    setup: util.toBlue(async (discovery) => {
+      await setup(discovery, context);
+    }),
     supportedTools,
     requiresLauncher: requiresLauncher,
     details: {
