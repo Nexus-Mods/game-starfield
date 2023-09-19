@@ -69,6 +69,15 @@ async function startLooseFilesCheck(context: types.IExtensionContext, iniPath: s
     let iniContent = (await fs.readFileAsync(iniPath,'utf-8')) ?? '';
     let ini = parse(iniContent);
 
+    // Check that Photo mode images are being re-routed.
+    if (ini?.General?.sPhotoModeFolder !== 'Photos') {
+      if (!ini.General) {
+            ini.General = {}
+      }
+
+      ini.General.sPhotoModeFolder = 'Photos';
+    }
+
     if (ini?.Archive?.bInvalidateOlderFiles !== '1' || ini?.Archive?.sResourceDataDirsFinal !== '') {
 
       // Required settings not configured. Loose files would not be loaded correctly.
