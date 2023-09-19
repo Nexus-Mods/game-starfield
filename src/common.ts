@@ -41,13 +41,14 @@ export const DATA_EXTENSIONS = [
 ];
 
 export const ROOT_EXTENSIONS = [
-    '.ini',
+    // '.ini',
     '.dll',
     '.exe'
 ];
 
 export const ROOT_FOLDERS = [
     'Plugins', //ASI loader uses this... e.g. https://www.nexusmods.com/starfield/mods/252
+    'Tools'
 ];
 
 export const SFSE_EXE = 'sfse_loader.exe';

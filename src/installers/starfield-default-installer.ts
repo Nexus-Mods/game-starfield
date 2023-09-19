@@ -93,7 +93,7 @@ async function install(
     }, []);
 
     // We have a .dll, .ini, .exe, so we assume files go in the root folder
-    if (rootFiles.length) return installGameFolderFiles(rootFiles);
+    if (rootFiles.length) return installGameFolderFiles(rootFiles, files);
 
     // END GAME FOLDER FILES
 
@@ -230,13 +230,16 @@ function installDataSubFolders(dataSubfolderFiles: string[]): types.IInstallResu
 }
 
 /* Installs where there are known root folder files */
-function installGameFolderFiles(rootFiles: string[]): types.IInstallResult {
+function installGameFolderFiles(rootFiles: string[], allFiles: string[]): types.IInstallResult {
     // check if it's nested
     const idx = rootFiles[0].indexOf(path.basename(rootFiles[0]));
     const baseFolder = idx !== 0 ? rootFiles[0].substring(0, idx) : '';
 
+    // Filter the entire archive to find everything on the same level.
+    const modFiles = baseFolder === '' ? allFiles : allFiles.filter(f => f.toLowerCase().startsWith(baseFolder.toLowerCase()));
+
     // Map everything in that folder to the game root
-    const dataFilesInstructions: types.IInstruction[] = rootFiles.map((f: string) => ({
+    const dataFilesInstructions: types.IInstruction[] = modFiles.map((f: string) => ({
         type: 'copy',
         source: f,
         destination: baseFolder !== '' ? f.substring(idx) : f
