@@ -77,79 +77,49 @@ async function startLooseFilesCheck(context: types.IExtensionContext, iniPath: s
 
     // Ensure file is created if it does not exist.
     await fs.ensureFileAsync(iniPath);
-    
-    let fixAction :(dismiss: types.NotificationDismiss) => Promise<void>;
 
     // Load ini and parse as object
     let iniContent = (await fs.readFileAsync(iniPath,'utf-8')) ?? '';
     let ini = parse(iniContent);
 
-    // Check that Photo mode images are being re-routed.
-    if (ini?.General?.sPhotoModeFolder !== 'Photos') {
-      if (!ini.General) {
-            ini.General = {}
-      }
-
-      ini.General.sPhotoModeFolder = 'Photos';
-    }
-
-    if (ini?.Archive?.bInvalidateOlderFiles !== '1' || ini?.Archive?.sResourceDataDirsFinal !== '') {
+    if (ini?.Archive?.bInvalidateOlderFiles !== '1' || ini?.Archive?.sResourceDataDirsFinal !== '' || ini?.General?.sPhotoModeFolder !== 'Photos') {
 
       // Required settings not configured. Loose files would not be loaded correctly.
       log('warn',`${archiveInvalidationTag} - INI not setup: ${iniPath}`);
-      fixAction = async (dismiss: types.NotificationDismiss) => {
-        try {
-          // Reload ini in case external changes has happened in the meantime.
-          iniContent = (await fs.readFileAsync(iniPath,'utf-8')) ?? '';
-          ini = parse(iniContent);
-          log('info',`${archiveInvalidationTag} - Setting up INI: ${iniPath}`, ini);
+      try {
+        // Reload ini in case external changes has happened in the meantime.
+        iniContent = (await fs.readFileAsync(iniPath,'utf-8')) ?? '';
+        ini = parse(iniContent);
+        log('info',`${archiveInvalidationTag} - Setting up INI: ${iniPath}`, ini);
 
-          // Allow modifying file even if it was flagged read-only.
-          fs.makeFileWritableAsync(iniPath);
+        // Allow modifying file even if it was flagged read-only.
+        await fs.makeFileWritableAsync(iniPath);
 
-          if (!ini.Archive) {
-            ini.Archive = {};
-          }
-
-          // Set required settiings on ini object and convert back to writeable string
-          ini.Archive.bInvalidateOlderFiles = '1';
-          ini.Archive.sResourceDataDirsFinal = '';
-          const newIniContent = stringify(ini);
-          log('info',`${archiveInvalidationTag} - New INI: \n${newIniContent}`, ini);
-
-          // Save updates to StarfieldCustom.ini and dismiss the notification as it has been resolved.
-          await fs.writeFileAsync(iniPath, newIniContent, {
-            encoding: 'utf-8'
-          });
-          dismiss();
-        } catch (err) {
-          log('error',`${archiveInvalidationTag} - Failed fix`, err);
+        if (!ini.Archive) {
+          ini.Archive = {};
         }
+        if (!ini.General) {
+          ini.General = {};
+        }
+
+        // Set required settiings on ini object and convert back to writeable string
+        ini.Archive.bInvalidateOlderFiles = '1';
+        ini.Archive.sResourceDataDirsFinal = '';
+        ini.General.sPhotoModeFolder = 'Photos';
+        const newIniContent = stringify(ini);
+        log('info',`${archiveInvalidationTag} - New INI: \n${newIniContent}`, ini);
+
+        // Save updates to StarfieldCustom.ini and dismiss the notification as it has been resolved.
+        await fs.writeFileAsync(iniPath, newIniContent, {
+          encoding: 'utf-8'
+        });
+      } catch (err) {
+        log('error',`${archiveInvalidationTag} - Failed fix`, err);
       }
     }
 
-    if (fixAction) {
-
-      // Archive Invalidation not configured, notify the user and provide a "Fix" button to automatically resolve it.
-      log('info',`${archiveInvalidationTag} - Fix available`);
-        context.api.sendNotification({
-          // Treat as warning. Doesnt prevent all mods so not a complete error, but still a recommended fix.
-          type: 'warning',
-          message: 'Loose file loading in "StarfieldCustom.ini" not configured. Some mods might not work as intended.',
-          title: 'Loose mod loading not enabled',
-          // User can choose "Do not show again" if they really dont care about this.
-          allowSuppress: true,
-
-          // Only add the "Fix" button, a "X" (Dismiss) is already available.
-          actions: [
-            {
-              title: 'Fix',
-              action: util.toBlue(fixAction)
-            }
-          ]
-        });
-    }
-  } catch (err) {
+  } 
+  catch (err) {
     log('error',`${archiveInvalidationTag} - Failed check`, err);
     try {
       await fs.statAsync(iniPath);
