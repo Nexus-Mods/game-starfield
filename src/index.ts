@@ -1,6 +1,6 @@
 import { types } from "vortex-api";
 import { testSupported, install } from './installers/starfield-default-installer';
-import { isStarfield, openAppDataPath, openSettingsPath } from './util';
+import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } from './util';
 import setup from './setup';
 
 
@@ -71,6 +71,8 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
 
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
+
+  context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', () => openPhotoModePath(context), (gameId?: string[]) => isStarfield(context, gameId));
                       
 
   context.once(() => {
