@@ -21,6 +21,18 @@ export default async function setup(discovery: types.IDiscoveryResult, context: 
   // Make sure the folder exists
   await fs.ensureDirAsync(myGamesFolder);
   
+  // The game has a secondary data folder at My Games\Starfield\Data which overrides the Data folder in the game installation.
+  // To get around this, we create a symbolic link between the "real" Data folder and the one in the My Games folder.
+  // This will trick the game engine into using the same Data folder for all textures.
+  // Existing contents of this folder will be copied over to the game install folder and backed up. 
+  await symlinkMyGamesDataFolder(myGamesFolder, myGamesData, gameDataFolder);
+
+  // Check for StarfieldCustom.ini and loose file setup. 
+  const customINIPath = path.join(myGamesFolder, SFCUSTOM_INI);
+  await startLooseFilesCheck(context, customINIPath);
+}
+
+async function symlinkMyGamesDataFolder(myGamesFolder: string, myGamesData: string, gameDataFolder: string) {
   // We want to clean up the additional "Data" folder in "My Games" and create a junction pointing back to the game folder. 
   let createSymlink = true;
 
@@ -57,10 +69,6 @@ export default async function setup(discovery: types.IDiscoveryResult, context: 
   catch(err) {
     log('error', 'Error checking for My Games Data path for Starfield', err);
   }
-
-  // Check for StarfieldCustom.ini and loose file setup. 
-  const customINIPath = path.join(myGamesFolder, SFCUSTOM_INI);
-  await startLooseFilesCheck(context, customINIPath);
 }
 
 async function startLooseFilesCheck(context: types.IExtensionContext, iniPath: string) {
