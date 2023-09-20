@@ -9,7 +9,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Anything in the Documents/My Games/Starfield/Data will be automatically moved to the game installation Data folder and a junction created that tricks the game into using that folder for all textures. 
 - A StarfieldCustom.ini will be created with minimal values if is not already present. 
 - Symlink support has been re-enabled as this appears to work (it didn't in Fallout 4/Skyrim).
-- Add a warning when installing Starfield Script Extender on Xbox Game Pass. 
 - Fixed installing EXEs to the game root incorrectly. 
 - Warn the user if they try to install SKSE to a non-Steam version of Starfield. 
 - Added menu option to open photo mode folder
