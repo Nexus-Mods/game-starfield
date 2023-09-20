@@ -137,12 +137,12 @@ async function installSFSE(api: types.IExtensionApi, files: string[], SFSE: stri
             },
             [
                 {
+                    label: 'Continue',
+                },
+                {
                     label: 'Cancel',
                     default: true
                 },
-                {
-                    label: 'Continue',
-                }
             ]
         )
 
