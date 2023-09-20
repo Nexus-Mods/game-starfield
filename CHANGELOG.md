@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Add a warning when installing Starfield Script Extender on Xbox Game Pass. 
 - Fixed installing EXEs to the game root incorrectly. 
 - Warn the user if they try to install SKSE to a non-Steam version of Starfield. 
+- Added menu option to open photo mode folder
 
 ## [0.3.0] - 2023-09-17
 
