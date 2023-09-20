@@ -18,7 +18,7 @@
     "prettier:fix": "prettier --config .prettierrc src/**/*.ts --write",
     "copyassets": "copyfiles -f ./src/assets/* ./dist/",
     "build": "npx webpack && npm run copyassets && node createinfojson.js && npm run pack",
-    "deploy": "npx webpack && node createinfojson.js && npm run copyplugin && npm run pack",
+    "deploy": "npx webpack && npm run copyassets && node createinfojson.js && npm run copyplugin && npm run pack",
     "copyplugin": "node copyplugin.js",
     "format": "npm run prettier:fix && npm run lint:fix",
     "pack": "node packageplugin.js"
