@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.4.0] - UNRELEASED
+## [0.4.0] - 2023-09-21
 
 - Anything in the Documents/My Games/Starfield/Data will be automatically moved to the game installation Data folder and a junction created that tricks the game into using that folder for all textures. 
 - A StarfieldCustom.ini will be created with minimal values if is not already present. 
