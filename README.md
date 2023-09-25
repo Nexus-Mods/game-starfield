@@ -4,8 +4,8 @@ This is an extension for [Vortex](https://www.nexusmods.com/about/vortex/) to ad
 
 # Features
 
-- Correct setup of StarfieldCustom.ini
-- Supports both `Data` folders through the use of folder junctions
+- ~~Correct setup of StarfieldCustom.ini~~
+- ~~Supports both `Data` folders through the use of folder junctions~~
 - Supports SFSE, BethINI and SFEdit
 
 # Installation
@@ -32,9 +32,9 @@ By default, Vortex will deploy files to the game's root folder and extracts the 
 
 Starfield shakes up the traditional loading of mods by having an extra `Data` folder located in `Documents\My Games\Starfield` which is created the first time you open the game. The files provided at this location completely override those found in the `Data` folder where mods would traditionally be installed (`Starfield\Data`). This has caused quite a bit of confusion in the community with different mods providing instructions to install to the two different folders and a number of community workarounds - some that worked and some less so. 
 
-Vortex users no longer need to worry about this. Upon managing Starfield, Vortex will now copy all the files already installed to `Documents\My Games\Starfield\Data` into the game `Data` directory, then create a junction that tricks the game into redirecting any files it would read to or write from the Documents folder to use the game folder instead. This neat trick means that your mods will always load correctly and as an added bonus this method works for both the Steam and Xbox Game Pass releases of the game. 
+~~Vortex users no longer need to worry about this. Upon managing Starfield, Vortex will now copy all the files already installed to `Documents\My Games\Starfield\Data` into the game `Data` directory, then create a junction that tricks the game into redirecting any files it would read to or write from the Documents folder to use the game folder instead. This neat trick means that your mods will always load correctly and as an added bonus this method works for both the Steam and Xbox Game Pass releases of the game.~~ 
 
-Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a StarfieldCustom.ini file in the Document\My Games\Starfield folder. Vortex now creates this file and will validate that the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" settings are correct on each startup. If they are wrong, they will be corrected automatically (without changing any other settings you might've added manually). Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos and there is now a button inside Vortex to quickly open this folder. 
+~~Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a StarfieldCustom.ini file in the Document\My Games\Starfield folder. Vortex now creates this file and will validate that the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" settings are correct on each startup. If they are wrong, they will be corrected automatically (without changing any other settings you might've added manually). Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos and there is now a button inside Vortex to quickly open this folder.~~
 
 # Known Issues
 

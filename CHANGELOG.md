@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.1] - 2023-09-22
+
+- Hotfix to disable the My Games Data folder workaround and StarfieldCustom.ini management from the previous release due to unforeseen issues.
+
 ## [0.4.0] - 2023-09-21
 
 - Anything in the Documents/My Games/Starfield/Data will be automatically moved to the game installation Data folder and a junction created that tricks the game into using that folder for all textures. 
