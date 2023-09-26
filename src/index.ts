@@ -55,6 +55,7 @@ function main(context: types.IExtensionContext) {
     supportedTools,
     requiresLauncher: requiresLauncher,
     details: {
+      supportsSymlinks: false,
       steamAppId: parseInt(STEAMAPP_ID),
     },
   });
