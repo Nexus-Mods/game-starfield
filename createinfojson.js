@@ -35,6 +35,7 @@ async function start() {
     author: packageJson.author,
     version: packageJson.version,
     description: packageJson.description,
+    lastUpdated: Date.now()
   };
 
   // try to copy gameart.jpg

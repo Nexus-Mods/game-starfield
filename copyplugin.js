@@ -4,7 +4,12 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const VORTEX_PLUGINS = path.join(process.env.APPDATA, "Vortex", "plugins");
+
+
+const isDev = process.argv.find(arg => arg === '-dev') !== undefined;
+console.log(isDev);
+
+const VORTEX_PLUGINS = path.join(process.env.APPDATA, isDev ? "vortex_devel" : "Vortex", "plugins");
 
 //console.log("__dirname=" + __dirname);
 //console.log("__filename=" + __filename);
@@ -23,9 +28,13 @@ async function removeOldPlugins(name) {
 }
 
 async function start() {
+
   const packageData = await fs.readFile(path.join(__dirname, "package.json"), {
     encoding: "utf8"
-  });
+  });  
+
+  console.log(`start VORTEX_PLUGINS=${VORTEX_PLUGINS}`);
+
   try {
     const data = JSON.parse(packageData);
     const destination = path.join(

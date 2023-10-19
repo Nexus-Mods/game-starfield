@@ -15,7 +15,8 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "jsx": "react",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   },
   "exclude": ["node_modules"],
   "include": ["src/index.ts"]

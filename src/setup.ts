@@ -86,10 +86,13 @@ async function startLooseFilesCheck(context: types.IExtensionContext, iniPath: s
 
       // Required settings not configured. Loose files would not be loaded correctly.
       log('warn',`${archiveInvalidationTag} - INI not setup: ${iniPath}`);
+
       try {
         // Reload ini in case external changes has happened in the meantime.
         iniContent = (await fs.readFileAsync(iniPath,'utf-8')) ?? '';
+
         ini = parse(iniContent);
+        
         log('info',`${archiveInvalidationTag} - Setting up INI: ${iniPath}`, ini);
 
         // Allow modifying file even if it was flagged read-only.

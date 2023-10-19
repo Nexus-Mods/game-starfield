@@ -5,13 +5,12 @@ import archiver from "archiver";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const VORTEX_PLUGINS = path.join(process.env.APPDATA, "vortex_devel", "plugins");
 
 async function pack() {
 
     await new Promise(async (resolve, reject) => {
         
-        const packageData = await fs.promises.readFile(path.join(__dirname, "package.json"), { encoding: "utf8" });
+        const packageData = await fs.promises.readFile(path.join(__dirname, "package.json"), { encoding: "utf8" });            
 
         const data = JSON.parse(packageData);
         const destinationFolder = path.join(__dirname, "out");
@@ -44,6 +43,7 @@ async function pack() {
         archive.on('warning', function(err) {
             if (err.code === 'ENOENT') {
                 // log warning
+                console.warn(err);
             } else {
                 // throw error
                 throw err;
@@ -67,4 +67,4 @@ async function pack() {
     });
 }
 
-await pack();
+pack();
