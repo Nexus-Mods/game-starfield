@@ -67,15 +67,7 @@ function main(context: types.IExtensionContext) {
 
   context.registerAction("mod-icons", 500, "open-ext", {}, "Open Game Application Data Folder", openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
 
-  context.registerAction(
-    "mod-icons",
-    700,
-    "open-ext",
-    {},
-    "Open Game Photo Mode Folder",
-    () => openPhotoModePath(context),
-    (gameId?: string[]) => isStarfield(context, gameId),
-  );
+  context.registerAction("mod-icons", 700, "open-ext", {}, "Open Game Photo Mode Folder", openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
 
   context.once(() => {
     //

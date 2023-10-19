@@ -82,7 +82,7 @@ async function startLooseFilesCheck(context: types.IExtensionContext, iniPath: s
     let iniContent = (await fs.readFileAsync(iniPath,'utf-8')) ?? '';
     let ini = parse(iniContent);
 
-    if (ini?.Archive?.bInvalidateOlderFiles !== '1' || ini?.Archive?.sResourceDataDirsFinal !== '' || ini?.General?.sPhotoModeFolder !== 'Photos') {
+    if (ini?.Archive?.bInvalidateOlderFiles !== '1' || ini?.Archive?.sResourceDataDirsFinal !== '' || ini?.Display?.sPhotoModeFolder !== 'Photos') {
 
       // Required settings not configured. Loose files would not be loaded correctly.
       log('warn',`${archiveInvalidationTag} - INI not setup: ${iniPath}`);
@@ -98,14 +98,14 @@ async function startLooseFilesCheck(context: types.IExtensionContext, iniPath: s
         if (!ini.Archive) {
           ini.Archive = {};
         }
-        if (!ini.General) {
-          ini.General = {};
+        if (!ini.Display) {
+          ini.Display = {};
         }
 
         // Set required settiings on ini object and convert back to writeable string
         ini.Archive.bInvalidateOlderFiles = '1';
         ini.Archive.sResourceDataDirsFinal = '';
-        ini.General.sPhotoModeFolder = 'Photos';
+        ini.Display.sPhotoModeFolder = 'Photos';
         const newIniContent = stringify(ini);
         log('info',`${archiveInvalidationTag} - New INI: \n${newIniContent}`, ini);
 

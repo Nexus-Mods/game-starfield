@@ -65,12 +65,7 @@ export const openAppDataPath = () => {
   util.opn(docPath).catch(() => null);
 };
 
-export const openPhotoModePath = (context: types.IExtensionContext) => {
-  const state = context.api.getState();
-  const activeGame = selectors.activeGameId(state)
-  if (activeGame !== GAME_ID) return;
-  const discovery = selectors.currentGameDiscovery(state);
-  if (!discovery?.path) return;
-  const docPath = path.join(discovery.path, 'Data', 'Textures', 'Photos');
+export const openPhotoModePath = () => {
+  const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Photos');
   util.opn(docPath).catch(() => null);
 };
