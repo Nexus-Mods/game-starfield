@@ -54,7 +54,7 @@ async function install(
     // RELATIVE TO ROOT FOLDER
     // Archive contains a "Data" folder?
     const dataFolderFiles: string[] = files.filter(f => f.toLowerCase().startsWith('data'));
-    if (dataFolderFiles.length) return installWithDataFolder(dataFolderFiles);
+    if (dataFolderFiles.length) return installWithDataFolder(dataFolderFiles, files);
 
     // END RELATIVE TO ROOT FOLDER
 
@@ -67,7 +67,7 @@ async function install(
     }, []);
 
     // We have an ESP/ESM/BA2/ESL/etc so anything on that level can go into the data folder.
-    if (dataFiles.length) return installDataFolderFiles(dataFiles);
+    if (dataFiles.length) return installDataFolderFiles(dataFiles, files);
 
     // END KNOWN DATA FOLDER FILES
 
@@ -190,28 +190,40 @@ function installExplicitTopLevel(files: string[], topLevel: string[], topLevelNo
 }
 
 /* Installs where the archive is packed relative to the game root */
-function installWithDataFolder(dataFolderFiles: string[]): types.IInstallResult {
+function installWithDataFolder(dataFolderFiles: string[], allFiles: string[]): types.IInstallResult {
     // See where in the file tree the data folder exists
         const idx = dataFolderFiles[0].toLowerCase().indexOf('data');
         const dataParent = idx !== 0 ? dataFolderFiles[0].substring(0, idx)  : '';
-        const dataFolderInstructions: types.IInstruction[] = dataFolderFiles.map(f => ({
+        const installableFiles = allFiles.filter(f => f.startsWith(dataParent));
+        const dataFolderInstructions: types.IInstruction[] = installableFiles.map(f => ({
             type: 'copy',
             source: f,
             destination: dataParent !== '' ? f.toLowerCase().replace(dataParent.toLowerCase(), 'Data'): f
         }));
 
+        // The files we couldn't install
+        const unprocessedFiles: types.IInstruction[] = allFiles.filter(f => !f.startsWith(dataParent)).map(f => ({ type: 'copy', source: f, destination: f }));
+
         log('info', 'Starfield mod detected with data subfolder (packed relative to game root)')
-        return { instructions: dataFolderInstructions };
+        return { instructions: [...dataFolderInstructions, ...unprocessedFiles] };
 }
 
 /* Installs where there are known data folder files */
-function installDataFolderFiles(dataFiles: string[]): types.IInstallResult {
+function installDataFolderFiles(dataFiles: string[], allFiles: string[]): types.IInstallResult {
     // check if it's nested
     const idx = dataFiles[0].indexOf(path.basename(dataFiles[0]));
     const baseFolder = idx !== 0 ? dataFiles[0].substring(0, idx) : '';
 
+    // All files at the level we want.
+    const eligibleFiles: string[] = baseFolder !== '' ? allFiles.filter(f => f.startsWith(baseFolder)) : allFiles;
+    let inEligibleFileInstructions: types.IInstruction[] = [];
+    if (eligibleFiles.length < allFiles.length) {
+        const unprocessedFiles = allFiles.filter(f => !f.startsWith(baseFolder));
+        inEligibleFileInstructions = unprocessedFiles.map(f => ({ type: 'copy', source: f, destination: f }));
+    }
+
     // Map everything in that folder to "Data".
-    const dataFilesInstructions: types.IInstruction[] = dataFiles.map((f: string) => ({
+    const dataFilesInstructions: types.IInstruction[] = eligibleFiles.map((f: string) => ({
         type: 'copy',
         source: f,
         destination: path.join('Data', baseFolder !== '' ? f.substring(idx) : f)
@@ -219,7 +231,7 @@ function installDataFolderFiles(dataFiles: string[]): types.IInstallResult {
     
     
     log('info', 'Starfield mod detected with plugin or BA2 file, mapping to data folder');
-    return { instructions: dataFilesInstructions };
+    return { instructions: [...dataFilesInstructions, ...inEligibleFileInstructions] };
 }
 
 /* Installs where there are known data folder subfolders */
