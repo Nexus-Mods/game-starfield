@@ -67,7 +67,7 @@ async function install(
     }, []);
 
     // We have an ESP/ESM/BA2/ESL/etc so anything on that level can go into the data folder.
-    if (dataFiles.length) return installDataFolderFiles(dataFiles);
+    if (dataFiles.length) return installDataFolderFiles(dataFiles, files);
 
     // END KNOWN DATA FOLDER FILES
 
@@ -205,13 +205,21 @@ function installWithDataFolder(dataFolderFiles: string[]): types.IInstallResult 
 }
 
 /* Installs where there are known data folder files */
-function installDataFolderFiles(dataFiles: string[]): types.IInstallResult {
+function installDataFolderFiles(dataFiles: string[], allFiles: string[]): types.IInstallResult {
     // check if it's nested
     const idx = dataFiles[0].indexOf(path.basename(dataFiles[0]));
     const baseFolder = idx !== 0 ? dataFiles[0].substring(0, idx) : '';
 
+    // All files at the level we want.
+    const eligibleFiles: string[] = baseFolder !== '' ? allFiles.filter(f => f.startsWith(baseFolder)) : allFiles;
+    let inEligibleFileInstructions: types.IInstruction[] = [];
+    if (eligibleFiles.length < allFiles.length) {
+        const unprocessedFiles = allFiles.filter(f => !f.startsWith(baseFolder));
+        inEligibleFileInstructions = unprocessedFiles.map(f => ({ type: 'copy', source: f, destination: f }));
+    }
+
     // Map everything in that folder to "Data".
-    const dataFilesInstructions: types.IInstruction[] = dataFiles.map((f: string) => ({
+    const dataFilesInstructions: types.IInstruction[] = eligibleFiles.map((f: string) => ({
         type: 'copy',
         source: f,
         destination: path.join('Data', baseFolder !== '' ? f.substring(idx) : f)
@@ -219,7 +227,7 @@ function installDataFolderFiles(dataFiles: string[]): types.IInstallResult {
     
     
     log('info', 'Starfield mod detected with plugin or BA2 file, mapping to data folder');
-    return { instructions: dataFilesInstructions };
+    return { instructions: [...dataFilesInstructions, ...inEligibleFileInstructions] };
 }
 
 /* Installs where there are known data folder subfolders */
