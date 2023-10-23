@@ -1,6 +1,6 @@
-import { fs, log, selectors, types, util } from "vortex-api";
+import { fs, log, selectors, types, util } from 'vortex-api';
 import { GAME_ID } from './common';
-import path from "path";
+import path from 'path';
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
   log('debug', 'Merging folders', { source, destination, overwrite });
@@ -22,7 +22,7 @@ export async function mergeFolderContents(source: string, destination: string, o
       }
       // We can move the entire folder over. 
       else {
-        await fs.copyAsync(sourceFilePath, path.join(destination, sourceFile), { force: true });
+        await fs.copyAsync(sourceFilePath, path.join(destination, sourceFile), { overwrite: true });
       }
       // await fs.rmdirAsync(sourceFilePath)
       continue;
