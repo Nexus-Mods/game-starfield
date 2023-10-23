@@ -53,7 +53,7 @@ function main(context: types.IExtensionContext) {
     requiredFiles: ["Starfield.exe"],
     //setup: (discovery) => setup(discovery, context),
     supportedTools,
-    requiresLauncher: requiresLauncher,
+    requiresLauncher: requiresLauncher as any,
     details: {
       supportsSymlinks: false,
       steamAppId: parseInt(STEAMAPP_ID),
@@ -61,7 +61,7 @@ function main(context: types.IExtensionContext) {
   });
   
 
-  context.registerInstaller("starfield-default-installer", 25, testSupported, (files) => install(context.api, files));
+  context.registerInstaller("starfield-default-installer", 25, testSupported as any, (files) => install(context.api, files) as any);
 
   context.registerAction("mod-icons", 500, "open-ext", {}, "Open Game Settings Folder", openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
 
