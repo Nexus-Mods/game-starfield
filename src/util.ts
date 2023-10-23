@@ -1,6 +1,6 @@
 import { fs, log, selectors, types, util } from 'vortex-api';
 import { GAME_ID } from './common';
-import path from "path";
+import path from 'path';
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
   log('debug', 'Merging folders', { source, destination, overwrite });
