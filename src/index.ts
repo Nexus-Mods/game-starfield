@@ -52,7 +52,7 @@ function main(context: types.IExtensionContext) {
     logo: "gameart.jpg",
     executable: () => "Starfield.exe",
     requiredFiles: ["Starfield.exe"],
-    setup: (discovery) => setup(discovery, context) as any,
+    // setup: (discovery) => setup(discovery, context) as any,
     supportedTools,
     requiresLauncher: requiresLauncher as any,
     details: {

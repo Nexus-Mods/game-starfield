@@ -1,10 +1,8 @@
 /* eslint-disable */
 import path from 'path';
-import { GAME_ID, SFCUSTOM_INI, SFCUSTOM_INI_TEXT } from './common';
+import { GAME_ID, SFCUSTOM_INI } from './common';
 import { fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
-
-const customINITemplate = path.join(__dirname, 'StarfieldCustom.ini');
 
 const sanitize = (iniStr: string) => {
   // Replace whitespace around equals signs.
@@ -31,7 +29,7 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
   if (profile?.gameId !== GAME_ID) {
     return Promise.resolve(undefined);
   }
-  let ini
+  let ini;
   const myGamesFolder = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield');
   const iniPath = path.join(myGamesFolder, SFCUSTOM_INI);
   const archiveInvalidationTag = '[ARCHIVE INVALIDATION]';
@@ -43,7 +41,7 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
       ini = parse(iniContent);
       return (ini?.Archive?.bInvalidateOlderFiles === '1'
            && ini?.Archive?.sResourceDataDirsFinal === ''
-           && ini?.Display?.sPhotoModeFolder === 'Photos');
+           && ini?.Display?.sPhotoModeFolder !== undefined);
     } catch (err) {
       log('warn', `${archiveInvalidationTag} - INI not setup: ${iniPath}`);
       return false;
@@ -78,7 +76,9 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
         // Set required settiings on ini object and convert back to writeable string
         ini.Archive.bInvalidateOlderFiles = '1';
         ini.Archive.sResourceDataDirsFinal = '';
-        ini.Display.sPhotoModeFolder = 'Photos';
+        if (ini.Display?.sPhotoModeFolder === undefined) {
+          ini.Display.sPhotoModeFolder = 'Photos';
+        }
         const newIniContent = sanitize(stringify(ini, { retainComments: true, whitespace: true }));
         log('info', `${archiveInvalidationTag} - New INI: \n${newIniContent}`, ini);
 
