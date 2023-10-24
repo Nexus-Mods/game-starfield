@@ -1,7 +1,8 @@
-import { types } from "vortex-api";
-import { testSupported, install } from "./installers/starfield-default-installer";
-import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } from "./util";
-import setup from "./setup";
+import { types } from 'vortex-api';
+import { testSupported, install } from './installers/starfield-default-installer';
+import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } from './util';
+import setup from './setup';
+import { testLooseFiles } from './tests';
 
 // IDs for different stores and nexus
 import { GAME_ID, SFSE_EXE, STEAMAPP_ID, XBOX_ID } from "./common";
@@ -51,7 +52,7 @@ function main(context: types.IExtensionContext) {
     logo: "gameart.jpg",
     executable: () => "Starfield.exe",
     requiredFiles: ["Starfield.exe"],
-    //setup: (discovery) => setup(discovery, context),
+    // setup: (discovery) => setup(discovery, context) as any,
     supportedTools,
     requiresLauncher: requiresLauncher as any,
     details: {
@@ -60,6 +61,8 @@ function main(context: types.IExtensionContext) {
     },
   });
   
+  // Bluebird, the bane of my life.
+  context.registerTest('loose-files-check', 'gamemode-activated', () => Promise.resolve(testLooseFiles(context.api)) as any);
 
   context.registerInstaller("starfield-default-installer", 25, testSupported as any, (files) => install(context.api, files) as any);
 

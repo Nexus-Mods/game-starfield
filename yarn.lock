@@ -126,11 +126,6 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
-"@types/ini@^1.3.32":
-  version "1.3.32"
-  resolved "https://registry.yarnpkg.com/@types/ini/-/ini-1.3.32.tgz#6ebf95923d3b5afb95bfcf76a246da9fed26e48b"
-  integrity sha512-cCXfrhgTiChyYIBs7ZZdsi8a9JLs4vVdCsUJt8nczxpNcHcUEMO8Tu5vsMwbepDobKC1mOf4w32jgOz1NEDoaA==
-
 "@types/json-schema@*", "@types/json-schema@^7.0.8":
   version "7.0.14"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.14.tgz#74a97a5573980802f32c8e47b663530ab3b6b7d1"
@@ -783,10 +778,10 @@ inherits@2, inherits@^2.0.1, inherits@^2.0.3, inherits@~2.0.1, inherits@~2.0.3:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-ini@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/ini/-/ini-4.1.1.tgz#d95b3d843b1e906e56d6747d5447904ff50ce7a1"
-  integrity sha512-QQnnxNyfvmHFIsj7gkPcYymR8Jdw/o7mp5ZFihxn6h8Ci6fh3Dx4E1gPjpQEpIuPo9XVNY/ZUwh4BPMjGyL01g==
+ini-comments@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/ini-comments/-/ini-comments-5.0.0.tgz#b65d98298f610a43adf5f0467d1470dd0208202a"
+  integrity sha512-u/oLa7TpDhk7skLovT3ZBHt5nw0c4kiAhy1p9U3WYnNLV7ReER6JL+uaoaHG1pTMAlZqKLO3txrd210EuD3PVA==
 
 interpret@^2.2.0:
   version "2.2.0"

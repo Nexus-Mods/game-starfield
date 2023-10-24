@@ -14,6 +14,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "copyassets": "copyfiles -f ./src/assets/* ./dist/",
     "build": "npx webpack && yarn copyassets && node createinfojson.js && yarn packplugin",
+    "buildcopydev": "npx webpack && yarn copyassets && node createinfojson.js && yarn packplugin && yarn copyplugindev",
     "copyplugin": "node copyplugin.js",
     "copyplugindev": "node copyplugin.js -dev",
     "packplugin": "node packageplugin.js"
@@ -34,10 +35,9 @@
   },
   "dependencies": {
     "@types/estree": "^1.0.3",
-    "@types/ini": "^1.3.32",
     "archiver": "^6.0.0",
     "copyfiles": "^2.1.1",
-    "ini": "^4.1.1",
+    "ini-comments": "^5.0.0",
     "react-bootstrap": "^0.33.0",
     "react-redux": "^8.0.5",
     "redux-act": "^1.8.0"
