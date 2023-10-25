@@ -1,5 +1,5 @@
-import { fs, log, types, selectors, util } from 'vortex-api';
-import { mergeFolderContents, isJunctionDir, createJunction, removeJunction } from './util';
+import { fs, types, selectors, util } from 'vortex-api';
+import { isJunctionDir, createJunction, removeJunction } from './util';
 import path from 'path';
 
 import { setDirectoryJunctionEnabled } from './actions/settings';

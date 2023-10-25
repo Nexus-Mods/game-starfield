@@ -76,7 +76,12 @@ export const removeJunction = async (filePath: string): Promise<void> => {
   }
   await fs.unlinkAsync(filePath);
   const backUp = await getLatestBackupPath(path.dirname(filePath));
-  await fs.renameAsync(backUp, filePath);
+  try {
+    await fs.statAsync(backUp);
+    await fs.renameAsync(backUp, filePath);
+  } catch (err) {
+    await fs.ensureDirAsync(filePath);
+  }
   return Promise.resolve();
 }
 
