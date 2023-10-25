@@ -42,7 +42,7 @@ export const DATA_EXTENSIONS = [
 ];
 
 export const ROOT_EXTENSIONS = [
-  '.ini',
+  // '.ini',
   '.dll',
   '.exe'
 ];
