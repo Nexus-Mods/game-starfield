@@ -1,8 +1,12 @@
 /* eslint-disable */
 import path from 'path';
-import { GAME_ID, SFCUSTOM_INI } from './common';
+import { GAME_ID, JUNCTION_TEXT, SFCUSTOM_INI } from './common';
 import { fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
+
+import { isJunctionDir } from './util';
+import { toggleJunction } from './setup';
+import { setDirectoryJunctionSuppress, setDirectoryJunctionEnabled } from './actions/settings';
 
 const sanitize = (iniStr: string) => {
   // Replace whitespace around equals signs.
@@ -94,5 +98,60 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
       const valid = await isValid();
       return valid ? Promise.resolve(undefined) : Promise.resolve(testLooseFiles(api));
     }
+  });
+}
+
+export async function raiseJunctionDialog(api: types.IExtensionApi, suppress?: boolean): Promise<void> {
+  const state = api.getState();
+  const suppressed = util.getSafe(state, ['settings', 'suppressDirectoryJunctionTest'], false) || suppress;
+  const dismiss = () => {
+    api.dismissNotification('starfield-junction-notif');
+  }
+  const suppressNotif = () => {
+    dismiss();
+    api.suppressNotification('starfield-junction-notif');
+    api.store.dispatch(setDirectoryJunctionSuppress(true));
+  }
+  const toggle = () => {
+    dismiss();
+    toggleJunction(api, true);
+  }
+
+  const actions = [
+    { label: 'Never Ask Me Again', action: () => suppressNotif() },
+    { label: 'Use Junction', action: () => toggle() },
+    { label: 'Close', action: () => dismiss(), default: true },
+  ].filter((action) => suppressed ? action.label !== 'Never Ask Me Again' : true);
+
+  api.showDialog('question', 'Starfield Folder Junction Recommendation', {
+    bbcode: JUNCTION_TEXT,
+  }, [...actions], 'starfield-junction-dialog');
+}
+
+export async function testFolderJunction(api: types.IExtensionApi): Promise<void> {
+  const state = api.getState();
+  const profile: types.IProfile = selectors.activeProfile(state);
+  if (profile?.gameId !== GAME_ID) {
+    return Promise.resolve(undefined);
+  }
+  const myGamesFolder = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield');
+  const dataPath = path.join(myGamesFolder, 'Data');
+  const isJunction = await isJunctionDir(dataPath);
+  if (isJunction) {
+    // Make sure the toggle button is set correctly. (Backwards compatibility?)
+    api.store.dispatch(setDirectoryJunctionEnabled(true));
+    return Promise.resolve(undefined);
+  }
+
+  // Not a junction - time to jabber.
+  api.sendNotification({
+    id: 'starfield-junction-notif',
+    type: 'warning',
+    message: 'Folder Junction Recommendation',
+    allowSuppress: false,
+    noDismiss: true,
+    actions: [
+      { title: 'More', action: () => raiseJunctionDialog(api) },
+    ],
   });
 }
