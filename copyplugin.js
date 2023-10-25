@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 
 const isDev = process.argv.find(arg => arg === '-dev') !== undefined;
-console.log(isDev);
+//console.log(isDev);
 
 const VORTEX_PLUGINS = path.join(process.env.APPDATA, isDev ? "vortex_devel" : "Vortex", "plugins");
 
@@ -33,7 +33,7 @@ async function start() {
     encoding: "utf8"
   });  
 
-  console.log(`start VORTEX_PLUGINS=${VORTEX_PLUGINS}`);
+  //console.log(`start VORTEX_PLUGINS=${VORTEX_PLUGINS}`);
 
   try {
     const data = JSON.parse(packageData);
@@ -53,7 +53,8 @@ async function start() {
         path.join(__dirname, "dist", file),
         path.join(destination, file)
       );
-    }
+    }    
+    console.log(`${fileEntries.length} file(s) copied to ${destination}`);
   } catch (err) {
     console.error(err);
   }
