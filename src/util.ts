@@ -46,7 +46,55 @@ export async function mergeFolderContents(source: string, destination: string, o
   // await fs.rmdirAsync(source);
 }
 
-export const isStarfield = (context: types.IExtensionContext, gameId: string | string[] | undefined = undefined) => {
+export const isJunctionDir = async (filePath: string): Promise<boolean> => {
+  try {
+    const res: fs.Stats = await fs.lstatAsync(filePath);
+    return Promise.resolve(res.isSymbolicLink());
+  } catch (err) {
+    return Promise.resolve(false);
+  }
+}
+
+export const createJunction = async (source: string,
+                                     destination: string,
+                                     backup?: boolean): Promise<void> => {
+  if (backup) {
+    // merge both the 'my games' and 'main' data folders
+    await mergeFolderContents(source, destination, true);
+
+    // make a backup (just in case), timestamped so we dont worry about unique renaming
+    await fs.renameAsync(source, `${source}-backup-${Date.now()}`);
+  }
+  await fs.symlinkAsync(destination, source, 'junction');
+  return Promise.resolve();
+}
+
+export const removeJunction = async (filePath: string): Promise<void> => {
+  if (!isJunctionDir(filePath)) {
+    // Nothing here.
+    return Promise.resolve();
+  }
+  await fs.unlinkAsync(filePath);
+  const backUp = await getLatestBackupPath(path.dirname(filePath));
+  await fs.renameAsync(backUp, filePath);
+  return Promise.resolve();
+}
+
+export const getLatestBackupPath = async (dirPath: string) => {
+  // Captures the digits at the end.
+  const regexp = /(\d+)$/;
+  const directories = await fs.readdirAsync(dirPath);
+  const latestBack = directories.reduce((prev, current) => {
+    const match = current.match(regexp);
+    if (match && match[1] && +match[1] > +prev.match(regexp)[1]) {
+      prev = current;
+    }
+    return prev;
+  }, '0');
+  return path.join(dirPath, latestBack);
+}
+
+export const isStarfield = (context: types.IExtensionContext, gameId: string | string[]) => {
   if (gameId !== undefined) {
     return (gameId === GAME_ID);
   }
