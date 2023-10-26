@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.4] - 2023-10-26
+
+- Fix for [An uncoverable error occurred - clicking on Use Junction](https://github.com/Nexus-Mods/game-starfield/issues/22)
+- Updated text for ini check notification and dialog
+
 ## [0.4.3] - 2023-10-25
 
 - Folder junction is tested and user is asked with a lot of warnings if they'd like to use this feature.
