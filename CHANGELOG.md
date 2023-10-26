@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.3] - 2023-10-25
+
+- Folder junction is tested and user is asked with a lot of warnings if they'd like to use this feature.
+- Documentation added to [modding.wiki](https://modding.wiki/en/vortex/users/starfield-folder-junction-issues) for OneDrive and other cloud drive service issues 
+
+## [0.4.2] - 2023-10-22
+
+- The user is notified if `StarfieldCustom.ini` doesn't contain the bare minimum to enable modding.
+- If the ini file is fixed, it is done so without removing comments and `sPhotoModeFolder=Photos` is added to the `[Display]`  section instead of `[General]`.
+- Fix for [BA2/ESM files have other files stripped on install](https://github.com/Nexus-Mods/game-starfield/issues/15)
+- Fix for [Does not install mods with BAT files AND valid data properly](https://github.com/Nexus-Mods/game-starfield/issues/17)
+
+
 ## [0.4.1] - 2023-09-22
 
 - Hotfix to disable the My Games Data folder workaround and StarfieldCustom.ini management from the previous release due to unforeseen issues.

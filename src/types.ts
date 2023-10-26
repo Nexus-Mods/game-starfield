@@ -10,8 +10,16 @@ export interface IProps {
   profile: types.IProfile;
   discovery: types.IDiscoveryResult;
   //mods: { [modId: string]: types.IMod };
-  mods: Record<string, IMod>;
+  mods?: Record<string, IMod>;
 }
+
+export interface IDirectoryProps {
+  gameDataFolder: string;
+  myGamesFolder: string;
+  myGamesData: string;
+}
+
+export type IJunctionProps = IProps & IDirectoryProps;
 
 export interface ISerializableData {
   // The prefix we want to add to the folder name on deployment.
