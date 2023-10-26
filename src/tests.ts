@@ -54,8 +54,8 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
   const valid = await isValid();
   return valid ? Promise.resolve(undefined) : Promise.resolve({
     description: {
-      short: 'Required settings not configured',
-      long: 'Required settings not configured. Loose files would not be loaded correctly.\n\n',
+      short: 'StarfieldCustom.ini not configured',
+      long: 'Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a "StarfieldCustom.ini" file in the "Documents\\My Games\\Starfield" folder. If Vortex detects that this ini doesn\'t exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might\'ve added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\\Textures\\Photos (unless you\'ve already set it to something else) and there is now a button inside Vortex to quickly open this folder.'
 
     },
     severity: 'warning',
