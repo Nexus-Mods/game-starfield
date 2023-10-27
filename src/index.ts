@@ -85,6 +85,7 @@ function main(context: types.IExtensionContext) {
   // Bluebird, the bane of my life.
   context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => Promise.resolve(testLooseFiles(context.api)) as any);
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
+  //context.registerInstaller('starfield-deprecated-fomod', 25,)
   // context.registerInstaller('starfield-default-installer', 25, testSupported as any, (files) => install(context.api, files) as any);
 
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
@@ -93,8 +94,8 @@ function main(context: types.IExtensionContext) {
 
   context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
 
-  context.registerModType('starfield-data-folder', 1,
-    (gameId) => selectors.activeGameId(context.api.getState()) === gameId,
+  context.registerModType('starfield-data-folder', 10,
+    (gameId) => GAME_ID === gameId,
     (game: types.IGame) => {
       const discovery = selectors.discoveryByGame(context.api.getState(), game.id);
       if (!discovery || !discovery.path) {
