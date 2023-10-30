@@ -15,6 +15,8 @@ Clone repo and run `yarn install`
 - `yarn copyplugindev` will copy contents of `/dist` to the plugins folder of the development build of Vortex. Normally located at `%APPDATA/Roaming/vortex_devel/plugins`
 - `yarn buildcopydev` will build and contents of `/dist` to the plugins folder of the development build of Vortex. Normally located at `%APPDATA/Roaming/vortex_devel/plugins`
 
+# Testing
+
 # Features
 
 - Check (and ask to fix) bare minimum setup of `StarfieldCustom.ini`
