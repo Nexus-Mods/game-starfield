@@ -172,7 +172,7 @@ export async function testDeprecatedFomod(api: types.IExtensionApi): Promise<typ
   const isFomod = (mod: types.IMod) => mod?.attributes?.installerChoices?.type === 'fomod';
   const isDataType = (mod: types.IMod) => mod?.attributes?.modType === MOD_TYPE_DATAPATH;
   const mods: { [modId: string]: types.IMod } = util.getSafe(state, ['persistent', 'mods', GAME_ID], {});
-  const fomods = Object.values(mods).filter(isFomod && isDataType);
+  const fomods = Object.values(mods).filter(mod => isFomod(mod) && isDataType(mod));
   const installationPath = selectors.installPathForGame(state, GAME_ID);
   const invalidFomods: types.IMod[] = [];
   for (const fomod of fomods) {
