@@ -3,10 +3,10 @@ import path from 'path';
 import semver from 'semver';
 import { actions, fs, selectors, types, util } from 'vortex-api';
 import { setMigrationVersion } from '../actions/settings';
-import { DATA_SUBFOLDERS ,GAME_ID, MOD_TYPE_DATAPATH } from '../common';
+import { DATA_SUBFOLDERS ,GAME_ID, MOD_TYPE_DATAPATH, NS } from '../common';
 import { deploy, nuclearPurge } from '../util';
 
-const DEBUG = false;
+const DEBUG = true;
 
 // Migrations should be self contained - do not let any errors escape from them.
 //  if a migration fails, it should allow the user to fallback to his previous state,
@@ -21,12 +21,12 @@ export async function migrateExtension(api: types.IExtensionApi) {
   const infoFile = JSON.parse(await fs.readFileAsync(path.join(__dirname, 'info.json')));
   const currentVersion = infoFile.version;
   if (DEBUG || semver.gt('0.5.0', currentVersion)) {
-    await migrate050(api);
+    await migrate050(api, currentVersion);
   }
   api.store?.dispatch(setMigrationVersion(currentVersion));
 }
 
-export async function migrate050(api: types.IExtensionApi) {
+export async function migrate050(api: types.IExtensionApi, version: string) {
   const state = api.getState();
   const installationPath = selectors.installPathForGame(state, GAME_ID);
   try {
@@ -51,4 +51,29 @@ export async function migrate050(api: types.IExtensionApi) {
   util.batchDispatch(api.store, batchedActions);
 
   await deploy(api);
+  const t = api.translate;
+  api.sendNotification({
+    message: t('Starfield extension has been updated to V{{newVersion}}', { replace: { newVersion: version }, ns: NS }),
+    noDismiss: true,
+    allowSuppress: false,
+    type: 'success',
+    id: 'starfield-update-notif',
+    actions: [
+      {
+        title: t('More', { ns: NS }),
+        action: () => api.showDialog('success', 'Starfield Extension Update', {
+          bbcode: t('The Starfield extension has been updated to V{{newVersion}}.[br][/br][br][/br]'
+                  + 'The default installer in 0.4.X has been deprecated in 0.5.X due to:[br][/br][br][/br]'
+                  + '- Flaws in its logic which could potentially strip out mod files, causing issues in-game.[br][/br]'
+                  + '- Limited support for different mod packaging patterns.[br][/br]'
+                  + '- Incorrect installation of FOMODs requiring mod authors to cater for different mod managers separately (MO2/Vortex)[br][/br][br][/br]'
+                  + 'What to expect:[br][/br][br][/br]'
+                  + '- As part of the migration, Vortex will purge all your mods as soon as Starfield is activated and will run checks to ensure your existing mods deploy correctly.[br][/br]'
+                  + '- Mods installed with 0.4.X should still function as they previously did. If for any reason you suspect the mod has missing files, simply re-install it and the new installation logic will ensure that the mod is installed correctly.', { replace: { newVersion: version }, ns: NS }),
+        }, [
+          { label: t('Close', { ns: NS }), action: () => api.dismissNotification('starfield-update-notif') }
+        ], 'starfield-update-0.5.0')
+      }
+    ],
+  });
 }
