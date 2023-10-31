@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - If the ini file is fixed, it is done so without removing comments and `sPhotoModeFolder=Photos` is added to the `[Display]`  section instead of `[General]`.
 - Fix for [BA2/ESM files have other files stripped on install](https://github.com/Nexus-Mods/game-starfield/issues/15)
 - Fix for [Does not install mods with BAT files AND valid data properly](https://github.com/Nexus-Mods/game-starfield/issues/17)
+- [Symlink support has been disabled](https://github.com/Nexus-Mods/game-starfield/pull/12) due to inconsistencies with files working\not working.
 
 
 ## [0.4.1] - 2023-09-22
