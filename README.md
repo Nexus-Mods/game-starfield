@@ -66,7 +66,7 @@ current
 
 - Mods needing ASI loading will require manual installation due to the complexities. Please see a mod's description for individual installation instructions.
 
-- Mods installed with version 0.4.X of this extension may have missing files due to a flaw in the default installer. Please re-install your mods using 0.5.X to ensure your mods are installed correctly.
+- Mods installed with version 0.4.X of this extension may have missing files due to a flaw in the default installer. Please re-install your mods using 0.5.X to ensure your mods are installed correctly. (Any missing archives will have to be re-downloaded manually)
 
 - Fomods installed with 0.4.X (selecting the "Vortex" flag) will no longer deploy correctly. 0.5.X has a test in place to detect these mods and will notify you if any are found; providing you with the ability to fix the installed fomod. Mod authors are no longer required to provide separate Vortex/MO2 destinations for their mod files!
 
