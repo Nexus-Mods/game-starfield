@@ -57,7 +57,7 @@ export async function migrate050(api: types.IExtensionApi, version: string) {
     noDismiss: true,
     allowSuppress: false,
     type: 'success',
-    id: 'starfield-update-notif',
+    id: 'starfield-update-notif-0.5.0',
     actions: [
       {
         title: t('More', { ns: NS }),
@@ -71,7 +71,13 @@ export async function migrate050(api: types.IExtensionApi, version: string) {
                   + '- As part of the migration, Vortex will purge all your mods as soon as Starfield is activated and will run checks to ensure your existing mods deploy correctly.[br][/br]'
                   + '- Mods installed with 0.4.X should still function as they previously did. If for any reason you suspect the mod has missing files, simply re-install it and the new installation logic will ensure that the mod is installed correctly.', { replace: { newVersion: version }, ns: NS }),
         }, [
-          { label: t('Close', { ns: NS }), action: () => api.dismissNotification('starfield-update-notif') }
+          {
+            label: t('Close', { ns: NS }),
+            action: () => {
+              api.dismissNotification('starfield-update-notif-0.5.0');
+              api.suppressNotification('starfield-update-notif-0.5.0');
+            }
+          }
         ], 'starfield-update-0.5.0')
       }
     ],
