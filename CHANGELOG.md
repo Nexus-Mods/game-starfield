@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.3] - 2023-10-31
+
+- fomod install check will now only run for data folder modtype.
+- Added a notification specifying the changes in the extension to the users.
+
 ## [0.5.2] - 2023-10-31
 
 - Mods installation logic now use stop patterns.
