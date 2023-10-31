@@ -15,6 +15,8 @@ Clone repo and run `yarn install`
 - `yarn copyplugindev` will copy contents of `/dist` to the plugins folder of the development build of Vortex. Normally located at `%APPDATA/Roaming/vortex_devel/plugins`
 - `yarn buildcopydev` will build and contents of `/dist` to the plugins folder of the development build of Vortex. Normally located at `%APPDATA/Roaming/vortex_devel/plugins`
 
+# Testing
+
 # Features
 
 - Check (and ask to fix) bare minimum setup of `StarfieldCustom.ini`
@@ -50,11 +52,21 @@ Starfield breaks the Bethesda-game trend by having a secondary data folder at `D
 > IMPORTANT: Things aren't all perfect though. Using a file syncing\cloud drive service such as OneDrive, Google Drive or Dropbox are known to cause issues with this method due to the inconsistencies in how they handle folder junctions. The most severe of these issues can lead to the loss of data. For compatibility information about individual services, please [read this page on modding.wiki](https://modding.wiki/en/vortex/users/starfield-folder-junction-issues) for more information.
 
 Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a `StarfieldCustom.ini` file in the `Documents\My Games\Starfield` folder. If Vortex detects that this ini doesn't exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might've added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.
+current 
 
 # Known Issues
 
+- This extension has been tested with all of the most popular mods, installers, script extenders, mod fixers etc. Please see this [Mod Compatibility List](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) forum post for details. 
+
+- Mods that include ini entries to be added won't fully work as functionality for ini merging isn't added yet. Deployment will work fine, but the ini (normally the `StarfieldCustom.ini`) will need to be updated manually. Please see a mod's description for individual installation instructions.  
+
+- [Starfield Script Extender (SFSE)](https://www.nexusmods.com/starfield/mods/106) is Steam version only and currently does not work with the Xbox Game Pass version
+
+- [PureDark's StarfieldUpscaler](https://www.nexusmods.com/starfield/mods/111) is manual install only, [this is a good guide](https://www.dexerto.com/tech/how-to-add-dlss-to-starfield-on-pc-step-by-step-mod-guide-2274531/) to follow.
+
+- Mods needing ASI loading will require manual installation due to the complexities. Please see a mod's description for individual installation instructions.
+
 - Mod management isn't an exact science so [please report any mods](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) that don't install correctly so we can continue to increase our compatibility and coverage
-- Starfield Script Extender (SFSE) doesn't currently work with the Xbox Game Pass version
 
 # See also
 
