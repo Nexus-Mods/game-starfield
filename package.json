@@ -1,6 +1,6 @@
 {
   "name": "starfield",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "Vortex Extension for Starfield",
   "author": "Nexus Mods",
   "private": true,
@@ -21,9 +21,9 @@
   },
   "license": "GPLV3",
   "devDependencies": {
+    "@types/react-bootstrap": "^0.32.20",
     "bluebird": "^3.7.2",
     "react": "^18.2.0",
-    "@types/react-bootstrap": "^0.32.20",
     "semver": "^7.3.8",
     "strongly-typed-events": "^3.0.9",
     "ts-loader": "^9.4.2",
@@ -42,6 +42,8 @@
     "react-bootstrap": "^0.33.0",
     "react-i18next": "^13.3.1",
     "react-redux": "^8.0.5",
-    "redux-act": "^1.8.0"
+    "redux-act": "^1.8.0",
+    "turbowalk": "Nexus-Mods/node-turbowalk",
+    "xml2js": "^0.6.2"
   }
 }

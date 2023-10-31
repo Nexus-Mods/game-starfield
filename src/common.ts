@@ -3,6 +3,8 @@ export const GAME_ID = 'starfield';
 export const XBOX_ID = 'BethesdaSoftworks.ProjectGold';
 export const STEAMAPP_ID = '1716740';
 
+export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
+
 export const DATA_SUBFOLDERS = [
   'Meshes',
   'Textures',
@@ -52,6 +54,7 @@ export const ROOT_FOLDERS = [
   'Tools'
 ];
 
+export const MODULE_CONFIG = 'moduleconfig.xml';
 export const SFSE_EXE = 'sfse_loader.exe';
 
 export const SFCUSTOM_INI = 'StarfieldCustom.ini';

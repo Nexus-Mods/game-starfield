@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.2] - 2023-10-31
+
+- Mods installation logic now use stop patterns.
+- Removed deprecated starfield installer.
+- Added Data folder modType to support the new installation logic.
+- Added check for incorrectly installed fomods.
+- Added migration logic to seamlessly migrate 0.4.x users to the new 0.5.x stop patterns installation functionality.
+
 ## [0.4.4] - 2023-10-26
 
 - Fix for [An uncoverable error occurred - clicking on Use Junction](https://github.com/Nexus-Mods/game-starfield/issues/22)

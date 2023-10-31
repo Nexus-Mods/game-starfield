@@ -1,11 +1,10 @@
 /* eslint-disable */
 import path from 'path';
 import { types, selectors } from 'vortex-api';
-import { testSupported, install } from './installers/starfield-default-installer';
 import { testSFSESupported, installSFSE } from './installers/starfield-sfse-installer';
 import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } from './util';
 import { toggleJunction, setup } from './setup';
-import { raiseJunctionDialog, testFolderJunction, testLooseFiles } from './tests';
+import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod } from './tests';
 
 import { settingsReducer } from './reducers/settings';
 import Settings from './views/Settings';
@@ -13,7 +12,7 @@ import Settings from './views/Settings';
 import { getStopPatterns, getTopLevelPatterns } from './stopPatterns';
 
 // IDs for different stores and nexus
-import { GAME_ID, SFSE_EXE, STEAMAPP_ID, XBOX_ID } from './common';
+import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, STEAMAPP_ID, XBOX_ID } from './common';
 
 const supportedTools: types.ITool[] = [
   {
@@ -84,9 +83,10 @@ function main(context: types.IExtensionContext) {
   
   // Bluebird, the bane of my life.
   context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => Promise.resolve(testLooseFiles(context.api)) as any);
+  context.registerTest('starfield-deprecated-fomod-check', 'gamemode-activated', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
+  context.registerTest('starfield-deprecated-fomod-check', 'mod-installed', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
+
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
-  //context.registerInstaller('starfield-deprecated-fomod', 25,)
-  // context.registerInstaller('starfield-default-installer', 25, testSupported as any, (files) => install(context.api, files) as any);
 
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
 
@@ -94,7 +94,7 @@ function main(context: types.IExtensionContext) {
 
   context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
 
-  context.registerModType('starfield-data-folder', 10,
+  context.registerModType(MOD_TYPE_DATAPATH, 10,
     (gameId) => GAME_ID === gameId,
     (game: types.IGame) => {
       const discovery = selectors.discoveryByGame(context.api.getState(), game.id);

@@ -1,5 +1,7 @@
+/* eslint-disable */
 import { fs, log, selectors, types, util } from 'vortex-api';
 import { GAME_ID } from './common';
+import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
@@ -122,3 +124,70 @@ export const openPhotoModePath = () => {
   const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Photos');
   util.opn(docPath).catch(() => null);
 };
+
+export function purge(api: types.IExtensionApi) {
+  return new Promise<void>((resolve, reject) =>
+    api.events.emit('purge-mods', true, (err) => err ? reject(err) : resolve()));
+}
+
+export function deploy(api: types.IExtensionApi) {
+  return new Promise<void>((resolve, reject) =>
+    api.events.emit('deploy-mods', (err) => err ? reject(err) : resolve()));
+}
+
+export function walkPath(dirPath: string, walkOptions?: IWalkOptions): Promise<IEntry[]> {
+  walkOptions = walkOptions || { skipLinks: true, skipHidden: true, skipInaccessible: true };
+  const walkResults: IEntry[] = [];
+  return new Promise<IEntry[]>(async (resolve, reject) => {
+    await turbowalk(dirPath, (entries: IEntry[]) => {
+      walkResults.push(...entries);
+      return Promise.resolve() as any;
+    }, walkOptions);
+    return resolve(walkResults);
+  });
+}
+
+// Only use this option as part of a migration if/when we need to change our installers or mod paths.
+//  The intented effect is to avoid the external changes dialog for users who have already deployed mods
+//  using the old pathing. This call will be expensive as it will pull the manifests of all existing modTypes.
+export async function nuclearPurge(api: types.IExtensionApi, gameId: string): Promise<void> {
+  const state = api.getState();
+  const profile: types.IProfile = selectors.activeProfile(state);
+  if (profile?.gameId !== gameId) {
+    return Promise.resolve();
+  }
+
+  // The game path should've stayed the same.
+  const discovery = selectors.discoveryByGame(state, gameId);
+  if (!discovery?.path) {
+    return Promise.resolve();
+  }
+  const gamePath = discovery.path;
+  const manifestRegexp = /^vortex.deployment.*json$/i;
+  // Get all the manifests for all modTypes for this game. We can't rely
+  //  on our store selectors as the modPaths may have changed.
+  const entries: IEntry[] = await walkPath(gamePath);
+  const manifests: { [filePath: string] : types.IDeploymentManifest } = await entries.reduce(async (accumP, m) => {
+    const accum = await accumP;
+    if (manifestRegexp.test(path.basename(m.filePath))) {
+      accum[m.filePath] = JSON.parse(await fs.readFileAsync(m.filePath));
+    }
+    return accum;
+  }, {});
+  for (const filePath of Object.keys(manifests)) {
+    const manifest = manifests[filePath];
+    await purgeDeployedFiles(manifest.targetPath, manifest.files);
+    await fs.removeAsync(filePath);
+  }
+}
+
+export async function purgeDeployedFiles(basePath: string,
+                                         files: types.IDeployedFile[]): Promise<void> {
+  for (const file of files) {
+    const fullPath = path.join(basePath, file.relPath);
+    // Timestamp differences of more than a second are considered a manual change. (probably the user, don't delete)
+    await fs.statAsync(fullPath).then(stats => ((stats.mtime.getTime() - file.time) < 1000) ? fs.unlinkAsync(fullPath) : Promise.resolve())
+                                .catch(err => err.code !== 'ENOENT' ? Promise.reject(err) : Promise.resolve());
+  }
+  return Promise.resolve();
+}

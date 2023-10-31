@@ -1,10 +1,10 @@
 /* eslint-disable */
 import path from 'path';
-import { GAME_ID, JUNCTION_TEXT, SFCUSTOM_INI } from './common';
-import { fs, types, log, selectors, util } from 'vortex-api';
+import { GAME_ID, JUNCTION_TEXT, SFCUSTOM_INI, MOD_TYPE_DATAPATH } from './common';
+import { actions, fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
 
-import { isJunctionDir } from './util';
+import { isJunctionDir, purge, deploy } from './util';
 import { toggleJunction } from './setup';
 import { setDirectoryJunctionSuppress, setDirectoryJunctionEnabled } from './actions/settings';
 
@@ -154,4 +154,66 @@ export async function testFolderJunction(api: types.IExtensionApi): Promise<void
       { title: 'More', action: () => raiseJunctionDialog(api) },
     ],
   });
+}
+
+// Unfortunately our previous installer logic has forced mod authors to branch the destination
+//  paths in their fomod installers to cater for either MO2 or Vortex. With the addition of stop
+//  patterns this is no longer a problem as Vortex is using the same logic as MO2. The only issue
+//  is that any fomods that have been installed using the Vortex plugin option will no longer deploy
+//  correctly. This function will detect if the fomod is using the old Vortex plugin option and try
+//  to fix it for the user.
+export async function testDeprecatedFomod(api: types.IExtensionApi): Promise<types.ITestResult> {
+  const state = api.getState();
+  const profile: types.IProfile = selectors.activeProfile(state);
+  if (profile?.gameId !== GAME_ID) {
+    return Promise.resolve(undefined);
+  }
+
+  const isFomod = (mod: types.IMod) => mod?.attributes?.installerChoices?.type === 'fomod';
+  const mods: { [modId: string]: types.IMod } = util.getSafe(state, ['persistent', 'mods', GAME_ID], {});
+  const fomods = Object.values(mods).filter(isFomod);
+  const installationPath = selectors.installPathForGame(state, GAME_ID);
+  const invalidFomods: types.IMod[] = [];
+  for (const fomod of fomods) {
+    const fomodPath = path.join(installationPath, fomod.installationPath);
+    const content: string[] = await fs.readdirAsync(fomodPath);
+    if (content.length === 1 && content[0].toLowerCase() === 'data') {
+      invalidFomods.push(fomod);
+    }
+  }
+
+  return (invalidFomods.length === 0) ? Promise.resolve(undefined) : Promise.resolve({
+    description: {
+      short: 'Deprecated fomods detected',
+      long: 'One or more installed fomods have been detected as using the deprecated Vortex plugin option. This option is no longer required and will cause the fomod to deploy incorrectly. Vortex will attempt to fix the fomods for you, and it is recommended to inform the mod author to change his module configuration file and remove the vortex flag. Alternatively you can re-install any affected fomods manually and select the MO2 plugin option instead.',
+    },
+    severity: 'warning',
+    automaticFix: async () => {
+      const batched = [];
+      await purge(api);
+      try {
+        for (const fomod of invalidFomods) {
+          const fomodPath = path.join(installationPath, fomod.installationPath);
+          await migrateFomod(fomodPath);
+          batched.push(actions.setModType(GAME_ID, fomod.id, MOD_TYPE_DATAPATH));
+        }
+        util.batchDispatch(api.store, batched);
+      } catch (err) {
+        api.showErrorNotification('Failed to fix deprecated fomods - reinstall manually', err, { allowReport: false });
+        return Promise.resolve(undefined)
+      }
+      await deploy(api);
+    },
+  });
+}
+
+async function migrateFomod(fomodPath: string) {
+  const dataPath = path.join(fomodPath, 'Data');
+  const files = await fs.readdirAsync(dataPath);
+  for (const file of files) {
+    const src = path.join(dataPath, file);
+    const dest = path.join(fomodPath, file);
+    await fs.moveAsync(src, dest, { overwrite: true });
+  }
+  await fs.rmdirAsync(dataPath);
 }

@@ -66,7 +66,24 @@ current
 
 - Mods needing ASI loading will require manual installation due to the complexities. Please see a mod's description for individual installation instructions.
 
+- Mods installed with version 0.4.X of this extension may have missing files due to a flaw in the default installer. Please re-install your mods using 0.5.X to ensure your mods are installed correctly.
+
+- Fomods installed with 0.4.X (selecting the "Vortex" flag) will no longer deploy correctly. 0.5.X has a test in place to detect these mods and will notify you if any are found; providing you with the ability to fix the installed fomod. Mod authors are no longer required to provide separate Vortex/MO2 destinations for their mod files!
+
+- Migrating this extension from version 0.4.X to 0.5.X may fail if for any reason the files are being actively manipulated by other tools or the game itself. Please make sure to close any such tools (or the game) before migrating to 0.5.X
+
 - Mod management isn't an exact science so [please report any mods](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) that don't install correctly so we can continue to increase our compatibility and coverage
+
+# Migrating this extension to 0.5.X
+
+The default installer in 0.4.X has been deprecated in 0.5.X due to:
+- Flaws in its logic which could potentially strip out mod files, causing issues in-game.
+- Limited support for different mod packaging patterns.
+- Incorrect installation of FOMODs requiring mod authors to cater for different mod managers separately (MO2/Vortex)
+
+What to expect:
+- As part of the migration, Vortex will purge all your mods as soon as Starfield is activated and will run checks to ensure your existing mods deploy correctly.
+- Mods installed with 0.4.X should still function as they previously did. If for any reason you suspect the mod has missing files, simply re-install it and the new installation logic will ensure that the mod is installed correctly.
 
 # See also
 
