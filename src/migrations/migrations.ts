@@ -6,7 +6,7 @@ import { setMigrationVersion } from '../actions/settings';
 import { DATA_SUBFOLDERS ,GAME_ID, MOD_TYPE_DATAPATH, NS } from '../common';
 import { deploy, nuclearPurge } from '../util';
 
-const DEBUG = true;
+const DEBUG = false;
 
 // Migrations should be self contained - do not let any errors escape from them.
 //  if a migration fails, it should allow the user to fallback to his previous state,
