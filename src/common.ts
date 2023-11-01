@@ -5,6 +5,7 @@ export const STEAMAPP_ID = '1716740';
 
 export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
 export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
+export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
 
 export const DATA_SUBFOLDERS = [
   'Meshes',

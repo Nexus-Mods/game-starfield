@@ -19,11 +19,11 @@ export async function migrateExtension(api: types.IExtensionApi) {
   }
 
   const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
-  if (DEBUG || semver.gt('0.5.0', currentVersion)) {
-    await migrate050(api, currentVersion);
-  }
   const infoFile = JSON.parse(await fs.readFileAsync(path.join(__dirname, 'info.json')));
   const newVersion = infoFile.version;
+  if (DEBUG || semver.gt('0.5.0', currentVersion)) {
+    await migrate050(api, newVersion);
+  }
   api.store?.dispatch(setMigrationVersion(newVersion));
 }
 

@@ -1,8 +1,8 @@
 /* eslint-disable */
 import path from 'path';
-import { fs, types, selectors, util } from 'vortex-api';
+import { types, selectors } from 'vortex-api';
 import { testSFSESupported, installSFSE } from './installers/starfield-sfse-installer';
-import { isJunctionDir, isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } from './util';
+import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod } from './tests';
 
@@ -138,38 +138,7 @@ async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, dep
   if (gameId !== GAME_ID) {
     return Promise.resolve();
   }
-  testDeprecatedFomod(api, false);
-  const notifications = util.getSafe(state,
-    ['session', 'notifications', 'notifications'], []);
-  if (notifications.find(not => not.id === JUNCTION_NOTIFICATION_ID) !== undefined) {
-    // If the junction notification is up, we don't need to do anything.
-    return Promise.resolve();
-  }
-  const myGamesDataFolder = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Data');
-  const exists = await fs.statAsync(myGamesDataFolder).then(() => true).catch(() => false);
-  if (!exists) {
-    return Promise.resolve();
-  }
-  const isJunct = await isJunctionDir(myGamesDataFolder);
-  if (isJunct) {
-    return Promise.resolve();
-  }
-  api.sendNotification({
-    message: 'Mods may not load correctly',
-    type: 'warning',
-    id: 'starfield-my-games-data-warning',
-    actions: [
-      {
-        title: 'More', action: () => api.showDialog('question', 'Mods may not load correctly', {
-          text: 'Vortex deploys mods to the Data folder in the game\'s installation directory. However, it '
-            + 'looks like you have a Data folder in your "Documents/My Games" folder. This will interfere with '
-            + 'your modding setup. Please either remove the Data folder in your "Documents/My Games" folder or use Vortex\'s folder junction feature to link the two folders together.',
-        }, [
-          { label: 'Close', action: () => api.dismissNotification('starfield-my-games-data-warning') }
-        ])
-      },
-    ]
-  })
+  await testDeprecatedFomod(api, false);
   return Promise.resolve();
 }
 

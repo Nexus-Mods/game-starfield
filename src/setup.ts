@@ -4,7 +4,7 @@ import { isJunctionDir, createJunction, removeJunction } from './util';
 import path from 'path';
 
 import { setDirectoryJunctionEnabled } from './actions/settings';
-import { GAME_ID } from './common';
+import { GAME_ID, MY_GAMES_DATA_WARNING } from './common';
 import { IJunctionProps } from './types';
 
 import { migrateExtension } from './migrations/migrations';
@@ -54,6 +54,7 @@ export async function toggleJunction(api: types.IExtensionApi, enable: boolean):
   const func = enable ? enableJunction : disableJunction;
   await func(props);
   api.dismissNotification('starfield-junction-activity');
+  api.dismissNotification(MY_GAMES_DATA_WARNING);
   return Promise.resolve();
 }
 

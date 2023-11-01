@@ -1,6 +1,6 @@
 /* eslint-disable */
 import path from 'path';
-import { GAME_ID, JUNCTION_TEXT, JUNCTION_NOTIFICATION_ID, SFCUSTOM_INI, MOD_TYPE_DATAPATH } from './common';
+import { GAME_ID, JUNCTION_TEXT, JUNCTION_NOTIFICATION_ID, SFCUSTOM_INI, MOD_TYPE_DATAPATH, MY_GAMES_DATA_WARNING } from './common';
 import { actions, fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
 
@@ -118,7 +118,10 @@ export async function raiseJunctionDialog(api: types.IExtensionApi, suppress?: b
   }
 
   const actions = [
-    { label: 'Never Ask Me Again', action: () => suppressNotif() },
+    { label: 'Never Ask Me Again', action: () => {
+      suppressNotif();
+      hasSuppressedJunctionNotif(api);
+    }},
     { label: 'Use Junction', action: () => toggle() },
     { label: 'Close', action: () => dismiss(), default: true },
   ].filter((action) => suppressed ? action.label !== 'Never Ask Me Again' : true);
@@ -127,6 +130,23 @@ export async function raiseJunctionDialog(api: types.IExtensionApi, suppress?: b
     bbcode: JUNCTION_TEXT,
   }, [...actions], 'starfield-junction-dialog');
 }
+
+const hasSuppressedJunctionNotif = (api: types.IExtensionApi) => api.sendNotification({
+  message: 'Mods may not load correctly',
+  type: 'warning',
+  id: MY_GAMES_DATA_WARNING,
+  actions: [
+    {
+      title: 'More', action: () => api.showDialog('question', 'Mods may not load correctly', {
+        text: 'Vortex deploys mods to the Data folder in the game\'s installation directory. However, it '
+          + 'looks like you have a Data folder in your "Documents/My Games" folder. This will interfere with '
+          + 'your modding setup. Please either remove the Data folder in your "Documents/My Games" folder or use Vortex\'s folder junction feature to link the two folders together.',
+      }, [
+        { label: 'Close', action: () => api.dismissNotification(MY_GAMES_DATA_WARNING) }
+      ])
+    },
+  ]
+});
 
 export async function testFolderJunction(api: types.IExtensionApi): Promise<void> {
   const state = api.getState();
@@ -143,17 +163,23 @@ export async function testFolderJunction(api: types.IExtensionApi): Promise<void
     return Promise.resolve(undefined);
   }
 
-  // Not a junction - time to jabber.
-  api.sendNotification({
-    id: JUNCTION_NOTIFICATION_ID,
-    type: 'warning',
-    message: 'Folder Junction Recommendation',
-    allowSuppress: false,
-    noDismiss: true,
-    actions: [
-      { title: 'More', action: () => raiseJunctionDialog(api) },
-    ],
-  });
+  const suppressed = util.getSafe(state, ['settings', 'starfield', 'suppressDirectoryJunctionTest'], false);
+  const dataPathExists = await fs.statAsync(dataPath).then(() => true).catch(() => false);
+  if (dataPathExists && suppressed) {
+    hasSuppressedJunctionNotif(api);
+  } else {
+    // Not a junction - time to jabber.
+    api.sendNotification({
+      id: JUNCTION_NOTIFICATION_ID,
+      type: 'warning',
+      message: 'Folder Junction Recommendation',
+      allowSuppress: false,
+      noDismiss: true,
+      actions: [
+        { title: 'More', action: () => raiseJunctionDialog(api) },
+      ],
+    });
+  }
 }
 
 // Unfortunately our previous installer logic has forced mod authors to branch the destination
