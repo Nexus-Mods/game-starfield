@@ -183,10 +183,17 @@ export async function testDeprecatedFomod(api: types.IExtensionApi): Promise<typ
     }
   }
 
+  const t = api.translate;
   return (invalidFomods.length === 0) ? Promise.resolve(undefined) : Promise.resolve({
     description: {
-      short: 'Deprecated fomods detected',
-      long: 'One or more installed fomods have been detected as using the deprecated Vortex plugin option. This option is no longer required and will cause the fomod to deploy incorrectly. Vortex will attempt to fix the fomods for you, and it is recommended to inform the mod author to change his module configuration file and remove the vortex flag. Alternatively you can re-install any affected fomods manually and select the MO2 plugin option instead.',
+      short: t('Deprecated fomods detected ({{num}})', { replace: { num: invalidFomods.length } }),
+      long: t('Vortex detected {{invalidNum}} fomods which are using the deprecated '
+            + 'Vortex plugin option. This option is no longer required and will cause '
+            + 'the fomod to deploy incorrectly. Vortex will attempt to fix the fomods '
+            + 'for you, and it is recommended to inform the mod author to change his '
+            + 'module configuration file and remove the vortex flag. Alternatively you '
+            + 'can re-install any affected fomods manually and select the MO2 plugin '
+            + 'option instead.', { replace: { invalidNum: invalidFomods.length } }),
     },
     severity: 'warning',
     automaticFix: async () => {
