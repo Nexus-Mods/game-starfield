@@ -49,7 +49,7 @@ export async function migrate050(api: types.IExtensionApi, version: string) {
     }
   }
   util.batchDispatch(api.store, batchedActions);
-
+  const notificationId = 'starfield-update-notif-0.5.0';
   await deploy(api);
   const t = api.translate;
   api.sendNotification({
@@ -57,7 +57,7 @@ export async function migrate050(api: types.IExtensionApi, version: string) {
     noDismiss: true,
     allowSuppress: false,
     type: 'success',
-    id: 'starfield-update-notif-0.5.0',
+    id: notificationId,
     actions: [
       {
         title: t('More', { ns: NS }),
@@ -74,8 +74,8 @@ export async function migrate050(api: types.IExtensionApi, version: string) {
           {
             label: t('Close', { ns: NS }),
             action: () => {
-              api.dismissNotification('starfield-update-notif-0.5.0');
-              api.suppressNotification('starfield-update-notif-0.5.0');
+              api.dismissNotification(notificationId);
+              api.suppressNotification(notificationId);
             }
           }
         ], 'starfield-update-0.5.0')
