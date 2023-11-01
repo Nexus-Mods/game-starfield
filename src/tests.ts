@@ -1,6 +1,6 @@
 /* eslint-disable */
 import path from 'path';
-import { GAME_ID, JUNCTION_TEXT, SFCUSTOM_INI, MOD_TYPE_DATAPATH } from './common';
+import { GAME_ID, JUNCTION_TEXT, JUNCTION_NOTIFICATION_ID, SFCUSTOM_INI, MOD_TYPE_DATAPATH } from './common';
 import { actions, fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
 
@@ -44,8 +44,8 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
       let iniContent = (await fs.readFileAsync(iniPath, 'utf-8')) ?? '';
       ini = parse(iniContent);
       return (ini?.Archive?.bInvalidateOlderFiles === '1'
-           && ini?.Archive?.sResourceDataDirsFinal === ''
-           && ini?.Display?.sPhotoModeFolder !== undefined);
+        && ini?.Archive?.sResourceDataDirsFinal === ''
+        && ini?.Display?.sPhotoModeFolder !== undefined);
     } catch (err) {
       log('warn', `${archiveInvalidationTag} - INI not setup: ${iniPath}`);
       return false;
@@ -105,11 +105,11 @@ export async function raiseJunctionDialog(api: types.IExtensionApi, suppress?: b
   const state = api.getState();
   const suppressed = util.getSafe(state, ['settings', 'suppressDirectoryJunctionTest'], false) || suppress;
   const dismiss = () => {
-    api.dismissNotification('starfield-junction-notif');
+    api.dismissNotification(JUNCTION_NOTIFICATION_ID);
   }
   const suppressNotif = () => {
     dismiss();
-    api.suppressNotification('starfield-junction-notif');
+    api.suppressNotification(JUNCTION_NOTIFICATION_ID);
     api.store.dispatch(setDirectoryJunctionSuppress(true));
   }
   const toggle = () => {
@@ -145,7 +145,7 @@ export async function testFolderJunction(api: types.IExtensionApi): Promise<void
 
   // Not a junction - time to jabber.
   api.sendNotification({
-    id: 'starfield-junction-notif',
+    id: JUNCTION_NOTIFICATION_ID,
     type: 'warning',
     message: 'Folder Junction Recommendation',
     allowSuppress: false,
@@ -162,7 +162,7 @@ export async function testFolderJunction(api: types.IExtensionApi): Promise<void
 //  is that any fomods that have been installed using the Vortex plugin option will no longer deploy
 //  correctly. This function will detect if the fomod is using the old Vortex plugin option and try
 //  to fix it for the user.
-export async function testDeprecatedFomod(api: types.IExtensionApi): Promise<types.ITestResult> {
+export async function testDeprecatedFomod(api: types.IExtensionApi, isApiTest: boolean = true) {
   const state = api.getState();
   const profile: types.IProfile = selectors.activeProfile(state);
   if (profile?.gameId !== GAME_ID) {
@@ -183,36 +183,79 @@ export async function testDeprecatedFomod(api: types.IExtensionApi): Promise<typ
     }
   }
 
+  return isApiTest
+    ? invalidFomodApiTest(api, invalidFomods, installationPath)
+    : invalidFomodDeployTest(api, invalidFomods, installationPath);
+}
+
+const fomodInvalidShortText = (t: types.TFunction, invalidNum: number) =>
+  t('Deprecated fomods detected ({{num}})', { replace: { num: invalidNum } });
+
+const fomodInvalidLongText = (t: types.TFunction, invalidNum: number) =>
+  t('Vortex detected {{num}} fomods which are using the deprecated '
+    + 'Vortex plugin option. This option is no longer required and will cause '
+    + 'the fomod to deploy incorrectly. Vortex will attempt to fix the fomods '
+    + 'for you, and it is recommended to inform the mod author to change his '
+    + 'module configuration file and remove the vortex flag. Alternatively you '
+    + 'can re-install any affected fomods manually and select the MO2 plugin '
+    + 'option instead.', { replace: { num: invalidNum } });
+
+async function invalidFomodApiTest(api: types.IExtensionApi, invalidFomods: types.IMod[], installationPath: string) {
   const t = api.translate;
   return (invalidFomods.length === 0) ? Promise.resolve(undefined) : Promise.resolve({
     description: {
-      short: t('Deprecated fomods detected ({{num}})', { replace: { num: invalidFomods.length } }),
-      long: t('Vortex detected {{invalidNum}} fomods which are using the deprecated '
-            + 'Vortex plugin option. This option is no longer required and will cause '
-            + 'the fomod to deploy incorrectly. Vortex will attempt to fix the fomods '
-            + 'for you, and it is recommended to inform the mod author to change his '
-            + 'module configuration file and remove the vortex flag. Alternatively you '
-            + 'can re-install any affected fomods manually and select the MO2 plugin '
-            + 'option instead.', { replace: { invalidNum: invalidFomods.length } }),
+      short: fomodInvalidShortText(t, invalidFomods.length),
+      long: fomodInvalidLongText(t, invalidFomods.length),
     },
     severity: 'warning',
-    automaticFix: async () => {
-      const batched = [];
-      await purge(api);
-      try {
-        for (const fomod of invalidFomods) {
-          const fomodPath = path.join(installationPath, fomod.installationPath);
-          await migrateFomod(fomodPath);
-          batched.push(actions.setModType(GAME_ID, fomod.id, MOD_TYPE_DATAPATH));
-        }
-        util.batchDispatch(api.store, batched);
-      } catch (err) {
-        api.showErrorNotification('Failed to fix deprecated fomods - reinstall manually', err, { allowReport: false });
-        return Promise.resolve(undefined)
-      }
-      await deploy(api);
-    },
+    automaticFix: async () => fomodFix(api, invalidFomods, installationPath),
   });
+}
+
+async function invalidFomodDeployTest(api: types.IExtensionApi, invalidFomods: types.IMod[], installationPath: string) {
+  if (invalidFomods.length === 0) {
+    return;
+  }
+  const t = api.translate;
+  const onFix = async () => {
+    await fomodFix(api, invalidFomods, installationPath);
+    api.dismissNotification('invalid-fomods-detected-notif');
+  }
+
+  const showDialog = () => {
+    return api.showDialog('info', 'Deprecated Fomods', {
+      text: fomodInvalidLongText(t, invalidFomods.length),
+    }, [{ label: 'Fix', action: () => onFix() }],
+  )};
+
+  api.sendNotification({
+    message: fomodInvalidShortText(t, invalidFomods.length),
+    type: 'warning',
+    allowSuppress: false,
+    noDismiss: true,
+    id: 'invalid-fomods-detected-notif',
+    actions: [
+      { title: 'More', action: async () => showDialog() },
+      { title: 'Fix', action: async () => onFix() },
+    ],
+  })
+}
+
+async function fomodFix(api: types.IExtensionApi, invalidFomods: types.IMod[], installationPath: string) {
+  const batched = [];
+  await purge(api);
+  try {
+    for (const fomod of invalidFomods) {
+      const fomodPath = path.join(installationPath, fomod.installationPath);
+      await migrateFomod(fomodPath);
+      batched.push(actions.setModType(GAME_ID, fomod.id, MOD_TYPE_DATAPATH));
+    }
+    util.batchDispatch(api.store, batched);
+  } catch (err) {
+    api.showErrorNotification('Failed to fix deprecated fomods - reinstall manually', err, { allowReport: false });
+    return Promise.resolve(undefined)
+  }
+  await deploy(api);
 }
 
 async function migrateFomod(fomodPath: string) {

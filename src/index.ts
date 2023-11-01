@@ -12,7 +12,7 @@ import Settings from './views/Settings';
 import { getStopPatterns, getTopLevelPatterns } from './stopPatterns';
 
 // IDs for different stores and nexus
-import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, STEAMAPP_ID, XBOX_ID } from './common';
+import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID } from './common';
 
 const supportedTools: types.ITool[] = [
   {
@@ -80,11 +80,10 @@ function main(context: types.IExtensionContext) {
       }
     }
   }), () => selectors.activeGameId(context.api.getState()) === GAME_ID, 150);
-  
+
   // Bluebird, the bane of my life.
   context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => Promise.resolve(testLooseFiles(context.api)) as any);
   context.registerTest('starfield-deprecated-fomod-check', 'gamemode-activated', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
-  context.registerTest('starfield-deprecated-fomod-check', 'mod-installed', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
 
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
 
@@ -127,39 +126,51 @@ function main(context: types.IExtensionContext) {
 
   context.once(() => {
     context.api.events.on('gamemode-activated', () => testFolderJunction(context.api));
-    context.api.onAsync('did-deploy', async (profileId, deployment: types.IDeploymentManifest) => {
-      const gameId = selectors.profileById(context.api.getState(), profileId)?.gameId;
-      if (gameId !== GAME_ID) {
-        return Promise.resolve();
-      }
-      const myGamesDataFolder = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Data');
-      const exists = await fs.statAsync(myGamesDataFolder).then(() => true).catch(() => false);
-      if (!exists) {
-        return Promise.resolve();
-      }
-      const isJunct = await isJunctionDir(myGamesDataFolder);
-      if (isJunct) {
-        return Promise.resolve();
-      }
-      context.api.sendNotification({
-        message: 'Mods may not load correctly',
-        type: 'warning',
-        id: 'starfield-my-games-data-warning',
-        actions: [
-          { title: 'More', action: () => context.api?.showDialog('question', 'Mods may not load correctly', {
-            text: 'Vortex deploys mods to the Data folder in the game\'s installation directory. However, it '
-                + 'looks like you have a Data folder in your "Documents/My Games" folder. This will interfere with '
-                + 'your modding setup. Please either remove the Data folder in your "Documents/My Games" folder or use Vortex\'s folder junction feature to link the two folders together.',
-          }, [
-            { label: 'Close', action: () => context.api.dismissNotification('starfield-my-games-data-warning') }
-          ]) },
-        ]
-      })
-      return Promise.resolve();
-    });
+    context.api.onAsync('did-deploy', (profileId, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
   });
 
   return true;
+}
+
+async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, deployment: types.IDeploymentManifest) {
+  const state = api.getState();
+  const gameId = selectors.profileById(state, profileId)?.gameId;
+  if (gameId !== GAME_ID) {
+    return Promise.resolve();
+  }
+  testDeprecatedFomod(api, false);
+  const notifications = util.getSafe(state,
+    ['session', 'notifications', 'notifications'], []);
+  if (notifications.find(not => not.id === JUNCTION_NOTIFICATION_ID) !== undefined) {
+    // If the junction notification is up, we don't need to do anything.
+    return Promise.resolve();
+  }
+  const myGamesDataFolder = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Data');
+  const exists = await fs.statAsync(myGamesDataFolder).then(() => true).catch(() => false);
+  if (!exists) {
+    return Promise.resolve();
+  }
+  const isJunct = await isJunctionDir(myGamesDataFolder);
+  if (isJunct) {
+    return Promise.resolve();
+  }
+  api.sendNotification({
+    message: 'Mods may not load correctly',
+    type: 'warning',
+    id: 'starfield-my-games-data-warning',
+    actions: [
+      {
+        title: 'More', action: () => api.showDialog('question', 'Mods may not load correctly', {
+          text: 'Vortex deploys mods to the Data folder in the game\'s installation directory. However, it '
+            + 'looks like you have a Data folder in your "Documents/My Games" folder. This will interfere with '
+            + 'your modding setup. Please either remove the Data folder in your "Documents/My Games" folder or use Vortex\'s folder junction feature to link the two folders together.',
+        }, [
+          { label: 'Close', action: () => api.dismissNotification('starfield-my-games-data-warning') }
+        ])
+      },
+    ]
+  })
+  return Promise.resolve();
 }
 
 async function requiresLauncher(gamePath: string, store?: string) {
