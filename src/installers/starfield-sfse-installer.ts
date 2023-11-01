@@ -1,4 +1,5 @@
 /* eslint-disable */
+import path from 'path'
 import { log, types, selectors, util } from 'vortex-api';
 import { GAME_ID, SFSE_EXE } from '../common';
 
@@ -7,7 +8,7 @@ export function testSFSESupported(files: string[], gameId: string): Promise<type
     if (gameId !== GAME_ID) {
       return prev;
     }
-    if (file.toLowerCase().endsWith(SFSE_EXE)) {
+    if (path.basename(file).toLowerCase() === SFSE_EXE) {
       prev = true;
     }
     return prev;
