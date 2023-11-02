@@ -4,7 +4,7 @@ import { GAME_ID, JUNCTION_TEXT, JUNCTION_NOTIFICATION_ID, SFCUSTOM_INI, MOD_TYP
 import { actions, fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
 
-import { isJunctionDir, purge, deploy } from './util';
+import { isJunctionDir, purge, deploy, migrateMod } from './util';
 import { toggleJunction } from './setup';
 import { setDirectoryJunctionSuppress, setDirectoryJunctionEnabled } from './actions/settings';
 
@@ -273,7 +273,7 @@ async function fomodFix(api: types.IExtensionApi, invalidFomods: types.IMod[], i
   try {
     for (const fomod of invalidFomods) {
       const fomodPath = path.join(installationPath, fomod.installationPath);
-      await migrateFomod(fomodPath);
+      await migrateMod(fomodPath);
       batched.push(actions.setModType(GAME_ID, fomod.id, MOD_TYPE_DATAPATH));
     }
     util.batchDispatch(api.store, batched);
@@ -282,15 +282,4 @@ async function fomodFix(api: types.IExtensionApi, invalidFomods: types.IMod[], i
     return Promise.resolve(undefined)
   }
   await deploy(api);
-}
-
-async function migrateFomod(fomodPath: string) {
-  const dataPath = path.join(fomodPath, 'Data');
-  const files = await fs.readdirAsync(dataPath);
-  for (const file of files) {
-    const src = path.join(dataPath, file);
-    const dest = path.join(fomodPath, file);
-    await fs.moveAsync(src, dest, { overwrite: true });
-  }
-  await fs.rmdirAsync(dataPath);
 }

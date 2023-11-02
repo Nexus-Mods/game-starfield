@@ -12,6 +12,7 @@ export const DATA_SUBFOLDERS = [
   'Textures',
   'FaceGen',
   'Music',
+  'Sound',
   'Sounds',
   'MaxHeights',
   'VIS',

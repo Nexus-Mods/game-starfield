@@ -6,8 +6,11 @@ import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } fro
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod } from './tests';
 
+import { clone, condition, generate, parse, title } from './migrations/collections';
+
 import { settingsReducer } from './reducers/settings';
 import Settings from './views/Settings';
+import StarfieldData from './views/StarfieldData';
 
 import { getStopPatterns, getTopLevelPatterns } from './stopPatterns';
 
@@ -90,6 +93,14 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
+
+  context.optional.registerCollectionFeature('starfield_collection_data',
+    generate,
+    (gameId: string, collection: any) => parse(context.api, gameId, collection),
+    (gameId: string, collection: any, from: types.IMod, to: types.IMod) => clone(context.api, gameId, collection, from, to),
+    title,
+    condition,
+    StarfieldData);
 
   context.registerModType(MOD_TYPE_DATAPATH, 10,
     (gameId) => GAME_ID === gameId,

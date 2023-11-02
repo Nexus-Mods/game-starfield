@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.5] - 2023-11-02
+
+- Added migration capabilities for collections created with 0.4.4
+- Added missing "sound" stop pattern
+
+## [0.5.4] - 2023-11-01
+
+- Improved junction suppression/my games notification flow
+- Improved invalid fomod detection
+
 ## [0.5.3] - 2023-10-31
 
 - fomod install check will now only run for data folder modtype.

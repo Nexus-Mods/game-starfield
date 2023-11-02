@@ -3,6 +3,7 @@ import { fs, log, selectors, types, util } from 'vortex-api';
 import { GAME_ID } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
+import { getStopPatterns } from './stopPatterns';
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
   log('debug', 'Merging folders', { source, destination, overwrite });
@@ -125,17 +126,17 @@ export const openPhotoModePath = () => {
   util.opn(docPath).catch(() => null);
 };
 
-export function purge(api: types.IExtensionApi) {
+export async function purge(api: types.IExtensionApi): Promise<void> {
   return new Promise<void>((resolve, reject) =>
     api.events.emit('purge-mods', true, (err) => err ? reject(err) : resolve()));
 }
 
-export function deploy(api: types.IExtensionApi) {
+export async function deploy(api: types.IExtensionApi): Promise<void> {
   return new Promise<void>((resolve, reject) =>
     api.events.emit('deploy-mods', (err) => err ? reject(err) : resolve()));
 }
 
-export function walkPath(dirPath: string, walkOptions?: IWalkOptions): Promise<IEntry[]> {
+export async function walkPath(dirPath: string, walkOptions?: IWalkOptions): Promise<IEntry[]> {
   walkOptions = walkOptions || { skipLinks: true, skipHidden: true, skipInaccessible: true };
   const walkResults: IEntry[] = [];
   return new Promise<IEntry[]>(async (resolve, reject) => {
@@ -190,4 +191,42 @@ export async function purgeDeployedFiles(basePath: string,
                                 .catch(err => err.code !== 'ENOENT' ? Promise.reject(err) : Promise.resolve());
   }
   return Promise.resolve();
+}
+
+export async function getExtensionVersion() {
+  const infoFile = JSON.parse(await fs.readFileAsync(path.join(__dirname, 'info.json')));
+  return infoFile.version;
+}
+
+export async function migrateMod(modPath: string): Promise<void> {
+  const dataPath = path.join(modPath, 'Data');
+  const files = await fs.readdirAsync(dataPath);
+  for (const file of files) {
+    const src = path.join(dataPath, file);
+    const dest = path.join(modPath, file);
+    await fs.moveAsync(src, dest, { overwrite: true });
+  }
+  await fs.rmdirAsync(dataPath);
+  return Promise.resolve();
+}
+
+export async function doesModRequireMigration(modPath: string): Promise<boolean> {
+  const dataPath = path.join(modPath, 'Data');
+  return isDataPathMod(dataPath);
+}
+
+export async function isDataPathMod(modPath: string): Promise<boolean> {
+  const files = await fs.readdirAsync(modPath).catch(() => []);
+  if (files.length === 0) {
+    return Promise.resolve(false);
+  }
+  const stopPatterns = getStopPatterns();
+  for (const patt of stopPatterns) {
+    const regex = new RegExp(patt, 'i');
+    const match = files.find(f => regex.test(f));
+    if (match !== undefined) {
+      return Promise.resolve(true);
+    }
+  }
+  return Promise.resolve(false);
 }

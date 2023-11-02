@@ -4,7 +4,7 @@ import semver from 'semver';
 import { actions, fs, selectors, types, util } from 'vortex-api';
 import { setMigrationVersion } from '../actions/settings';
 import { DATA_SUBFOLDERS ,GAME_ID, MOD_TYPE_DATAPATH, NS } from '../common';
-import { deploy, nuclearPurge } from '../util';
+import { deploy, nuclearPurge, getExtensionVersion } from '../util';
 
 const DEBUG = false;
 
@@ -19,8 +19,7 @@ export async function migrateExtension(api: types.IExtensionApi) {
   }
 
   const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
-  const infoFile = JSON.parse(await fs.readFileAsync(path.join(__dirname, 'info.json')));
-  const newVersion = infoFile.version;
+  const newVersion = await getExtensionVersion();
   if (DEBUG || semver.gt('0.5.0', currentVersion)) {
     await migrate050(api, newVersion);
   }
