@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [0.5.5] - 2023-11-02
 
-- Added migration capabilities for collections created with 0.4.4
+- Added migration capabilities for collections created with 0.4.x
 - Added missing "sound" stop pattern
 
 ## [0.5.4] - 2023-11-01
