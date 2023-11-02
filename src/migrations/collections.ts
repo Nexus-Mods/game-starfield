@@ -15,7 +15,7 @@ export async function generate(gameId: string, includedMods: string[]): Promise<
 }
 
 export async function parse(api: types.IExtensionApi, gameId: string, collection: ICollection): Promise<void> {
-  if (gameId !== GAME_ID || collection.extensionVersion !== undefined) {
+  if (gameId !== GAME_ID) {
     return Promise.resolve();
   }
   const state = api.getState();
@@ -42,31 +42,31 @@ export async function parse(api: types.IExtensionApi, gameId: string, collection
 }
 
 export async function clone(api: types.IExtensionApi, gameId: string, collection: ICollection, from: types.IMod, to: types.IMod): Promise<void> {
-  if (gameId !== GAME_ID || collection.extensionVersion !== undefined) {
-    return Promise.resolve();
-  }
-  const state = api.getState();
-  const collectionMods: types.IMod[] = collectionToMods(api, collection);
-  const installationPath = selectors.installPathForGame(state, gameId);
-  const batchedActions = [];
-  for (const mod of collectionMods) {
-    const dataPath = path.join(installationPath, mod.installationPath, 'Data');
-    const hasData = await fs.statAsync(dataPath).then(() => true).catch(() => false);
-    if (hasData) {
-      const rule = to.rules.find(r => mod.archiveId === r.reference.archiveId);
-      if (rule) {
-        batchedActions.push(actions.removeModRule(gameId, to.id, rule));
-        const newRule = { ...rule };
-        newRule['extra'] = {
-          ...newRule['extra'],
-          ['type']: MOD_TYPE_DATAPATH
-         };
-        batchedActions.push(actions.addModRule(gameId, to.id, newRule));
-      }
-    }
-  }
+  // if (gameId !== GAME_ID || collection.extensionVersion !== undefined) {
+  //   return Promise.resolve();
+  // }
+  // const state = api.getState();
+  // const collectionMods: types.IMod[] = collectionToMods(api, collection);
+  // const installationPath = selectors.installPathForGame(state, gameId);
+  // const batchedActions = [];
+  // for (const mod of collectionMods) {
+  //   const dataPath = path.join(installationPath, mod.installationPath, 'Data');
+  //   const hasData = await fs.statAsync(dataPath).then(() => true).catch(() => false);
+  //   if (hasData) {
+  //     const rule = to.rules.find(r => mod.archiveId === r.reference.archiveId);
+  //     if (rule) {
+  //       batchedActions.push(actions.removeModRule(gameId, to.id, rule));
+  //       const newRule = { ...rule };
+  //       newRule['extra'] = {
+  //         ...newRule['extra'],
+  //         ['type']: MOD_TYPE_DATAPATH
+  //        };
+  //       batchedActions.push(actions.addModRule(gameId, to.id, newRule));
+  //     }
+  //   }
+  // }
 
-  util.batchDispatch(api.store, batchedActions);
+  // util.batchDispatch(api.store, batchedActions);
 
   return Promise.resolve();
 }
