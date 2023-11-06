@@ -17,6 +17,8 @@ Clone repo and run `yarn install`
 
 # Testing
 
+Coming Soon
+
 # Features
 
 - Check (and ask to fix) bare minimum setup of `StarfieldCustom.ini`
@@ -45,9 +47,9 @@ If your game lacks this file then it is likely that your installation has become
 
 By default, Vortex will deploy files to the game's root folder and extracts the archive while preserving the folder structure.
 
-Starfield shakes up the traditional loading of mods by having an extra `Data` folder located in `Documents\My Games\Starfield` which is created the first time you open the game. The files provided at this location completely override those found in the `Data` folder where mods would traditionally be installed (`Starfield\Data`). This has caused quite a bit of confusion in the community with different mods providing instructions to install to the two different folders and a number of community workarounds - some that worked and some less so. 
+Starfield breaks the Bethesda-game trend by having a secondary data folder at `Documents\My Games\Starfield\Data` which, in most case, overrides the regular `\Data` folder within the game installation. This has caused quite a bit of confusion in the community with different mods providing instructions to install to the two different folders and a number of community workarounds - some that worked and some less so. 
 
-Starfield breaks the Bethesda-game trend by having a secondary data folder at `Documents\My Games\Starfield\Data` which, in most case, overrides the regular `\Data` folder within the game installation. To get around this, Vortex can create a specific type of shortcut (called a folder junction) between the regular Data folder and the one in the My Games folder. This tricks the game engine into using the same Data folder and simplifies mod installation. As an added bonus, this also works for both Steam and Xbox versions. The My Games Data folder is tested on startup and if it isn't a junction already, then the user is notified about potentially enabling this feature along with documentation as to why the user may not want to.
+To get around this, Vortex can create a specific type of shortcut (called a folder junction) between the regular Data folder and the one in the My Games folder. This tricks the game engine into using the same Data folder and simplifies mod installation. As an added bonus, this also works for both Steam and Xbox versions. The My Games Data folder is tested on startup and if it isn't a junction already, then the user is notified about potentially enabling this feature along with documentation as to why the user may not want to.
 
 > IMPORTANT: Things aren't all perfect though. Using a file syncing\cloud drive service such as OneDrive, Google Drive or Dropbox are known to cause issues with this method due to the inconsistencies in how they handle folder junctions. The most severe of these issues can lead to the loss of data. For compatibility information about individual services, please [read this page on modding.wiki](https://modding.wiki/en/vortex/users/starfield-folder-junction-issues) for more information.
 
@@ -57,6 +59,8 @@ current
 # Known Issues
 
 - This extension has been tested with all of the most popular mods, installers, script extenders, mod fixers etc. Please see this [Mod Compatibility List](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) forum post for details. 
+
+- Symlink support has been disabled due inconsistencies with some files working and some not. Animation replacers don’t read symlinked, but textures seem ok. This does match the pattern of older Bethesda games which looked for a while like we could avoid.
 
 - Mods that include ini entries to be added won't fully work as functionality for ini merging isn't added yet. Deployment will work fine, but the ini (normally the `StarfieldCustom.ini`) will need to be updated manually. Please see a mod's description for individual installation instructions.  
 

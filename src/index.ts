@@ -38,11 +38,11 @@ const supportedTools: types.ITool[] = [
   },
   {
     id: 'xedit-sf',
-    name: 'SFEdit',
-    executable: () => 'xEdit.exe',
-    logo: 'tes5edit.png',
+    name: 'SF1Edit',
+    executable: () => 'SF1Edit64.exe',
+    logo: 'SF1Edit.png',
     requiredFiles: [],
-    parameters: ['-sf1', '-view'],
+    parameters: [],
   },
 ];
 
