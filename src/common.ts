@@ -58,7 +58,13 @@ export const ROOT_FOLDERS = [
 ];
 
 export const MODULE_CONFIG = 'moduleconfig.xml';
+
+// Known top level files - from an executable point of view we can probably assume
+//  that all executables are destined for the root folder. Dlls are a bit more complicated
+//  as they can be SFSE plugins. Fortunately we can specify a couple of well known
+//  assemblies that are generally used for content loading.
 export const SFSE_EXE = 'sfse_loader.exe';
+export const ROOT_ASSEMBLIES = ['dinput8.dll', 'vcruntime140_1.dll'];
 
 export const SFCUSTOM_INI = 'StarfieldCustom.ini';
 

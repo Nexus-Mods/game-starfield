@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.6] - 2023-11-06
+
+- Modified stop patterns to install known injector type assemblies to the game's root folder
+
 ## [0.5.5] - 2023-11-02
 
 - Added migration capabilities for collections created with 0.4.x

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { DATA_EXTENSIONS, DATA_SUBFOLDERS, TOP_LEVEL_COMPATIBILITY_FOLDERS, SFSE_EXE } from './common';
+import { DATA_EXTENSIONS, DATA_SUBFOLDERS, TOP_LEVEL_COMPATIBILITY_FOLDERS, SFSE_EXE, ROOT_ASSEMBLIES } from './common';
 
 function dirToWordExp(input: string, index?: number, array?: string[], escape?: boolean): string {
   return escape ? '(^|\/)' + input + '(\/|$)' : '(^|/)' + input + '(/|$)';
@@ -15,7 +15,7 @@ function fileEndToWordExp(input: string) {
 }
 
 const gamebryoTopLevel: string[] = TOP_LEVEL_COMPATIBILITY_FOLDERS.map((val, idx, arr) => dirToWordExp(val.toLowerCase(), idx, arr, true));
-const gamebryoFileTopLevel: string[] = [].concat([SFSE_EXE].map(fileEndToWordExp));
+const gamebryoFileTopLevel: string[] = [].concat([...ROOT_ASSEMBLIES, SFSE_EXE].map(fileEndToWordExp));
 
 const gamebryoSubLevel: string[] = DATA_SUBFOLDERS.map(dir => dirToWordExp(dir.toLowerCase()));
 const gamebryoFilePatterns: string[] = DATA_EXTENSIONS.map(extToWordExp);
