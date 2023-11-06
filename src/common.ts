@@ -46,10 +46,11 @@ export const DATA_EXTENSIONS = [
   '.ba2', '.esm', '.esp', '.esl'
 ];
 
-export const ROOT_EXTENSIONS = [
-  // '.ini',
-  '.dll',
-  '.exe'
+export const ROOT_FILE_EXTENSIONS = [
+  '.ini',
+  //'.dll',
+  '.exe',
+  '.txt',
 ];
 
 export const ROOT_FOLDERS = [

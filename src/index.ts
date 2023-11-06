@@ -112,25 +112,29 @@ function main(context: types.IExtensionContext) {
       const dataPath = path.join(discovery.path, 'Data');
       return dataPath;
     }, (instructions: types.IInstruction[]) => {
-      const topLevelPatterns = getTopLevelPatterns();
-      const isTopLevel = (inst: types.IInstruction) => {
-        for (const pattern of topLevelPatterns) {
-          const regex = new RegExp(pattern, 'i');
-          if (regex.test(inst.destination)) {
-            return true;
+      // We want to sort the instructions so that the longest paths are first
+      //  this will make the modType recognition faster.
+      const sorted = instructions
+        .filter(inst => inst.type === 'copy')
+        .sort((a, b) => b.destination.length - a.destination.length);
+      const dataLevelPatterns = getStopPatterns(true);
+      const topLevelPatterns = getTopLevelPatterns(true);
+      const runThroughPatterns = (patterns: string[]) => {
+          for (const pattern of patterns) {
+            const regex = new RegExp(pattern, 'i');
+            for (const inst of sorted) {
+              const normal = inst.destination.replace('\\', '/');
+              if (regex.test(normal)) {
+                return true;
+              }
+            }
           }
-        }
         return false;
       };
-      const supported: boolean = instructions.reduce((prev, inst) => {
-        if (!prev) {
-          return prev;
-        }
-        if (inst.type === 'copy' && (isTopLevel(inst))) {
-          prev = false;
-        }
-        return prev;
-      }, true);
+      const isDataLevel = () => runThroughPatterns(dataLevelPatterns);
+      const isTopLevel = () => runThroughPatterns(topLevelPatterns);
+      // Make sure the instructions aren't data level first
+      const supported = isDataLevel() ? true : isTopLevel() ? false : true;
       return Promise.resolve(supported) as any;
     },
     { deploymentEssential: true, name: 'Data Folder' });
