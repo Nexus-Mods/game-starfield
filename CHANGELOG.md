@@ -18,16 +18,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.5.4] - 2023-11-01
 
 - Improved junction suppression/my games notification flow
+- Fix for [Add a notification for when Data folder exists in My Games](https://github.com/Nexus-Mods/game-starfield/issues/24) 
+- Fix for [SFSE installer false positives](https://github.com/Nexus-Mods/game-starfield/issues/25)
 - Improved invalid fomod detection
 
 ## [0.5.3] - 2023-10-31
 
-- fomod install check will now only run for data folder modtype.
+- Fomod install check will now only run for data folder modtype.
 - Added a notification specifying the changes in the extension to the users.
 
 ## [0.5.2] - 2023-10-31
 
 - Mods installation logic now use stop patterns.
+- Fix for [Cater for mods that have redundant top-level folders](https://github.com/Nexus-Mods/game-starfield/issues/14)
 - Removed deprecated starfield installer.
 - Added Data folder modType to support the new installation logic.
 - Added check for incorrectly installed fomods.
