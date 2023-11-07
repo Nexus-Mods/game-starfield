@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Modified stop patterns to install known injector type assemblies to the game's root folder
 - Improved the stop patterns to deploy ini and txt files to root (also executables!)
+- Starfield notifications now dismissed on game mode change
 
 ## [0.5.5] - 2023-11-02
 
