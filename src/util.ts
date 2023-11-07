@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { fs, log, selectors, types, util } from 'vortex-api';
-import { GAME_ID } from './common';
+import { actions, fs, log, selectors, types, util } from 'vortex-api';
+import { GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
 import { getStopPatterns } from './stopPatterns';
@@ -229,4 +229,12 @@ export async function isDataPathMod(modPath: string): Promise<boolean> {
     }
   }
   return Promise.resolve(false);
+}
+
+export function dismissNotifications(api: types.IExtensionApi) {
+  const notificationIds = ['starfield-junction-activity',
+    MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, 'starfield-update-notif-0.5.0'];
+  for (const id of notificationIds) {
+    api.dismissNotification(id);
+  }
 }

@@ -2,7 +2,7 @@
 import path from 'path';
 import { types, selectors } from 'vortex-api';
 import { testSFSESupported, installSFSE } from './installers/starfield-sfse-installer';
-import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath } from './util';
+import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod } from './tests';
 
@@ -123,7 +123,7 @@ function main(context: types.IExtensionContext) {
           for (const pattern of patterns) {
             const regex = new RegExp(pattern, 'i');
             for (const inst of sorted) {
-              const normal = inst.destination.replace('\\', '/');
+              const normal = inst.destination.replace(/\\/g, '/');
               if (regex.test(normal)) {
                 return true;
               }
@@ -140,11 +140,21 @@ function main(context: types.IExtensionContext) {
     { deploymentEssential: true, name: 'Data Folder' });
 
   context.once(() => {
-    context.api.events.on('gamemode-activated', () => testFolderJunction(context.api));
+    context.api.events.on('gamemode-activated', () => onGameModeActivated(context.api));
     context.api.onAsync('did-deploy', (profileId, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
   });
 
   return true;
+}
+
+async function onGameModeActivated(api: types.IExtensionApi) {
+  const state = api.getState();
+  const activeGameId = selectors.activeGameId(state);
+  if (activeGameId !== GAME_ID) {
+    dismissNotifications(api);
+  }
+  testFolderJunction(api);
+  return;
 }
 
 async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, deployment: types.IDeploymentManifest) {
