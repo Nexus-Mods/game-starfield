@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [0.4.5] - 2023-11-07
 
-- Fixed crash if Vortex is unable to create the folder junction. 
+- Fixed crash if Vortex is unable to create the folder junction.
+- Improved error handling when merging mod directories.
 
 ## [0.4.4] - 2023-10-26
 

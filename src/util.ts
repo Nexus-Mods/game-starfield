@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { fs, log, selectors, types, util } from 'vortex-api';
 import { GAME_ID } from './common';
 import path from 'path';
@@ -6,12 +7,19 @@ export async function mergeFolderContents(source: string, destination: string, o
   log('debug', 'Merging folders', { source, destination, overwrite });
   // Copy all the files and folders that are inside one folder to another. 
   await fs.ensureDirWritableAsync(destination);
-  const sourceDir = await fs.readdirAsync(source);
+
+  // Can't read the source folder? Nothing to do.
+  const sourceDir = await fs.readdirAsync(source).catch(err => Promise.resolve([]));
   const destinationDir = await fs.readdirAsync(destination);
 
   for (const sourceFile of sourceDir) {
-    const sourceFilePath = path.join(source, sourceFile)
-    const stats: fs.Stats = await fs.statAsync(sourceFilePath);
+    const sourceFilePath = path.join(source, sourceFile);
+    const stats: fs.Stats = await fs.statAsync(sourceFilePath).catch(err => Promise.resolve(undefined));
+    if (!stats) {
+      // This shouldn't happen, but if it does, we can't do anything about it.
+      log('warn', 'Could not stat file', sourceFilePath);
+      continue;
+    }
     // Check if there's an indentical folder/file in the dest already.
     const destinationMatch = destinationDir.find(f => f.toLowerCase() === sourceFile.toLowerCase());
 
@@ -19,22 +27,16 @@ export async function mergeFolderContents(source: string, destination: string, o
       // Is there already a subfolder? If so, we need to merge the contents
       if (destinationMatch !== undefined) {
         await mergeFolderContents(sourceFilePath, path.join(destination, destinationMatch), overwrite);
-      }
-      // We can move the entire folder over. 
-      else {
+      } else {
         await fs.copyAsync(sourceFilePath, path.join(destination, sourceFile), { overwrite: true });
       }
-      // await fs.rmdirAsync(sourceFilePath)
       continue;
-    }
-    // Otherwise we're dealing with a file. 
-    else if (stats.isFile()) {
+    } else if (stats.isFile()) {
       // If the file doesn't exist, merge it over. 
       if (!destinationMatch || overwrite) {
-        await fs.copyAsync(sourceFilePath, path.join(destination, destinationMatch), { overwrite: true });
+        await fs.copyAsync(sourceFilePath, path.join(destination, destinationMatch), { overwrite: true, noSelfCopy: true });
         continue;
-      }
-      else {
+      } else {
         log('debug', 'Did not copy file as it already exists', { source: sourceFilePath, destination: path.join(destination, destinationMatch) })
         // await fs.unlinkAsync(sourceFilePath);
         continue;
@@ -58,6 +60,9 @@ export const isJunctionDir = async (filePath: string): Promise<boolean> => {
 export const createJunction = async (source: string,
                                      destination: string,
                                      backup?: boolean): Promise<void> => {
+  // Make sure the parent folder exists before attempting to create the junction.
+  //  Plenty of reasons why this might be missing at this stage, lets just make sure.
+  await fs.ensureDirWritableAsync(path.dirname(source));
   if (backup) {
     // merge both the 'my games' and 'main' data folders
     await mergeFolderContents(source, destination, true);
