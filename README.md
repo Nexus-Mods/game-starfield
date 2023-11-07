@@ -88,6 +88,25 @@ The default installer in 0.4.X has been deprecated in 0.5.X due to:
 What to expect:
 - As part of the migration, Vortex will purge all your mods as soon as Starfield is activated and will run checks to ensure your existing mods deploy correctly.
 - Mods installed with 0.4.X should still function as they previously did. If for any reason you suspect the mod has missing files, simply re-install it and the new installation logic will ensure that the mod is installed correctly.
+- Collections that were created before 0.5.X will still function correctly on both 0.4.X and 0.5.X; however any collections created in 0.5.X is not necessarily backwards compatible with 0.4.X and could potentially result in a broken mod setup, especially if the mods included in the collection are known to cause issues in 0.4.X.
+- FOMODs no longer require different file path configuration for different mod managers (MO2/Vortex). The user will be informed of any fomods it detects as misconfigured/outdated and allow them to fix them automatically via a notification.
+- INI/TXT files will be deployed to the game's root folder; although the txt files can be executed using the 'bat' command in the game's console, Vortex does not currently offer automatic INI merging, those need to be sorted out manually.
+
+Recommendations:
+- Although not necessary if you're happy with your current mod setup, it is highly advisable for ALL 0.5.X users to re-install all of their mods to ensure that the new mod type system kicks in.
+
+# Collections in 0.5.X and above
+
+Given the changes in 0.5.X, migration functionality has been introduced to ensure we support collections created before this update. Upon successful installation of a collection, all mods tied to said collection are checked and migrated automatically to use the new system on the user's environment.
+
+What to expect:
+- Mods on the curator's machine may have a different mod type than the mods on the user's end, especially if the curator is still using an outdated version of the Starfield extension.
+- As mentioned - mods installed as part of a collection on the user's end in 0.5.X are automatically migrated to use the new 'Data Folder' mod type (when required). That will ensure the mods load into the game correctly.
+- Existing collections downloaded before 0.5.X should still be in a functional state.
+
+Recommendations:
+- As a curator it is highly advisable to update to 0.5.X as soon as possible and re-install any mods you wish to distribute as part of a collection.
+- As a user, although existing collections should still be functional - re-installing the collection is recommended as it will update all your mods to the new mod type system.
 
 # See also
 
