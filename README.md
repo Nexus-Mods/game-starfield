@@ -43,6 +43,10 @@ It is also possible to manually set the game folder if the auto detection doesn'
 
 If your game lacks this file then it is likely that your installation has become corrupted somehow.
 
+## Important note if managing the game through xbox game pass:
+
+Currently the game discovery will resolve to the game's default `WindowsApps` location - Vortex's access to this directory is very limited due to the game store locking the files in a system owned virtual file system. As a workaround, please install the game into an external location, e.g. `C:/XboxGames/` and manually set the game folder inside Vortex to the `C:\XboxGames\Starfield\Content` folder. You should then be able to create the folder junction and mod your game.
+
 # Mod Management
 
 By default, Vortex will deploy files to the game's root folder and extracts the archive while preserving the folder structure.
