@@ -74,6 +74,8 @@ current
 
 - Mods needing ASI loading will require manual installation due to the complexities. Please see a mod's description for individual installation instructions.
 
+- Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` and manually set the location of the game inside Vortex. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
+
 - Mod management isn't an exact science so [please report any mods](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) that don't install correctly so we can continue to increase our compatibility and coverage
 
 # See also
