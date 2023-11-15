@@ -22,7 +22,8 @@ export async function setup(api: types.IExtensionApi,
     throw new Error('Starfield is not detected correctly, please update the location of the game in the "Games" tab. It must point to the folder where the game is installed and not the My Documents folder.');
   }
   // Make sure the folder exists
-  await fs.ensureDirAsync(myGamesFolder);
+  await fs.ensureDirWritableAsync(myGamesFolder);
+  await fs.ensureDirWritableAsync(path.join(discovery.path, 'Plugins'));
   await migrateExtension(api);
 }
 

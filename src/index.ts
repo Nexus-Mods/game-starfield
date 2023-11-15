@@ -1,8 +1,14 @@
 /* eslint-disable */
-import path from 'path';
 import { types, selectors } from 'vortex-api';
+
+import { getDataPath, testDataPath } from './modTypes/dataPath';
+import { getASIPluginsPath, testASIPluginsPath } from './modTypes/asiMod';
+
 import { testSFSESupported, installSFSE } from './installers/starfield-sfse-installer';
-import { testASILoaderSupported, installASILoader } from './installers/starfield-asi-installer';
+import { testASILoaderSupported, installASILoader, testASIModSupported, installASIMod } from './installers/starfield-asi-installer';
+
+import { mergeIni, testMergeIni } from './merges/iniMerge';
+
 import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod } from './tests';
@@ -16,7 +22,10 @@ import StarfieldData from './views/StarfieldData';
 import { getStopPatterns, getTopLevelPatterns } from './stopPatterns';
 
 // IDs for different stores and nexus
-import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID } from './common';
+import {
+  GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
+  STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID
+} from './common';
 
 const supportedTools: types.ITool[] = [
   {
@@ -90,6 +99,7 @@ function main(context: types.IExtensionContext) {
   context.registerTest('starfield-deprecated-fomod-check', 'gamemode-activated', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
 
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
+  context.registerInstaller('starfield-asi-mod-installer', 20, testASIModSupported as any, (files) => installASIMod(context.api, files) as any);
   context.registerInstaller('starfield-asi-loader-installer', 25, testASILoaderSupported as any, (files) => installASILoader(context.api, files) as any);
 
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
@@ -106,40 +116,15 @@ function main(context: types.IExtensionContext) {
 
   context.registerModType(MOD_TYPE_DATAPATH, 10,
     (gameId) => GAME_ID === gameId,
-    (game: types.IGame) => {
-      const discovery = selectors.discoveryByGame(context.api.getState(), game.id);
-      if (!discovery || !discovery.path) {
-        return '.';
-      }
-      const dataPath = path.join(discovery.path, 'Data');
-      return dataPath;
-    }, (instructions: types.IInstruction[]) => {
-      // We want to sort the instructions so that the longest paths are first
-      //  this will make the modType recognition faster.
-      const sorted = instructions
-        .filter(inst => inst.type === 'copy')
-        .sort((a, b) => b.destination.length - a.destination.length);
-      const dataLevelPatterns = getStopPatterns(true);
-      const topLevelPatterns = getTopLevelPatterns(true);
-      const runThroughPatterns = (patterns: string[]) => {
-          for (const pattern of patterns) {
-            const regex = new RegExp(pattern, 'i');
-            for (const inst of sorted) {
-              const normal = inst.destination.replace(/\\/g, '/');
-              if (regex.test(normal)) {
-                return true;
-              }
-            }
-          }
-        return false;
-      };
-      const isDataLevel = () => runThroughPatterns(dataLevelPatterns);
-      const isTopLevel = () => runThroughPatterns(topLevelPatterns);
-      // Make sure the instructions aren't data level first
-      const supported = isDataLevel() ? true : isTopLevel() ? false : true;
-      return Promise.resolve(supported) as any;
-    },
+    (game: types.IGame) => getDataPath(context.api, game), testDataPath as any,
     { deploymentEssential: true, name: 'Data Folder' });
+  
+  context.registerModType(MOD_TYPE_ASI_MOD, 10,
+    (gameId) => GAME_ID === gameId,
+    (game: types.IGame) => getASIPluginsPath(context.api, game), testASIPluginsPath as any,
+    { deploymentEssential: true, name: 'ASI Mod' });
+
+  context.registerMerge(testMergeIni, mergeIni as any, MOD_TYPE_ASI_MOD);
 
   context.once(() => {
     context.api.events.on('gamemode-activated', () => onGameModeActivated(context.api));

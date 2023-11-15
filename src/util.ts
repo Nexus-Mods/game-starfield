@@ -241,3 +241,22 @@ export function dismissNotifications(api: types.IExtensionApi) {
     api.dismissNotification(id);
   }
 }
+
+export function sanitizeIni(iniStr: string) {
+  // Replace whitespace around equals signs.
+  //  Pretty sure the game doesn't care one way or another, but it's nice to be consistent.
+  let text = iniStr.replace(/\s=\s/g, '=');
+  const escapedQuotes = /\\\"/g;
+  if (text.match(escapedQuotes)) {
+    // The library has the bad habit of wrapping values with quotation marks entirely,
+    //  and escaping the existing quotation marks.
+    // We could do some crazy regex here, but it's better to be as simple as possible.
+    // Remove all the quotation marks.
+    text = text.replace(/\"/g, '');
+
+    // Wherever we have an escape character, it's safe to assume that used to be a quotation
+    //  mark so we re-introduce it.
+    text = text.replace(/\\/g, '"');
+  }
+  return text;
+}

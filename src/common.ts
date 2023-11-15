@@ -8,6 +8,7 @@ export const GAME_ID = 'starfield';
 export const XBOX_ID = 'BethesdaSoftworks.ProjectGold';
 export const STEAMAPP_ID = '1716740';
 
+export const MOD_TYPE_ASI_MOD = 'starfield-asi-mod';
 export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
 export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
 export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
@@ -51,9 +52,10 @@ export const DATA_EXTENSIONS = [
   '.ba2', '.esm', '.esp', '.esl'
 ];
 
+export const ASI_EXT = '.asi';
 export const ROOT_FILE_EXTENSIONS = [
+  ASI_EXT,
   '.ini',
-  //'.dll',
   '.exe',
   '.txt',
 ];
@@ -81,7 +83,10 @@ export const ASI_LOADER_ASSEMBLIES = [
 ];
 
 // Whatever flavour of ASI loader the user downloads, we'll always use this name when installing it.
-export const TARGET_ASI_LOADER_NAME = 'wininet.dll'
+export const TARGET_ASI_LOADER_NAME = 'wininet.dll';
+
+// In order for ASI mods to load global sets, the ini file needs to match the name of the assembly we use.
+export const ASI_MOD_INI_NAME = TARGET_ASI_LOADER_NAME.replace('dll', 'ini');
 
 export const ROOT_ASSEMBLIES = [...ASI_LOADER_ASSEMBLIES, 'vcruntime140_1.dll'];
 

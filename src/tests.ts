@@ -4,28 +4,9 @@ import { GAME_ID, JUNCTION_TEXT, JUNCTION_NOTIFICATION_ID, SFCUSTOM_INI, MOD_TYP
 import { actions, fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
 
-import { isJunctionDir, purge, deploy, migrateMod } from './util';
+import { isJunctionDir, purge, deploy, migrateMod, sanitizeIni } from './util';
 import { toggleJunction } from './setup';
 import { setDirectoryJunctionSuppress, setDirectoryJunctionEnabled } from './actions/settings';
-
-const sanitize = (iniStr: string) => {
-  // Replace whitespace around equals signs.
-  //  Pretty sure the game doesn't care one way or another, but it's nice to be consistent.
-  let text = iniStr.replace(/\s=\s/g, '=');
-  const escapedQuotes = /\\\"/g;
-  if (text.match(escapedQuotes)) {
-    // The library has the bad habit of wrapping values with quotation marks entirely,
-    //  and escaping the existing quotation marks.
-    // We could do some crazy regex here, but it's better to be as simple as possible.
-    // Remove all the quotation marks.
-    text = text.replace(/\"/g, '');
-
-    // Wherever we have an escape character, it's safe to assume that used to be a quotation
-    //  mark so we re-introduce it.
-    text = text.replace(/\\/g, '"');
-  }
-  return text;
-}
 
 export async function testLooseFiles(api: types.IExtensionApi): Promise<types.ITestResult> {
   const state = api.getState();
@@ -83,7 +64,7 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
         if (ini.Display?.sPhotoModeFolder === undefined) {
           ini.Display.sPhotoModeFolder = 'Photos';
         }
-        const newIniContent = sanitize(stringify(ini, { retainComments: true, whitespace: true }));
+        const newIniContent = sanitizeIni(stringify(ini, { retainComments: true, whitespace: true }));
         log('info', `${archiveInvalidationTag} - New INI: \n${newIniContent}`, ini);
 
         // Save updates to StarfieldCustom.ini and dismiss the notification as it has been resolved.
