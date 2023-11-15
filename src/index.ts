@@ -2,6 +2,7 @@
 import path from 'path';
 import { types, selectors } from 'vortex-api';
 import { testSFSESupported, installSFSE } from './installers/starfield-sfse-installer';
+import { testASILoaderSupported, installASILoader } from './installers/starfield-asi-installer';
 import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod } from './tests';
@@ -89,6 +90,7 @@ function main(context: types.IExtensionContext) {
   context.registerTest('starfield-deprecated-fomod-check', 'gamemode-activated', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
 
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
+  context.registerInstaller('starfield-asi-loader-installer', 25, testASILoaderSupported as any, (files) => installASILoader(context.api, files) as any);
 
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
