@@ -35,6 +35,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added Data folder modType to support the new installation logic.
 - Added check for incorrectly installed fomods.
 - Added migration logic to seamlessly migrate 0.4.x users to the new 0.5.x stop patterns installation functionality.
+## [0.4.5] - 2023-11-07
+
+- Fixed crash if Vortex is unable to create the folder junction.
+- Improved error handling when merging mod directories.
 
 ## [0.4.4] - 2023-10-26
 

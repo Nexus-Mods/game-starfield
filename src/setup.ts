@@ -83,7 +83,7 @@ async function enableJunction(props: IJunctionProps): Promise<void> {
         progress: 50,
       });
       const needsBackup = await fs.statAsync(myGamesData).then(() => true).catch(err => false);
-      createJunction(myGamesData, gameDataFolder, needsBackup);
+      await createJunction(myGamesData, gameDataFolder, needsBackup);
     }
     api.store.dispatch(setDirectoryJunctionEnabled(true));
   } catch (err) {

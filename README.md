@@ -43,6 +43,10 @@ It is also possible to manually set the game folder if the auto detection doesn'
 
 If your game lacks this file then it is likely that your installation has become corrupted somehow.
 
+## Important note if managing the game through xbox game pass:
+
+Currently the game discovery will resolve to the game's default `WindowsApps` location - Vortex's access to this directory is very limited due to the game store locking the files in a system owned virtual file system. As a workaround, please install the game into an external location, e.g. `C:/XboxGames/` and manually set the game folder inside Vortex to the `C:\XboxGames\Starfield\Content` folder. You should then be able to create the folder junction and mod your game.
+
 # Mod Management
 
 By default, Vortex will deploy files to the game's root folder and extracts the archive while preserving the folder structure.
@@ -75,6 +79,8 @@ current
 - Fomods installed with 0.4.X (selecting the "Vortex" flag) will no longer deploy correctly. 0.5.X has a test in place to detect these mods and will notify you if any are found; providing you with the ability to fix the installed fomod. Mod authors are no longer required to provide separate Vortex/MO2 destinations for their mod files!
 
 - Migrating this extension from version 0.4.X to 0.5.X may fail if for any reason the files are being actively manipulated by other tools or the game itself. Please make sure to close any such tools (or the game) before migrating to 0.5.X
+
+- Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` and manually set the location of the game inside Vortex. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
 
 - Mod management isn't an exact science so [please report any mods](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) that don't install correctly so we can continue to increase our compatibility and coverage
 
