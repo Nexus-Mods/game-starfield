@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.6.0] - 2023-11-15
 
 - Added ASI Loader installer
+- Added ASI mod support
+- Added support for merging INI files for ASI mods
 
 ## [0.5.6] - 2023-11-06
 
