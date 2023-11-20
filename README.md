@@ -114,6 +114,12 @@ Recommendations:
 - As a curator it is highly advisable to update to 0.5.X as soon as possible and re-install any mods you wish to distribute as part of a collection.
 - As a user, although existing collections should still be functional - re-installing the collection is recommended as it will update all your mods to the new mod type system.
 
+# Addendum
+
+Vortex 0.6.X load ordering functionality is using INI merging for global datasets defined in ASI mods. At the time of writing this addendum, the deepMerge
+utility function was not exported as part of the API. In order to allow users to test this extension without waiting for Vortex 1.9.9+, the extension has
+and identical copy of the deepMerge function included - this should be removed once we confirm 1.9.9+ is stable.
+
 # See also
 
 - [Download the Extension (Nexus Mods)](https://www.nexusmods.com/site/mods/634)

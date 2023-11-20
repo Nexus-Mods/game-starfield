@@ -2,8 +2,8 @@
 import path from 'path';
 import { parse, stringify } from 'ini-comments';
 import { GAME_ID, ASI_MOD_INI_NAME } from '../common';
-import { sanitizeIni } from '../util';
-import { fs, types, util } from 'vortex-api';
+import { sanitizeIni, deepMerge } from '../util';
+import { fs, types } from 'vortex-api';
 
 export function testMergeIni(game: types.IGame, discovery:
                              types.IDiscoveryResult): types.IMergeFilter | undefined {
@@ -27,7 +27,7 @@ export async function mergeIni(filePath: string, mergeDir: string): Promise<void
   try {
     const ini = parse(iniContent, { retainComments: true });
     const mergedIni = parse(mergedContent, { retainComments: true });
-    const merged = util.deepMerge(mergedIni, ini);
+    const merged = deepMerge(mergedIni, ini);
     const newIniContent = sanitizeIni(stringify(merged, { retainComments: true, whitespace: true }));
     await fs.writeFileAsync(mergedFilePath, newIniContent, {
       encoding: 'utf-8'

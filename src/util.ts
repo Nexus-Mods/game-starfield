@@ -260,3 +260,36 @@ export function sanitizeIni(iniStr: string) {
   }
   return text;
 }
+
+/**
+ * At the time of writing this extension, deepMerge was not exported
+ *  as part of the API. We're using a copy of the function here, to ensure
+ *  older versions of Vortex (with the 0.6.X extension) can still run the merging
+ *  functionality - it should be safe to remove once we confirm everyone migrated to
+ *  Vortex 1.9.9+
+ */
+export function deepMerge(lhs: any, rhs: any): any {
+  if (lhs === undefined) {
+    return rhs;
+  } else if (rhs === undefined) {
+    return lhs;
+  }
+
+  const result = {};
+  for (const key of Object.keys(lhs).concat(Object.keys(rhs))) {
+    if ((lhs[key] === undefined) || (rhs[key] === undefined)) {
+      result[key] = pick(lhs[key], rhs[key]);
+    }
+
+    result[key] = ((typeof(lhs[key]) === 'object') && (typeof(rhs[key]) === 'object'))
+      ? result[key] = deepMerge(lhs[key], rhs[key])
+      : (Array.isArray(lhs[key]) && Array.isArray(rhs[key]))
+        ? result[key] = lhs[key].concat(rhs[key])
+        : result[key] = pick(rhs[key], lhs[key]);
+  }
+  return result;
+}
+
+function pick(lhs: any, rhs: any): any {
+  return lhs === undefined ? rhs : lhs;
+}
