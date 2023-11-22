@@ -1,44 +1,101 @@
 /*
 the more specific they are, the higher priority we get otherwise they'll never override the original and we DONT want to use !important
 */
+#page-file-based-loadorder {
+  .main-page-body {
+    .layout-container {
+      gap: 8px;
+    }
+  }
 
-#loadorderinfo {
-  > .layout-container {
-    gap: 8px;
-    display: flex;
-    flex-direction: column;
+  .file-based-load-order-list {
+    .list-group {
+      padding: 0 8px 0 0;
+      margin: 0;
 
-    > :first-child {
-      //background-color: #acff2f60;
-      flex: 1 1 0; // default
-      min-height: 200px; // don't think we need this as max-height on next child is 50%
+      .load-order-entry {
+        background-color: #2a2c2b;
+        margin: 0 0 4px 0;
+        border: 1px #7b7b7b solid;
+        border-radius: 4px;
+        padding: 0 0 0 12px;
 
-      > .layout-flex-inner {
-        //background-color: #adff2f29;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
+        .load-order-index + div,
+        .fblo-invalid-entry + div {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .load-order-unmanaged-banner {
+          display: flex;
+          background: transparent;
+          color: #818181;
+          border-radius: 16px;
+          align-items: center;
+          position: initial;
+          border: 1px #878787 solid;
+          padding: 2px;
+        }
       }
     }
+  }
 
-    > :last-child {
-      //background-color: #892be26b;
-      flex: unset; // shrinks to whatever space is needed, preferably none
-      max-height: 50%; // don't ever take up more than 50% of height
+  #loadorderinfo {
+    > .layout-container {
+      gap: 8px;
+      display: flex;
+      flex-direction: column;
 
-      > .layout-flex-inner {
-        //background-color: #8a2be230;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
+      > :first-child {
+        //background-color: #acff2f60;
+        flex: 1 1 0; // default
+        min-height: 200px; // don't think we need this as max-height on next child is 50%
+
+        > .layout-flex-inner {
+          //background-color: #adff2f29;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          h2 {
+            margin: 0;
+          }
+
+          p {
+            margin: 0;
+          }
+        }
       }
-    }
 
-    #fb-lo-errorbox {
-      display: none; // Hide the element by default
+      > :last-child {
+        //background-color: #892be26b;
+        flex: unset; // shrinks to whatever space is needed, preferably none
+        max-height: 50%; // don't ever take up more than 50% of height
 
-      &.invalid {
-        display: block; // Show the element when the class is 'invalid'
+        > .layout-flex-inner {
+          //background-color: #8a2be230;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          h5 {
+            margin: 0;
+          }
+
+          p {
+            margin: 0;
+            padding: 8px;
+          }
+
+          #fb-lo-errorbox {
+            display: block; // Hide the element by default
+
+            &.invalid {
+              display: block; // Show the element when the class is 'invalid'
+            }
+          }
+        }
       }
     }
   }
