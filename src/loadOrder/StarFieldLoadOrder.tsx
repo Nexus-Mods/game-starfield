@@ -135,7 +135,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       }
       const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, pluginName);
       const loEntry: types.ILoadOrderEntry = {
-        enabled: false,
+        enabled: true,
         id: mod?.id ?? pluginName,
         name: pluginName,
         modId: mod?.id,
