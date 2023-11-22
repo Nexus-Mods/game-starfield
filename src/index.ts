@@ -1,4 +1,7 @@
 /* eslint-disable */
+
+import * as React from 'react';
+
 import { types, selectors } from 'vortex-api';
 
 import { getDataPath, testDataPath } from './modTypes/dataPath';
@@ -11,7 +14,7 @@ import { mergeIni, testMergeIni } from './merges/iniMerge';
 
 import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications } from './util';
 import { toggleJunction, setup } from './setup';
-import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod } from './tests';
+import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
 
 import { clone, condition, generate, parse, title } from './migrations/collections';
 
@@ -20,6 +23,8 @@ import Settings from './views/Settings';
 import StarfieldData from './views/StarfieldData';
 
 import { getStopPatterns, getTopLevelPatterns } from './stopPatterns';
+
+import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 
 // IDs for different stores and nexus
 import {
@@ -106,6 +111,8 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
 
+  context.registerLoadOrder(new StarFieldLoadOrder(context.api));
+
   context.optional.registerCollectionFeature('starfield_collection_data',
     generate,
     (gameId: string, collection: any) => parse(context.api, gameId, collection),
@@ -140,6 +147,7 @@ async function onGameModeActivated(api: types.IExtensionApi) {
   if (activeGameId !== GAME_ID) {
     dismissNotifications(api);
   }
+  testPluginsEnabler(api);
   testFolderJunction(api);
   return;
 }
@@ -151,6 +159,7 @@ async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, dep
     return Promise.resolve();
   }
   await testDeprecatedFomod(api, false);
+  await testPluginsEnabler(api);
   return Promise.resolve();
 }
 

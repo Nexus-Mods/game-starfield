@@ -1,12 +1,13 @@
 /* eslint-disable */
 import path from 'path';
 import { GAME_ID, JUNCTION_TEXT, JUNCTION_NOTIFICATION_ID, SFCUSTOM_INI, MOD_TYPE_DATAPATH, MY_GAMES_DATA_WARNING } from './common';
+import { PLUGIN_REQUIREMENTS } from './loadOrder/StarFieldLoadOrder';
 import { actions, fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
 
 import { isJunctionDir, purge, deploy, migrateMod, sanitizeIni } from './util';
 import { toggleJunction } from './setup';
-import { setDirectoryJunctionSuppress, setDirectoryJunctionEnabled } from './actions/settings';
+import { setDirectoryJunctionSuppress, setDirectoryJunctionEnabled, setPluginsEnabler } from './actions/settings';
 
 export async function testLooseFiles(api: types.IExtensionApi): Promise<types.ITestResult> {
   const state = api.getState();
@@ -128,6 +129,27 @@ const hasSuppressedJunctionNotif = (api: types.IExtensionApi) => api.sendNotific
     },
   ]
 });
+
+export async function testPluginsEnabler(api: types.IExtensionApi): Promise<void> {
+  const state = api.getState();
+  const profile: types.IProfile = selectors.activeProfile(state);
+  if (profile?.gameId !== GAME_ID) {
+    return Promise.resolve(undefined);
+  }
+  const discovery = selectors.discoveryByGame(state, GAME_ID);
+  const gameStore = discovery?.store === 'xbox' ? 'xbox' : 'steam';
+  const requirements = PLUGIN_REQUIREMENTS[gameStore];
+  for (const requirement of requirements) {
+    if (await requirement.findMod(api) !== undefined) {
+      continue;
+    } else {
+      api.store.dispatch(setPluginsEnabler(false));
+      return;
+    }
+  }
+  api.store.dispatch(setPluginsEnabler(true));
+  return;
+}
 
 export async function testFolderJunction(api: types.IExtensionApi): Promise<void> {
   const state = api.getState();

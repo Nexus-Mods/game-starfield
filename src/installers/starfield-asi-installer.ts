@@ -52,11 +52,15 @@ export function testASIModSupported(files: string[], gameId: string): Promise<ty
     return Promise.resolve({ supported: false, requiredFiles: [] });
   }
 
-  // Don't touch the archive if it has a nested ASI as it may include several other important files _shrug_
   const asiFile = files.find(x => path.extname(x) === ASI_EXT);
+  if (asiFile === undefined) {
+    return Promise.resolve({ supported: false, requiredFiles: [] });
+  }
+
+  // Don't touch the archive if it has a nested ASI as it may include several other important files _shrug_
   const isNested = asiFile.indexOf(path.sep) !== -1;
   return Promise.resolve({
-    supported: (asiFile !== undefined) && !isNested,
+    supported: !isNested,
     requiredFiles: []
   });
 }

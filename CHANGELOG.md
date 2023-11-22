@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added ASI Loader installer
 - Added ASI mod support
 - Added support for merging INI files for ASI mods
+- Added automatic plugin enabled downloader
+- Added load order page
+- Added ability to migrate sTestFile entries to the load order page during deserialization
+- Added ability to enable/disable Vortex plugin management through the settings page
 
 ## [0.5.6] - 2023-11-06
 

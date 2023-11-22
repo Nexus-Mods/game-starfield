@@ -19,6 +19,17 @@ export interface IDirectoryProps {
   myGamesData: string;
 }
 
+export interface IPluginRequirement {
+  fileName: string;
+  modType: string;
+  modId?: number;
+  userFacingName?: string;
+  githubUrl?: string;
+  modUrl?: string;
+  findMod: (api: types.IExtensionApi) => Promise<types.IMod>;
+  fileFilter?: (file: string) => boolean;
+}
+
 export type IJunctionProps = IProps & IDirectoryProps;
 
 // Can use this for INI tweaks in the future too.

@@ -1,8 +1,11 @@
 import path from 'path';
 import { util } from 'vortex-api';
 
+import { IPluginRequirement } from './types';
+
 export const LOCAL_APP_DATA = path.join(util.getVortexPath('localAppData'), 'Starfield');
 export const PLUGINS_TXT = path.join(LOCAL_APP_DATA, 'plugins.txt');
+export const PLUGINS_ENABLER_FILENAME = 'SFPluginsTxtEnabler';
 export const NS = 'game-starfield';
 export const GAME_ID = 'starfield';
 export const XBOX_ID = 'BethesdaSoftworks.ProjectGold';
@@ -48,10 +51,14 @@ export const TOP_LEVEL_COMPATIBILITY_FOLDERS = [
   'Starfield root'
 ];
 
+export const DATA_PLUGINS = [
+  '.esm', '.esp', '.esl',
+];
 export const DATA_EXTENSIONS = [
-  '.ba2', '.esm', '.esp', '.esl'
+  '.ba2', ...DATA_PLUGINS,
 ];
 
+export const DLL_EXT = '.dll';
 export const ASI_EXT = '.asi';
 export const ROOT_FILE_EXTENSIONS = [
   ASI_EXT,
@@ -91,6 +98,7 @@ export const ASI_MOD_INI_NAME = TARGET_ASI_LOADER_NAME.replace('dll', 'ini');
 export const ROOT_ASSEMBLIES = [...ASI_LOADER_ASSEMBLIES, 'vcruntime140_1.dll'];
 
 export const SFCUSTOM_INI = 'StarfieldCustom.ini';
+export const SFPREFS_INI = 'StarfieldPrefs.ini';
 
 export const SFCUSTOM_INI_TEXT = '[Archive]\nbInvalidateOlderFiles=1\nsResourceDataDirsFinal=\n\n';
 

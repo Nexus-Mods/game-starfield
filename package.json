@@ -37,6 +37,7 @@
   "dependencies": {
     "@types/estree": "^1.0.3",
     "archiver": "^6.0.0",
+    "axios": "^1.6.2",
     "copyfiles": "^2.1.1",
     "ini-comments": "^5.0.0",
     "react-bootstrap": "^0.33.0",
