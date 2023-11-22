@@ -36,8 +36,9 @@ export default function InfoPanel(props: IBaseProps) {
           {t('This means that we expect certain functionality to change in the future, yet we\'re confident enough to provide interim support.')}
         </div>
         <div>
-          {t('Vortex is configured to help manage your load order using the Plugins.txt file which is located in: ')}
-          <a style={{ color: 'blue' }} onClick={onViewPlugins}>{t('"%LOCALAPPDATA%\\Starfield\\Plugins.txt"')}</a>
+          {t('Vortex is configured to help manage your load order using the Plugins.txt. Click the "View Plugins File" button in the toolbar to view its location.')}
+        </div>
+        <div>
           {t('Controlling your Load Order using external tools may cause interferences between Vortex and any such tools. Please ensure to use them separately.')}
         </div>
       </Alert>
@@ -54,8 +55,7 @@ export default function InfoPanel(props: IBaseProps) {
         {t('Plugin Management is not enabled!')}
       </h4>
       <div>
-        {t('Vortex is configured to help manage your load order using the Plugins.txt file which is located in: ')}
-        <a style={{ color: 'blue' }} onClick={onViewPlugins}>{t('"%LOCALAPPDATA%\\Starfield\\Plugins.txt"')}</a>
+        {t('Vortex is configured to help manage your load order using the Plugins.txt. Click the "View Plugins File" button in the toolbar to view its location.')}
       </div>
       <div>
         {t('Plugin enabling mods/tools are required in order for the game to load your plugins. You can install them by pressing the button below.')}
