@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useStore } from 'react-redux';
 import { Toggle, util } from 'vortex-api';
 
-import { setManageLoadOrder } from '../actions/settings';
+import { setPluginsEnabler } from '../actions/settings';
 
 import { NS, JUNCTION_TEXT } from '../common';
 
@@ -14,7 +14,7 @@ interface IBaseProps {
 
 interface IConnectedProps {
   enableDirectoryJunction: boolean;
-  manageLoadOrder: boolean;
+  pluginEnabler: boolean;
 }
 
 type IProps = IBaseProps;
@@ -27,11 +27,14 @@ export default function Settings(props: IProps) {
     onSetDirectoryJunction(newVal);
   }, [onSetDirectoryJunction]);
 
-  const onSetManageLO = React.useCallback((newVal) => {
-    store.dispatch(setManageLoadOrder(newVal));
+  const onSetManageLO = React.useCallback(() => {
+    store.dispatch(setPluginsEnabler(false));
   }, [store]);
 
-  const { enableDirectoryJunction, manageLoadOrder } = useSelector(mapStateToProps);
+  const { enableDirectoryJunction, pluginEnabler } = useSelector(mapStateToProps);
+  const loHelpBlockText = pluginEnabler
+    ? t('This will tell Vortex to disable plugin load order management.')
+    : t('Please enable plugin load order management through the load order screen.');
   return (
     <form>
       <FormGroup controlId='default-enable'>
@@ -39,13 +42,14 @@ export default function Settings(props: IProps) {
           <Panel.Body>
             <ControlLabel>{t('Starfield')}</ControlLabel>
             <Toggle
-              checked={manageLoadOrder}
+              disabled={!pluginEnabler}
+              checked={pluginEnabler}
               onToggle={onSetManageLO}
             >
               {t('Manage Load Order')}
             </Toggle>
             <HelpBlock>
-              {t('This will tell Vortex to enable plugin load order management via the load order page.')}
+              {loHelpBlockText}
             </HelpBlock>
             <Toggle
               checked={enableDirectoryJunction}
@@ -66,6 +70,6 @@ export default function Settings(props: IProps) {
 function mapStateToProps(state: any): IConnectedProps {
   return {
     enableDirectoryJunction: util.getSafe(state, ['settings', 'starfield', 'enableDirectoryJunction'], false),
-    manageLoadOrder: util.getSafe(state, ['settings', 'starfield', 'manageLoadOrder'], true),
+    pluginEnabler: util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false),
   };
 }

@@ -147,7 +147,6 @@ export async function testPluginsEnabler(api: types.IExtensionApi): Promise<void
       return;
     }
   }
-  api.store.dispatch(setPluginsEnabler(true));
   return;
 }
 

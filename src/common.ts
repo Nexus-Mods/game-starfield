@@ -1,8 +1,6 @@
 import path from 'path';
 import { util } from 'vortex-api';
 
-import { IPluginRequirement } from './types';
-
 export const LOCAL_APP_DATA = path.join(util.getVortexPath('localAppData'), 'Starfield');
 export const PLUGINS_TXT = path.join(LOCAL_APP_DATA, 'plugins.txt');
 export const PLUGINS_ENABLER_FILENAME = 'SFPluginsTxtEnabler';

@@ -13,6 +13,7 @@ import InfoPanel from '../views/InfoPanel';
 import { walkPath, findModByFile } from '../util';
 
 import { migrateTestFiles } from './testFileHandler';
+import { setPluginsEnabler } from '../actions/settings';
 
 type PluginRequirements = { [gameStore: string]: IPluginRequirement[] };
 export const PLUGIN_REQUIREMENTS: PluginRequirements = {
@@ -174,10 +175,11 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     // Default to the steam store if we can't figure out the store.
     const gameStore = !!discovery?.store ? discovery.store : 'steam';
     const requiredMods = PLUGIN_REQUIREMENTS[gameStore];
+    this.mApi.store.dispatch(setPluginsEnabler(true));
     try {
       await download(this.mApi, requiredMods);
     } catch (err) {
-      // TODO: Fallback here
+      this.mApi.showErrorNotification('Failed to download required mods.', err);
     }
   }
 
@@ -201,7 +203,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
   private isLOManagedByVortex(): boolean {
     const state = this.mApi.getState();
-    return util.getSafe(state, ['settings', 'starfield', 'manageLoadOrder'], true);
+    return util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
   }
 }
 
