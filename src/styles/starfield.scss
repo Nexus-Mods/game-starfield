@@ -1,7 +1,31 @@
-#fb-lo-errorbox {
-  display: none; // Hide the element by default
+/*
+the more specific they are, the higher priority we get otherwise they'll never override the original and we DONT want to use !important
+*/
 
-  &.invalid {
-    display: block; // Show the element when the class is 'invalid'
+#loadorderinfo {
+  > .layout-container {
+    > :first-child {
+      > .layout-flex-inner {
+        background-color: greenyellow;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    > :last-child {
+      > .layout-flex-inner {
+        background-color: blueviolet;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    #fb-lo-errorbox {
+      display: none; // Hide the element by default
+
+      &.invalid {
+        display: block; // Show the element when the class is 'invalid'
+      }
+    }
   }
 }
