@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import * as React from 'react';
+import path from 'path';
 
 import { types, selectors } from 'vortex-api';
 
@@ -134,6 +134,7 @@ function main(context: types.IExtensionContext) {
   context.registerMerge(testMergeIni, mergeIni as any, MOD_TYPE_ASI_MOD);
 
   context.once(() => {
+    context.api.setStylesheet('starfield', path.join(__dirname, 'starfield.scss'));
     context.api.events.on('gamemode-activated', () => onGameModeActivated(context.api));
     context.api.onAsync('did-deploy', (profileId, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
   });

@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added load order page
 - Added ability to migrate sTestFile entries to the load order page during deserialization
 - Added ability to enable/disable Vortex plugin management through the settings page
+- Added Starfield stylesheet
+- Modified build scripts to deploy stylesheets
 
 ## [0.5.6] - 2023-11-06
 

@@ -1,0 +1,7 @@
+#fb-lo-errorbox {
+  display: none; // Hide the element by default
+
+  &.invalid {
+    display: block; // Show the element when the class is 'invalid'
+  }
+}
