@@ -1,10 +1,18 @@
 /*
 the more specific they are, the higher priority we get otherwise they'll never override the original and we DONT want to use !important
 */
-#page-file-based-loadorder {
+#page-file-based-loadorder.main-page {
   .main-page-body {
     .layout-container {
       gap: 8px;
+
+      .file-based-load-order-list-outer {
+        flex: 3 1 0;
+      }
+
+      .file-based-load-order-list-outer + div {
+        flex: 2 1 0;
+      }
     }
   }
 
@@ -49,10 +57,22 @@ the more specific they are, the higher priority we get otherwise they'll never o
   }
 
   #loadorderinfo {
+    padding: 0;
+    border: 0;
+
     > .layout-container {
       gap: 8px;
       display: flex;
       flex-direction: column;
+
+      > * {
+        padding: 12px;
+        margin: 0 0 4px 0;
+        border: 1px #7b7b7b solid;
+        border-radius: 4px;
+      }
+
+      // top box (information)
 
       > :first-child {
         //background-color: #acff2f60;
@@ -65,6 +85,13 @@ the more specific they are, the higher priority we get otherwise they'll never o
           flex-direction: column;
           gap: 4px;
 
+          .alert {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-radius: 2px;
+          }
+
           h2 {
             margin: 0;
           }
@@ -72,13 +99,24 @@ the more specific they are, the higher priority we get otherwise they'll never o
           p {
             margin: 0;
           }
+
+          // fblo component is adding a dirty p above what the extension can add
+          > p {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
         }
       }
+
+      // bottom box (validation console)
 
       > :last-child {
         //background-color: #892be26b;
         flex: unset; // shrinks to whatever space is needed, preferably none
         max-height: 50%; // don't ever take up more than 50% of height
+
+        background-color: #2a2c2b;
 
         > .layout-flex-inner {
           //background-color: #8a2be230;
@@ -92,11 +130,15 @@ the more specific they are, the higher priority we get otherwise they'll never o
 
           p {
             margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             padding: 8px;
           }
 
           #fb-lo-errorbox {
             display: block; // Hide the element by default
+            border: none;
 
             &.invalid {
               display: block; // Show the element when the class is 'invalid'
