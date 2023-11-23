@@ -95,8 +95,10 @@ export const ASI_LOADER_ASSEMBLIES = [
   'bink2w64.dll', 'vorbisfile.dll', 'binkw32hooked.dll', 'bink2w64hooked.dll', 'vorbishooked.dll'
 ];
 
+export const ASI_LOADER_BACKUP = 'bink2w64hooked.dll';
+
 // Whatever flavour of ASI loader the user downloads, we'll always use this name when installing it.
-export const TARGET_ASI_LOADER_NAME = 'wininet.dll';
+export const TARGET_ASI_LOADER_NAME = 'bink2w64.dll';
 
 // In order for ASI mods to load global sets, the ini file needs to match the name of the assembly we use.
 export const ASI_MOD_INI_NAME = TARGET_ASI_LOADER_NAME.replace('dll', 'ini');

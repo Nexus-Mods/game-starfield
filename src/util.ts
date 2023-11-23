@@ -312,3 +312,27 @@ export async function findModByFile(api: types.IExtensionApi, modType: string, f
   }
   return undefined;
 }
+
+export async function linkAsiLoader(api: types.IExtensionApi, lhs: string, rhs: string): Promise<void> {
+  // The asi loader replaces a game assembly - we need to make sure to back up and restore it based on
+  //  the deployment events.
+  const state = api.getState();
+  const gameId = selectors.activeGameId(state);
+  if (gameId !== GAME_ID) {
+    return Promise.resolve();
+  }
+  const discovery = selectors.discoveryByGame(state, GAME_ID);
+  if (discovery?.store !== 'xbox') {
+    return Promise.resolve();
+  }
+
+  const asiLoaderLhs = path.join(discovery.path, lhs);
+  const asiLoaderRhs = path.join(discovery.path, rhs);
+
+  const exists = await fs.statAsync(asiLoaderLhs).then(() => true).catch(() => false);
+  if (exists) {
+    await fs.linkAsync(asiLoaderLhs, asiLoaderRhs).catch(err => Promise.resolve());
+    await fs.unlinkAsync(asiLoaderLhs).catch(err => Promise.resolve());
+  }
+  return Promise.resolve();
+}

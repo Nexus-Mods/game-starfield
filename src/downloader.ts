@@ -5,7 +5,7 @@ import { actions, fs, selectors, types, util } from 'vortex-api';
 import axios from 'axios';
 
 import { GAME_ID } from './common';
-import { IPluginRequirement } from './types';
+import { IPluginRequirement, IGithubDownload } from './types';
 
 export async function download(api: types.IExtensionApi, requirements: IPluginRequirement[]) {
   api.sendNotification({
@@ -24,9 +24,9 @@ export async function download(api: types.IExtensionApi, requirements: IPluginRe
       if (req?.modId !== undefined) {
         await downloadNexus(api, req);
       } else {
-        const url = await getLatestReleaseDownloadUrl(api, req);
-        const tempPath = path.join(util.getVortexPath('temp'), req.userFacingName ?? req.fileName + '.zip');
-        await doDownload(url, tempPath);
+        const asset = await getLatestReleaseDownloadUrl(api, req);
+        const tempPath = path.join(util.getVortexPath('temp'), asset.fileName);
+        await doDownload(asset.url, tempPath);
         await importAndInstall(api, tempPath);
       }
     }
@@ -103,13 +103,14 @@ async function downloadNexus(api: types.IExtensionApi, requirement: IPluginRequi
   }
 }
 
-async function getLatestReleaseDownloadUrl(api: types.IExtensionApi, requirement: IPluginRequirement): Promise<string | null> {
+async function getLatestReleaseDownloadUrl(api: types.IExtensionApi, requirement: IPluginRequirement): Promise<IGithubDownload | null> {
   try {
     const response = await axios.get(`${requirement.githubUrl}/releases/latest`);
     if (response.status === 200) {
       const release = response.data;
       if (release.assets.length > 0) {
-        return release.assets[0].browser_download_url;
+        const chosenAsset = release.assets.find((asset: any) => asset.name.includes('x64'));
+        return { fileName: chosenAsset.name, url: chosenAsset.browser_download_url  };
       }
     }
   } catch (error) {

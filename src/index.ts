@@ -2,7 +2,7 @@
 
 import path from 'path';
 
-import { types, selectors } from 'vortex-api';
+import { fs, types, selectors } from 'vortex-api';
 
 import { getDataPath, testDataPath } from './modTypes/dataPath';
 import { getASIPluginsPath, testASIPluginsPath } from './modTypes/asiMod';
@@ -12,7 +12,7 @@ import { testASILoaderSupported, installASILoader, testASIModSupported, installA
 
 import { mergeIni, testMergeIni } from './merges/iniMerge';
 
-import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications } from './util';
+import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications, linkAsiLoader } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
 
@@ -22,14 +22,14 @@ import { settingsReducer } from './reducers/settings';
 import Settings from './views/Settings';
 import StarfieldData from './views/StarfieldData';
 
-import { getStopPatterns, getTopLevelPatterns } from './stopPatterns';
+import { getStopPatterns } from './stopPatterns';
 
 import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 
 // IDs for different stores and nexus
 import {
   GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
-  STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID
+  STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID, TARGET_ASI_LOADER_NAME, ASI_LOADER_BACKUP
 } from './common';
 
 const supportedTools: types.ITool[] = [
@@ -137,7 +137,9 @@ function main(context: types.IExtensionContext) {
   context.once(() => {
     context.api.setStylesheet('starfield', path.join(__dirname, 'starfield.scss'));
     context.api.events.on('gamemode-activated', () => onGameModeActivated(context.api));
-    context.api.onAsync('did-deploy', (profileId, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
+    context.api.onAsync('did-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
+    context.api.onAsync('will-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onWillDeployEvent(context.api, profileId, deployment));
+    context.api.onAsync('did-purge', (profileId: string) => onDidPurgeEvent(context.api, profileId));
   });
 
   return true;
@@ -163,6 +165,14 @@ async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, dep
   await testDeprecatedFomod(api, false);
   await testPluginsEnabler(api);
   return Promise.resolve();
+}
+
+async function onDidPurgeEvent(api: types.IExtensionApi, profileId: string): Promise<void> {
+  return linkAsiLoader(api, ASI_LOADER_BACKUP, TARGET_ASI_LOADER_NAME);
+}
+
+async function onWillDeployEvent(api: types.IExtensionApi, profileId: any, deployment: types.IDeploymentManifest): Promise<void> {
+  return linkAsiLoader(api, TARGET_ASI_LOADER_NAME, ASI_LOADER_BACKUP);
 }
 
 async function requiresLauncher(gamePath: string, store?: string) {
