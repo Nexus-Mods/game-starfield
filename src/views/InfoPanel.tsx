@@ -24,13 +24,9 @@ export default function InfoPanel(props: IBaseProps) {
     onInstallPluginsEnabler();
   }, [onInstallPluginsEnabler]);
 
-  const onViewPlugins = React.useCallback((ev) => {
-    openAppDataPath();
-  }, []);
-
   return pluginEnabler ? (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginRight: '16px' }}>
-      <Alert bsStyle='warning' style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div>
+      <Alert bsStyle='warning'>
         <div>
           {t('The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda.')}
           {t('This means that we expect certain functionality to change in the future, yet we\'re confident enough to provide interim support.')}
@@ -50,8 +46,8 @@ export default function InfoPanel(props: IBaseProps) {
       </div>
     </div>
   ) : (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <h4 style={{ margin: 0 }}>
+    <div>
+      <h4>
         {t('Plugin Management is not enabled!')}
       </h4>
       <div>
