@@ -152,9 +152,10 @@ const hasSuppressedJunctionNotif = (api: types.IExtensionApi) =>
             "question",
             "Mods may not load correctly",
             {
-              text: `Vortex deploys mods to the Data folder in the game's installation directory. However, it looks like you have a Data folder 
-              in your "Documents/My Games" folder. This will interfere with your modding setup. Please either remove the Data folder in your 
-              "Documents/My Games" folder or use Vortex's folder junction feature to link the two folders together.`,
+              text:
+                "Vortex deploys mods to the Data folder in the game's installation directory. However, it looks like you have a Data folder " +
+                'in your "Documents/My Games" folder. This will interfere with your modding setup. Please either remove the Data folder in your ' +
+                '"Documents/My Games" folder or use Vortex\'s folder junction feature to link the two folders together.',
             },
             [{ label: "Close", action: () => api.dismissNotification(MY_GAMES_DATA_WARNING) }]
           ),
@@ -231,10 +232,10 @@ const fomodInvalidShortText = (t: types.TFunction, invalidNum: number) => t("Dep
 
 const fomodInvalidLongText = (t: types.TFunction, invalidNum: number) =>
   t(
-    `Vortex detected {{num}} FOMODs which are using the deprecated Vortex plugin option. 
-  This option is no longer required and will cause the FOMODs to deploy incorrectly. 
-  Vortex will attempt to fix the FOMODs for you and it is recommended to inform the mod author to change his configuration file and remove the Vortex flag. 
-  Alternatively you can re-install any affected FOMODs manually and select the MO2 plugin option instead.`,
+    "Vortex detected {{num}} FOMODs which are using the deprecated Vortex plugin option. " +
+      "This option is no longer required and will cause the FOMODs to deploy incorrectly. " +
+      "Vortex will attempt to fix the FOMODs for you and it is recommended to inform the mod author to change his configuration file and remove the Vortex flag. " +
+      "Alternatively you can re-install any affected FOMODs manually and select the MO2 plugin option instead.",
     { replace: { num: invalidNum } }
   );
 
