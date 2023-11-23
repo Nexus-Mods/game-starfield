@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.7] - 2023-11-23
+
+- Updated notification and dialog text
+
 ## [0.5.6] - 2023-11-06
 
 - Modified stop patterns to install known injector type assemblies to the game's root folder
@@ -12,13 +16,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [0.5.5] - 2023-11-02
 
-- Added migration capabilities for collections created with 0.4.x
+- Added migration capabilities for collections created with 0.4
 - Added missing "sound" stop pattern
 
 ## [0.5.4] - 2023-11-01
 
 - Improved junction suppression/my games notification flow
-- Fix for [Add a notification for when Data folder exists in My Games](https://github.com/Nexus-Mods/game-starfield/issues/24) 
+- Fix for [Add a notification for when Data folder exists in My Games](https://github.com/Nexus-Mods/game-starfield/issues/24)
 - Fix for [SFSE installer false positives](https://github.com/Nexus-Mods/game-starfield/issues/25)
 - Improved invalid fomod detection
 
@@ -34,7 +38,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Removed deprecated starfield installer.
 - Added Data folder modType to support the new installation logic.
 - Added check for incorrectly installed fomods.
-- Added migration logic to seamlessly migrate 0.4.x users to the new 0.5.x stop patterns installation functionality.
+- Added migration logic to seamlessly migrate 0.4 users to the new 0.5 stop patterns installation functionality.
+
 ## [0.4.5] - 2023-11-07
 
 - Fixed crash if Vortex is unable to create the folder junction.
@@ -48,16 +53,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.4.3] - 2023-10-25
 
 - Folder junction is tested and user is asked with a lot of warnings if they'd like to use this feature.
-- Documentation added to [modding.wiki](https://modding.wiki/en/vortex/users/starfield-folder-junction-issues) for OneDrive and other cloud drive service issues 
+- Documentation added to [modding.wiki](https://modding.wiki/en/vortex/users/starfield-folder-junction-issues) for OneDrive and other cloud drive service issues
 
 ## [0.4.2] - 2023-10-22
 
 - The user is notified if `StarfieldCustom.ini` doesn't contain the bare minimum to enable modding.
-- If the ini file is fixed, it is done so without removing comments and `sPhotoModeFolder=Photos` is added to the `[Display]`  section instead of `[General]`.
+- If the ini file is fixed, it is done so without removing comments and `sPhotoModeFolder=Photos` is added to the `[Display]` section instead of `[General]`.
 - Fix for [BA2/ESM files have other files stripped on install](https://github.com/Nexus-Mods/game-starfield/issues/15)
 - Fix for [Does not install mods with BAT files AND valid data properly](https://github.com/Nexus-Mods/game-starfield/issues/17)
 - [Symlink support has been disabled](https://github.com/Nexus-Mods/game-starfield/pull/12) due to inconsistencies with files working\not working.
-
 
 ## [0.4.1] - 2023-09-22
 
@@ -65,11 +69,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [0.4.0] - 2023-09-21
 
-- Anything in the Documents/My Games/Starfield/Data will be automatically moved to the game installation Data folder and a junction created that tricks the game into using that folder for all textures. 
-- A StarfieldCustom.ini will be created with minimal values if is not already present. 
+- Anything in the Documents/My Games/Starfield/Data will be automatically moved to the game installation Data folder and a junction created that tricks the game into using that folder for all textures.
+- A StarfieldCustom.ini will be created with minimal values if is not already present.
 - Symlink support has been re-enabled as this appears to work (it didn't in Fallout 4/Skyrim).
-- Fixed installing EXEs to the game root incorrectly. 
-- Warn the user if they try to install SKSE to a non-Steam version of Starfield. 
+- Fixed installing EXEs to the game root incorrectly.
+- Warn the user if they try to install SKSE to a non-Steam version of Starfield.
 - Added menu option to open photo mode folder
 
 ## [0.3.0] - 2023-09-17
