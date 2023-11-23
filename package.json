@@ -1,10 +1,6 @@
 {
   "name": "starfield",
-<<<<<<< HEAD
   "version": "0.6.0",
-=======
-  "version": "0.5.7",
->>>>>>> 227-stop-patterns
   "description": "Vortex Extension for Starfield",
   "author": "Nexus Mods",
   "private": true,

@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-<<<<<<< HEAD
 ## [0.6.0] - 2023-11-15
 
 - Added ASI Loader installer
@@ -16,11 +15,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added ability to enable/disable Vortex plugin management through the settings page
 - Added Starfield stylesheet
 - Modified build scripts to deploy stylesheets
-=======
+
 ## [0.5.7] - 2023-11-23
 
 - Updated notification and dialog text
->>>>>>> 227-stop-patterns
 
 ## [0.5.6] - 2023-11-06
 
