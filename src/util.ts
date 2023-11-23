@@ -235,8 +235,9 @@ export async function isDataPathMod(modPath: string): Promise<boolean> {
 }
 
 export function dismissNotifications(api: types.IExtensionApi) {
+  // TODO: Find a better way to control the update notifications!!!
   const notificationIds = ['starfield-junction-activity',
-    MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, 'starfield-update-notif-0.5.0'];
+    MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, 'starfield-update-notif-0.5.0', 'starfield-update-notif-0.6.0'];
   for (const id of notificationIds) {
     api.dismissNotification(id);
   }

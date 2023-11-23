@@ -20,10 +20,51 @@ export async function migrateExtension(api: types.IExtensionApi) {
 
   const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
   const newVersion = await getExtensionVersion();
-  if (DEBUG || semver.gt('0.5.0', currentVersion)) {
+  if (semver.gt('0.6.0', currentVersion)) {
+    await migrate060(api, newVersion);
+  } else if (semver.gt('0.5.0', currentVersion)) {
     await migrate050(api, newVersion);
   }
+
   api.store?.dispatch(setMigrationVersion(newVersion));
+}
+
+export async function migrate060(api: types.IExtensionApi, version: string) {
+  const notificationId = 'starfield-update-notif-0.6.0';
+  const t = api.translate;
+  api.sendNotification({
+    message: t('Starfield extension has been updated to v{{newVersion}}', { replace: { newVersion: version }, ns: NS }),
+    noDismiss: true,
+    allowSuppress: false,
+    type: 'success',
+    id: notificationId,
+    actions: [
+      {
+        title: t('More', { ns: NS }),
+        action: () => api.showDialog('success', 'Starfield Extension Update v{{newVersion}}', {
+          parameters: {
+            newVersion: version
+          },
+          bbcode: t('An interim load ordering solution for Starfield has been added in 0.6.X while we wait for official mod support.[br][/br][br][/br]'
+                  + 'What to expect:[br][/br][br][/br]'
+                  + '- By default Vortex will not touch your "sTestFileX=" configuration or plugins.txt file.[br][/br]'
+                  + '- To use Vortex\'s load ordering solution, please go to the "Load Order" page, and click the "Enable" button.[br][/br]'
+                  + '- Once enabled, Vortex will download the appropriate plugins.txt file enabler alongside SFSE or the ASI Loader, depending on the game store used for your copy of Starfield.[br][/br]'
+                  + '- Any "sTestFileX=" entries will be migrated and removed from your INI files if discovered (they conflict with the plugins.txt file).[br][/br]'
+                  + '- You can stop managing the load order through Vortex at any time by going to Settings -> Mods and disable the "Manage Load Order" toggle.[br][/br]'
+                  + '- For more information including how to view the plugins.txt file, please refer to the load order page'),
+        }, [
+          {
+            label: t('Close', { ns: NS }),
+            action: () => {
+              api.dismissNotification(notificationId);
+              api.suppressNotification(notificationId, true);
+            }
+          }
+        ], 'starfield-update-0.6.0')
+      }
+    ],
+  });
 }
 
 export async function migrate050(api: types.IExtensionApi, version: string) {
