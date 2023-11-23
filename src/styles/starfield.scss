@@ -20,6 +20,13 @@ the more specific they are, the higher priority we get otherwise they'll never o
         border-radius: 4px;
         padding: 0 0 0 12px;
 
+        // This shouldn't be necessary. But hey ho lets go.
+        > .entry-checkbox {
+          &.disabled {
+            display: none;
+          }
+        }
+
         .load-order-index + div,
         .fblo-invalid-entry + div {
           display: flex;

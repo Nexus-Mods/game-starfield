@@ -5,7 +5,7 @@ import { fs, selectors, types, util } from 'vortex-api';
 
 import { IPluginRequirement } from '../types';
 import {
-  GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME,
+  GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, NATIVE_PLUGINS,
   DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS,
 } from '../common';
 import { download } from '../downloader';
@@ -58,8 +58,10 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
   public toggleableEntries?: boolean | undefined;
   public usageInstructions?: React.ComponentType<{}>;
   public noCollectionGeneration?: boolean | undefined;
+
   private mApi: types.IExtensionApi;
   private mOnInstallPluginsEnabler: () => void;
+
   constructor(api: types.IExtensionApi) {
     this.gameId = GAME_ID;
     this.toggleableEntries = true;
@@ -143,6 +145,17 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       loadOrder.push(loEntry);
     }
 
+    let nativeIdx = 0;
+    const nextNativeIdx = () => nativeIdx++;
+    for (const plugin of NATIVE_PLUGINS) {
+      const idx = loadOrder.findIndex(entry => entry.name.toLowerCase() === plugin);
+      if (idx === -1) {
+        continue;
+      }
+      const nativePlugin = loadOrder.splice(idx, 1);
+      nativePlugin[0].locked = true;
+      loadOrder.splice(nextNativeIdx(), 0, nativePlugin[0]);
+    }
     return Promise.resolve(loadOrder);
   }
 

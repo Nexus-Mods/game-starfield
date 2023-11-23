@@ -14,6 +14,14 @@ export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
 export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
 export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
 
+// This is the order we expect the native plugins to be arranged.
+export const NATIVE_PLUGINS = [
+  'starfield.esm',
+  'constellation.esm',
+  'oldmars.esm',
+  'blueprintships-starfield.esm',
+];
+
 export const DATA_SUBFOLDERS = [
   'Meshes',
   'Textures',
