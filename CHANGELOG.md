@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added ability to migrate sTestFile entries to the load order page during deserialization
 - Added ability to enable/disable Vortex plugin management through the settings page
 - Added Starfield stylesheet
+- Added button to allow users to reset their plugins.txt file
 - Modified build scripts to deploy stylesheets
 
 ## [0.5.7] - 2023-11-23
