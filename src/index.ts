@@ -2,7 +2,7 @@
 
 import path from 'path';
 
-import { fs, types, selectors } from 'vortex-api';
+import { fs, types, selectors, util } from 'vortex-api';
 
 import { getDataPath, testDataPath } from './modTypes/dataPath';
 import { getASIPluginsPath, testASIPluginsPath } from './modTypes/asiMod';
@@ -12,7 +12,7 @@ import { testASILoaderSupported, installASILoader, testASIModSupported, installA
 
 import { mergeIni, testMergeIni } from './merges/iniMerge';
 
-import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications, linkAsiLoader } from './util';
+import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications, linkAsiLoader, walkPath, removePluginsFile } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
 
@@ -62,6 +62,10 @@ const gameFinderQuery = {
   steam: [{ id: STEAMAPP_ID, prefer: 0 }],
   xbox: [{ id: XBOX_ID }],
 };
+
+const removePluginsWrap = () => {
+  removePluginsFile();
+}
 
 function main(context: types.IExtensionContext) {
   context.registerReducer(['settings', 'starfield'], settingsReducer);
@@ -114,6 +118,7 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
+  context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', removePluginsWrap, (gameId?: string[]) => isStarfield(context, gameId));
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));
 
@@ -153,6 +158,9 @@ function main(context: types.IExtensionContext) {
     context.api.onAsync('did-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
     context.api.onAsync('will-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onWillDeployEvent(context.api, profileId, deployment));
     context.api.onAsync('did-purge', (profileId: string) => onDidPurgeEvent(context.api, profileId));
+    // context.api.onAsync('intercept-file-changes', (intercepted: types.IFileChange[], cb: (result: types.IFileChange[]) => void) => {
+    //   return onInterceptFileChanges(context.api, intercepted, cb);
+    // });
   });
 
   return true;
@@ -185,8 +193,45 @@ async function onDidPurgeEvent(api: types.IExtensionApi, profileId: string): Pro
 }
 
 async function onWillDeployEvent(api: types.IExtensionApi, profileId: any, deployment: types.IDeploymentManifest): Promise<void> {
-  return linkAsiLoader(api, TARGET_ASI_LOADER_NAME, ASI_LOADER_BACKUP);
+  const state = api.getState();
+  const pluginEnabler = util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
+  const profile = selectors.activeProfile(state);
+  if (profile?.gameId !== GAME_ID || pluginEnabler === false) {
+    return Promise.resolve();
+  }
+  const discovery = selectors.discoveryByGame(state, GAME_ID);
+  if (discovery?.store !== 'xbox') {
+    return Promise.resolve();
+  }
+
+  const backupPath = path.join(discovery.path, ASI_LOADER_BACKUP);
+  const exists = await fs.statAsync(backupPath).then(() => true).catch(err => false);
+  if (!exists) {
+    const installationPath = selectors.installPathForGame(state, GAME_ID);
+    const entries = (await walkPath(installationPath)).filter((entry) => !entry.isDirectory && path.basename(entry.filePath) === TARGET_ASI_LOADER_NAME);
+    const entry = entries.length > 0 ? entries[0] : undefined;
+    if (!entry) {
+      return Promise.resolve();
+    }
+    const asiPath = entry.filePath;
+    const asiExists = await fs.statAsync(asiPath).then(() => true).catch(err => false);
+    if (asiExists) {
+      await fs.copyAsync(asiPath, backupPath);
+    }
+  }
 }
+
+// async function onInterceptFileChanges(api: types.IExtensionApi,
+//                                       intercepted: types.IFileChange[],
+//                                       cb: (result: types.IFileChange[]) => void): Promise<void> {
+//   const state = api.getState();
+//   const gameId = selectors.activeGameId(state);
+//   if (gameId !== GAME_ID) {
+//     return Promise.resolve();
+//   }
+//   cb(intercepted.filter((change) => path.basename(change.filePath) !== TARGET_ASI_LOADER_NAME));
+//   return Promise.resolve();
+// }
 
 async function requiresLauncher(gamePath: string, store?: string) {
   // If Xbox, we'll launch via Xbox app

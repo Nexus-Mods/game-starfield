@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { fs, log, selectors, types, util } from 'vortex-api';
-import { LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID } from './common';
+import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
 import { getStopPatterns } from './stopPatterns';
@@ -123,6 +123,14 @@ export const openSettingsPath = () => {
 export const openAppDataPath = () => {
   util.opn(LOCAL_APP_DATA).catch(() => null);
 };
+
+export const removePluginsFile = async () => {
+  try {
+    await fs.unlinkAsync(PLUGINS_TXT);
+  } catch (err) {
+    // File doesn't exist, nothing to do.
+  }
+}
 
 export const openPhotoModePath = () => {
   const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Photos');
@@ -318,8 +326,9 @@ export async function linkAsiLoader(api: types.IExtensionApi, lhs: string, rhs: 
   // The asi loader replaces a game assembly - we need to make sure to back up and restore it based on
   //  the deployment events.
   const state = api.getState();
-  const gameId = selectors.activeGameId(state);
-  if (gameId !== GAME_ID) {
+  const pluginEnabler = util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
+  const profile = selectors.activeProfile(state);
+  if (profile?.gameId !== GAME_ID || pluginEnabler === false) {
     return Promise.resolve();
   }
   const discovery = selectors.discoveryByGame(state, GAME_ID);

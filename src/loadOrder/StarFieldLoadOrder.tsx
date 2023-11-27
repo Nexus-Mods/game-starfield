@@ -111,25 +111,43 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
         loadOrder.push(loEntry);
       }
     }
+
+    const invalidEntries = [];
     const currentLO = await this.deserializePluginsFile();
+
+    // Find out which plugins are actually deployed to the data folder.
+    const fileEntries = await walkPath(path.join(dataPath, 'Data'), { recurse: false });
+    const plugins = fileEntries.filter(file => DATA_PLUGINS.includes(path.extname(file.filePath)));
+    const isInDataFolder = (plugin: string) => plugins.some(file => path.basename(file.filePath).toLowerCase() === plugin.toLowerCase());
     for (const plugin of currentLO) {
-      if (plugin.startsWith('#')) {
+      if (currentLO.indexOf(plugin) === 0 && plugin.startsWith('#')) {
         continue;
       }
-      const enabled = plugin.startsWith('*');
-      const name = enabled ? plugin.substring(1) : plugin;
+      const name = plugin.replace(/\#|\*/g, '');
       const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, name);
+
+      // Plugin is invalid if it doesn't exist in the data folder. (And isn't a Vortex mod)
+      const invalid = !mod && !isInDataFolder(name);
+      const enabled = plugin.startsWith('*');
       const loEntry: types.ILoadOrderEntry = {
-        enabled: enabled,
+        enabled: enabled && !invalid,
         id: mod?.id ?? name,
         name: name,
         modId: mod?.id,
+        locked: invalid,
+        data: {
+          isInvalid: invalid,
+        }
       }
-      loadOrder.push(loEntry);
+      if (invalid) {
+        invalidEntries.push(loEntry);
+      } else {
+        if (isInDataFolder(name)) {
+          loadOrder.push(loEntry);
+        }
+      }
     }
-    // Check if there are any plugins that aren't in the plugins.txt file
-    const fileEntries = await walkPath(path.join(dataPath, 'Data'), { recurse: false });
-    const plugins = fileEntries.filter(file => DATA_PLUGINS.includes(path.extname(file.filePath)));
+
     for (const plugin of plugins) {
       const pluginName = path.basename(plugin.filePath);
       if (loadOrder.find(entry => entry.name === pluginName)) {
@@ -156,31 +174,50 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       nativePlugin[0].locked = true;
       loadOrder.splice(nextNativeIdx(), 0, nativePlugin[0]);
     }
-    return Promise.resolve(loadOrder);
+
+    if (invalidEntries.length > 0) {
+      this.mApi.sendNotification({
+        type: 'warning',
+        title: 'Missing Plugins Detected',
+        message: 'Some plugins are missing from your data folder. These plugins will be disabled and locked at the bottom of your load order screen. To remove them, modify your plugins.txt file.',
+        id: 'starfield-missing-plugins',
+      });
+    }
+
+    const result = [].concat(loadOrder, invalidEntries);
+    await this.serializeLoadOrder(result, []);
+    return Promise.resolve(result);
   }
 
   public async validate(prev: types.LoadOrder, current: types.LoadOrder): Promise<types.IValidationResult> {
-    if (!this.isLOManagedByVortex()) {
-      return Promise.resolve(undefined);
-    }
+    // if (!this.isLOManagedByVortex()) {
+    //   return Promise.resolve(undefined);
+    // }
 
-    const state = this.mApi.getState();
-    const discovery = selectors.discoveryByGame(state, GAME_ID);
-    const gamePath = !!discovery?.path ? discovery.path : undefined;
-    if (gamePath === undefined) {
-      return Promise.resolve({ invalid: [{ id: GAME_ID, reason: 'Game is not discovered' }]} );
-    }
-    const invalid = [];
-    const dataPath = path.join(gamePath, 'Data');
-    for (const entry of current) {
-      try {
-        await fs.statAsync(path.join(dataPath, entry.name));
-      } catch (err) {
-        invalid.push({ id: entry.id, reason: 'File not found' });
-      }
-    }
+    // const state = this.mApi.getState();
+    // const discovery = selectors.discoveryByGame(state, GAME_ID);
+    // const gamePath = !!discovery?.path ? discovery.path : undefined;
+    // if (gamePath === undefined) {
+    //   return Promise.resolve({ invalid: [{ id: GAME_ID, reason: 'Game is not discovered' }]} );
+    // }
+    // const invalid = [];
+    // const dataPath = path.join(gamePath, 'Data');
+    // for (const entry of current) {
+    //   try {
+    //     await fs.statAsync(path.join(dataPath, entry.name));
+    //   } catch (err) {
+    //     invalid.push({ id: entry.id, reason: 'File not found' });
+    //   }
+    // }
 
-    return invalid.length > 0 ? Promise.resolve({ invalid }) : Promise.resolve(undefined);
+    // return invalid.length > 0 ? Promise.resolve({ invalid }) : Promise.resolve(undefined);
+    return Promise.resolve(undefined);
+  }
+
+  public async onFixInvalidPlugins(): Promise<void> {
+    const deserialzed = await this.deserializeLoadOrder();
+    const valid = deserialzed.filter(entry => entry.data?.isInvalid !== true);
+    await this.serializeLoadOrder(valid, []);
   }
 
   private async onInstallPluginsEnabler(): Promise<void> {
@@ -198,8 +235,9 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
   private async serializePluginsFile(plugins: types.ILoadOrderEntry[]): Promise<void> {
     const data = plugins.map(plugin => {
+      const invalid = plugin.data?.isInvalid ? '#' : '';
       const enabled = plugin.enabled ? '*' : '';
-      return `${enabled}${plugin.name}`
+      return `${invalid}${enabled}${plugin.name}`
     });
     data.splice(0, 0, '# This file was automatically generated by Vortex. Do not edit this file.');
     await fs.writeFileAsync(PLUGINS_TXT, data.join('\n'), { encoding: 'utf8' });
@@ -208,7 +246,8 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
   private async deserializePluginsFile(): Promise<string[]> {
     try {
       const data = await fs.readFileAsync(PLUGINS_TXT, 'utf8');
-      return data.split('\n').filter(line => line.trim().length > 0);
+      const lines = data.split('\n').filter(line => line.trim().length > 0);
+      return Array.from(new Set(lines));
     } catch (err) {
       return [];
     }
