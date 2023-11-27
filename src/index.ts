@@ -27,10 +27,7 @@ import { getStopPatterns } from './stopPatterns';
 import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 
 // IDs for different stores and nexus
-import {
-  GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
-  STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID, TARGET_ASI_LOADER_NAME, ASI_LOADER_BACKUP
-} from './common';
+import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD, STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID, TARGET_ASI_LOADER_NAME, ASI_LOADER_BACKUP } from './common';
 
 const supportedTools: types.ITool[] = [
   {
@@ -88,16 +85,22 @@ function main(context: types.IExtensionContext) {
     },
   });
 
-  context.registerSettings('Mods', Settings, () => ({
-    t: context.api.translate,
-    onSetDirectoryJunction: (enabled: boolean) => {
-      if (!enabled) {
-        toggleJunction(context.api, enabled);
-      } else {
-        raiseJunctionDialog(context.api, true);
-      }
-    }
-  }), () => selectors.activeGameId(context.api.getState()) === GAME_ID, 150);
+  context.registerSettings(
+    'Mods',
+    Settings,
+    () => ({
+      t: context.api.translate,
+      onSetDirectoryJunction: (enabled: boolean) => {
+        if (!enabled) {
+          toggleJunction(context.api, enabled);
+        } else {
+          raiseJunctionDialog(context.api, true);
+        }
+      },
+    }),
+    () => selectors.activeGameId(context.api.getState()) === GAME_ID,
+    150
+  );
 
   // Bluebird, the bane of my life.
   context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => Promise.resolve(testLooseFiles(context.api)) as any);
@@ -114,28 +117,38 @@ function main(context: types.IExtensionContext) {
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));
 
-  context.optional.registerCollectionFeature('starfield_collection_data',
+  context.optional.registerCollectionFeature(
+    'starfield_collection_data',
     generate,
     (gameId: string, collection: any) => parse(context.api, gameId, collection),
     (gameId: string, collection: any, from: types.IMod, to: types.IMod) => clone(context.api, gameId, collection, from, to),
     title,
     condition,
-    StarfieldData);
+    StarfieldData
+  );
 
-  context.registerModType(MOD_TYPE_DATAPATH, 10,
+  context.registerModType(
+    MOD_TYPE_DATAPATH,
+    10,
     (gameId) => GAME_ID === gameId,
-    (game: types.IGame) => getDataPath(context.api, game), testDataPath as any,
-    { deploymentEssential: true, name: 'Data Folder' });
-  
-  context.registerModType(MOD_TYPE_ASI_MOD, 10,
+    (game: types.IGame) => getDataPath(context.api, game),
+    testDataPath as any,
+    { deploymentEssential: true, name: 'Data Folder' }
+  );
+
+  context.registerModType(
+    MOD_TYPE_ASI_MOD,
+    10,
     (gameId) => GAME_ID === gameId,
-    (game: types.IGame) => getASIPluginsPath(context.api, game), testASIPluginsPath as any,
-    { deploymentEssential: true, name: 'ASI Mod' });
+    (game: types.IGame) => getASIPluginsPath(context.api, game),
+    testASIPluginsPath as any,
+    { deploymentEssential: true, name: 'ASI Mod' }
+  );
 
   context.registerMerge(testMergeIni, mergeIni as any, MOD_TYPE_ASI_MOD);
 
   context.once(() => {
-    context.api.setStylesheet('starfield', path.join(__dirname, 'starfield.scss'));
+    //context.api.setStylesheet('starfield', path.join(__dirname, 'starfield.scss'));
     context.api.events.on('gamemode-activated', () => onGameModeActivated(context.api));
     context.api.onAsync('did-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
     context.api.onAsync('will-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onWillDeployEvent(context.api, profileId, deployment));
