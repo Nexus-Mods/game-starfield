@@ -27,9 +27,11 @@ Coming Soon
 
 # Installation
 
-This extension requires Vortex 1.8.5 or greater. To install, click the Vortex button at the top of the page to open this extension within Vortex, and then click Install.
+This extension requires Vortex **1.9.10** or greater.
 
-You can also manually install it by downloading the main file and dragging it into the drop target labelled Drop File(s) in the Extensions page at the bottom right.
+To install, click the Vortex button at the top of the [Starfield Extension page on Nexus Mods](https://www.nexusmods.com/site/mods/634), and then click Install.
+
+You can also manually install it by click the Manual button at the top of the page and dragging it into the drop target labelled Drop File(s) in the Extensions page at the bottom right.
 
 Afterwards, restart Vortex and you can begin installing supported Starfield mods with Vortex.
 
