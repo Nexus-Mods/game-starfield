@@ -80,7 +80,8 @@ current
 
 - Migrating this extension from version 0.4 to 0.5 may fail if for any reason the files are being actively manipulated by other tools or the game itself. Please make sure to close any such tools (or the game) before migrating to 0.5
 
-- Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` and manually set the location of the game inside Vortex. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
+- Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` Vortex will try to resolve custom game pass locations using the hidden .GamingRoot files which
+the game pass store creates. Alternatively, the location of the game can be set manually. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
 
 - Mod management isn't an exact science so [please report any mods](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) that don't install correctly so we can continue to increase our compatibility and coverage
 
