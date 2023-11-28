@@ -47,5 +47,5 @@ export async function migrateTestFiles(api: types.IExtensionApi): Promise<any> {
       return prev;
     }
   }, []);
-  return loadOrderFiles;
+  return Array.from(new Set(loadOrderFiles));
 }
