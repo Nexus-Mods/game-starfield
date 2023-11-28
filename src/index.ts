@@ -12,7 +12,9 @@ import { testASILoaderSupported, installASILoader, testASIModSupported, installA
 
 import { mergeIni, testMergeIni } from './merges/iniMerge';
 
-import { isStarfield, openAppDataPath, openPhotoModePath, openSettingsPath, dismissNotifications, linkAsiLoader, walkPath, removePluginsFile } from './util';
+import { isStarfield, openAppDataPath, openPhotoModePath,
+  openSettingsPath, dismissNotifications, linkAsiLoader,
+  walkPath, removePluginsFile, forceRefresh } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
 
@@ -66,8 +68,7 @@ const gameFinderQuery = {
 const removePluginsWrap = (api: types.IExtensionApi) => {
   removePluginsFile()
     .then(() => {
-      // Deployment is not actually required at this stage - but we need to force a refresh.
-      api.store.dispatch(actions.setDeploymentNecessary(GAME_ID, true));
+      forceRefresh(api);
     });
 }
 
@@ -181,7 +182,7 @@ async function onGameModeActivated(api: types.IExtensionApi) {
   return;
 }
 
-async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, deployment: types.IDeploymentManifest) {
+async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, deployment: types.IDeploymentManifest): Promise<void> {
   const state = api.getState();
   const gameId = selectors.profileById(state, profileId)?.gameId;
   if (gameId !== GAME_ID) {

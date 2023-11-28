@@ -10,7 +10,7 @@ import {
 } from '../common';
 import { download } from '../downloader';
 import InfoPanel from '../views/InfoPanel';
-import { walkPath, findModByFile } from '../util';
+import { walkPath, findModByFile, forceRefresh } from '../util';
 
 import { migrateTestFiles } from './testFileHandler';
 import { setPluginsEnabler } from '../actions/settings';
@@ -227,6 +227,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     try {
       await download(this.mApi, requiredMods);
       this.mApi.store.dispatch(setPluginsEnabler(true));
+      forceRefresh(this.mApi);
     } catch (err) {
       this.mApi.showErrorNotification('Failed to download required mods.', err);
     }

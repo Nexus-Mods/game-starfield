@@ -2,11 +2,13 @@ import * as React from 'react';
 import { ControlLabel, FormGroup, Panel, HelpBlock } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useStore } from 'react-redux';
-import { Toggle, util } from 'vortex-api';
+import { MainContext, Toggle, util } from 'vortex-api';
 
 import { setPluginsEnabler } from '../actions/settings';
 
 import { NS, JUNCTION_TEXT } from '../common';
+
+import { forceRefresh } from '../util';
 
 interface IBaseProps {
   onSetDirectoryJunction: (enabled: boolean) => void;
@@ -27,9 +29,12 @@ export default function Settings(props: IProps) {
     onSetDirectoryJunction(newVal);
   }, [onSetDirectoryJunction]);
 
+  const context = React.useContext(MainContext);
+
   const onSetManageLO = React.useCallback(() => {
     store.dispatch(setPluginsEnabler(false));
-  }, [store]);
+    forceRefresh(context.api);
+  }, [context, store]);
 
   const { enableDirectoryJunction, pluginEnabler } = useSelector(mapStateToProps);
   const loHelpBlockText = pluginEnabler

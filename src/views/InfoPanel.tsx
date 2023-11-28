@@ -1,11 +1,11 @@
 /* eslint-disable */
 import * as React from 'react';
-import { useSelector, useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Alert } from 'react-bootstrap';
-import { MainContext, tooltip, types, util } from 'vortex-api';
+import { MainContext, selectors, tooltip, types, util } from 'vortex-api';
 
 import { NS } from '../common';
-import { openAppDataPath } from '../util';
+import { forceRefresh } from '../util';
 
 interface IBaseProps {
   onInstallPluginsEnabler: () => void;
@@ -13,20 +13,25 @@ interface IBaseProps {
 
 interface IConnectedProps {
   pluginEnabler: boolean;
+  loadOrder: types.ILoadOrderEntry[];
 }
 
 export default function InfoPanel(props: IBaseProps) {
   const { onInstallPluginsEnabler } = props;
   const { api } = React.useContext(MainContext);
   const t = (input: string) => api.translate(input, { ns: NS });
-  const { pluginEnabler } = useSelector(mapStateToProps);
+  const { pluginEnabler, loadOrder } = useSelector(mapStateToProps);
   const onInstallEnabler = React.useCallback(
     (ev) => {
       onInstallPluginsEnabler();
     },
     [onInstallPluginsEnabler]
   );
-
+  React.useEffect(() => {
+    if (!pluginEnabler && loadOrder.length > 0) {
+      forceRefresh(api);
+    }
+  }, [pluginEnabler, loadOrder]);
   return pluginEnabler ? (
     <>
       <Alert bsStyle='warning'>
@@ -63,7 +68,9 @@ export default function InfoPanel(props: IBaseProps) {
 }
 
 function mapStateToProps(state: any): IConnectedProps {
+  const profile = selectors.activeProfile(state);
   return {
     pluginEnabler: util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false),
+    loadOrder: util.getSafe(state, ['persistent', 'loadOrder', profile?.id], []),
   };
 }

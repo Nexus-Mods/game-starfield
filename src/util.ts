@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { fs, log, selectors, types, util } from 'vortex-api';
+import { actions, fs, log, selectors, types, util } from 'vortex-api';
 import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
@@ -345,4 +345,16 @@ export async function linkAsiLoader(api: types.IExtensionApi, lhs: string, rhs: 
     await fs.unlinkAsync(asiLoaderLhs).catch(err => Promise.resolve());
   }
   return Promise.resolve();
+}
+
+export function forceRefresh(api: types.IExtensionApi) {
+  const state = api.getState();
+  const profileId = selectors.lastActiveProfileForGame(state, GAME_ID);
+  const action = {
+    type: 'SET_FB_FORCE_UPDATE',
+    payload: {
+      profileId,
+    },
+  };
+  api.store.dispatch(action);
 }
