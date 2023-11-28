@@ -93,28 +93,39 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       return Promise.resolve([]);
     }
 
-    const loadOrder: types.LoadOrder = [];
-    const testFiles = await migrateTestFiles(this.mApi);
-    if (testFiles.length > 0) {
-      for (const file of testFiles) {
-        const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, file);
-        const loEntry = {
-          enabled: true,
-          id: mod?.id ?? file,
-          name: file,
-          modId: mod?.id,
-        }
-        loadOrder.push(loEntry);
-      }
-    }
-
     const invalidEntries = [];
-    const currentLO = await this.deserializePluginsFile();
+    const loadOrder: types.LoadOrder = [];
+
+    // TODO: merge the test file migration with the deserialized LO - having these separate is a bit messy.
 
     // Find out which plugins are actually deployed to the data folder.
     const fileEntries = await walkPath(path.join(dataPath, 'Data'), { recurse: false });
     const plugins = fileEntries.filter(file => DATA_PLUGINS.includes(path.extname(file.filePath)));
     const isInDataFolder = (plugin: string) => plugins.some(file => path.basename(file.filePath).toLowerCase() === plugin.toLowerCase());
+    const testFiles = await migrateTestFiles(this.mApi);
+    if (testFiles.length > 0) {
+      for (const file of testFiles) {
+        const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, file);
+        const invalid = !mod && !isInDataFolder(file);
+        const loEntry = {
+          enabled: !invalid,
+          id: mod?.id ?? file,
+          name: file,
+          modId: mod?.id,
+          locked: invalid,
+          data: {
+            isInvalid: invalid,
+          }
+        }
+        if (invalid) {
+          invalidEntries.push(loEntry);
+        } else {
+          loadOrder.push(loEntry);
+        }
+      }
+    }
+
+    const currentLO = await this.deserializePluginsFile();
     for (const plugin of currentLO) {
       if (currentLO.indexOf(plugin) === 0 && plugin.startsWith('#')) {
         continue;
