@@ -175,9 +175,11 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       this.mApi.sendNotification({
         type: 'warning',
         title: 'Missing Plugins Detected',
-        message: 'Some plugins are missing from your data folder. These plugins will be disabled and locked at the bottom of your load order screen. To remove them, modify your plugins.txt file.',
+        message: 'Some plugins are missing from your data folder. These plugins will be disabled and locked at the bottom of your load order screen. To remove them, modify your plugins.txt file manually or click the "Reset Plugins File" button.',
         id: 'starfield-missing-plugins',
       });
+    } else {
+      this.mApi.dismissNotification('starfield-missing-plugins');
     }
 
     const result = [].concat(loadOrder, invalidEntries);
