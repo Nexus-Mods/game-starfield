@@ -181,6 +181,8 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     }
 
     const result = [].concat(loadOrder, invalidEntries);
+
+    // This is a bit hacky but necessary to keep the native plugins at the top of the load order.
     await this.serializeLoadOrder(result, []);
     return Promise.resolve(result);
   }
