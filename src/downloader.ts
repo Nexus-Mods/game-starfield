@@ -16,9 +16,13 @@ export async function download(api: types.IExtensionApi, requirements: IPluginRe
     allowSuppress: false,
   });
 
+  const batchActions = [];
+  const profileId = selectors.lastActiveProfileForGame(api.getState(), GAME_ID);
   try {
     for (const req of requirements) {
-      if (await req.findMod(api) !== undefined) {
+      const mod = await req.findMod(api);
+      if (mod?.id !== undefined) {
+        batchActions.push(actions.setModEnabled(profileId, mod.id, true));
         continue;
       }
       if (req?.modId !== undefined) {
@@ -33,6 +37,9 @@ export async function download(api: types.IExtensionApi, requirements: IPluginRe
   } catch (err) {
     // Fallback here.
   } finally {
+    if (batchActions.length > 0) {
+      util.batchDispatch(api.store, batchActions);
+    }
     api.dismissNotification('plugins-enabler-installing');
   }
 }

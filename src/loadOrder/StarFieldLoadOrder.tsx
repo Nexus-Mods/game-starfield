@@ -66,16 +66,12 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     this.gameId = GAME_ID;
     this.toggleableEntries = true;
     this.noCollectionGeneration = true;
-    this.usageInstructions = () =>
-    (<InfoPanel
-      onInstallPluginsEnabler={this.mOnInstallPluginsEnabler}
-    />);
+    this.usageInstructions = () => (<InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />);
     this.mApi = api;
     this.deserializeLoadOrder = this.deserializeLoadOrder.bind(this);
     this.serializeLoadOrder = this.serializeLoadOrder.bind(this);
     this.validate = this.validate.bind(this);
     this.mOnInstallPluginsEnabler = this.onInstallPluginsEnabler.bind(this);
-
   }
 
   public async serializeLoadOrder(loadOrder: types.LoadOrder, prev: types.LoadOrder): Promise<void> {
@@ -218,6 +214,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     const deserialzed = await this.deserializeLoadOrder();
     const valid = deserialzed.filter(entry => entry.data?.isInvalid !== true);
     await this.serializeLoadOrder(valid, []);
+    return Promise.resolve();
   }
 
   private async onInstallPluginsEnabler(): Promise<void> {
@@ -225,9 +222,9 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     // Default to the steam store if we can't figure out the store.
     const gameStore = !!discovery?.store ? discovery.store : 'steam';
     const requiredMods = PLUGIN_REQUIREMENTS[gameStore];
-    this.mApi.store.dispatch(setPluginsEnabler(true));
     try {
       await download(this.mApi, requiredMods);
+      this.mApi.store.dispatch(setPluginsEnabler(true));
     } catch (err) {
       this.mApi.showErrorNotification('Failed to download required mods.', err);
     }

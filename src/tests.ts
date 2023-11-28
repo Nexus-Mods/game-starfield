@@ -149,20 +149,22 @@ export async function testPluginsEnabler(api: types.IExtensionApi): Promise<void
   const state = api.getState();
   const profile: types.IProfile = selectors.activeProfile(state);
   if (profile?.gameId !== GAME_ID) {
-    return Promise.resolve(undefined);
+    return Promise.resolve();
   }
+  const isModEnabled = (mod: types.IMod) => util.getSafe(profile, ['modState', mod.id, 'enabled'], false);
   const discovery = selectors.discoveryByGame(state, GAME_ID);
   const gameStore = discovery?.store === 'xbox' ? 'xbox' : 'steam';
   const requirements = PLUGIN_REQUIREMENTS[gameStore];
   for (const requirement of requirements) {
-    if (await requirement.findMod(api) !== undefined) {
+    const mod = await requirement.findMod(api);
+    if (mod && isModEnabled(mod)) {
       continue;
     } else {
       api.store.dispatch(setPluginsEnabler(false));
-      return;
+      return Promise.resolve();
     }
   }
-  return;
+  return Promise.resolve();
 }
 
 export async function testFolderJunction(api: types.IExtensionApi): Promise<void> {

@@ -29,7 +29,9 @@ async function start() {
   }
   catch(err) {
     // eslint-disable-next-line no-console
-    console.error('Failed to copy styles!', err);
+    if (err.code !== 'ENOENT') {
+      console.error('Failed to copy styles!', err);
+    }
   }
 }
 
