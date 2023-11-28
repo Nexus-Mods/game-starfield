@@ -6,7 +6,7 @@ import { fs, selectors, types, util } from 'vortex-api';
 import { IPluginRequirement } from '../types';
 import {
   GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, NATIVE_PLUGINS,
-  DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS,
+  DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS, MISSING_PLUGINS_NOTIFICATION_ID,
 } from '../common';
 import { download } from '../downloader';
 import InfoPanel from '../views/InfoPanel';
@@ -176,10 +176,10 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
         type: 'warning',
         title: 'Missing Plugins Detected',
         message: 'Some plugins are missing from your data folder. These plugins will be disabled and locked at the bottom of your load order screen. To remove them, modify your plugins.txt file manually or click the "Reset Plugins File" button.',
-        id: 'starfield-missing-plugins',
+        id: MISSING_PLUGINS_NOTIFICATION_ID,
       });
     } else {
-      this.mApi.dismissNotification('starfield-missing-plugins');
+      this.mApi.dismissNotification(MISSING_PLUGINS_NOTIFICATION_ID);
     }
 
     const result = [].concat(loadOrder, invalidEntries);
