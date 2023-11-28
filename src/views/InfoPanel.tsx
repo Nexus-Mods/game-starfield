@@ -60,6 +60,7 @@ export default function InfoPanel(props: IBaseProps) {
       <h4>{t('Plugin Management is not enabled!')}</h4>
       <div>{t('Vortex is configured to help manage your load order using the Plugins.txt. Click the "View Plugins File" button in the toolbar to view its location.')}</div>
       <div>{t('Plugin enabling mods/tools are required in order for the game to load your plugins. You can install them by pressing the button below.')}</div>
+      <div>{t('Please note that if you\'re currently using the "sTestFileX=" pattern when managing plugins, these will be removed from the INI file and migrated to "plugins.txt" file as they will interfere with the load ordering system.')}</div>
       <tooltip.Button tooltip={'Enable Plugin Management'} onClick={onInstallEnabler}>
         {t('Enable Plugin Management')}
       </tooltip.Button>
