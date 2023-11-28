@@ -6,7 +6,7 @@ import { MainContext, Toggle, util } from 'vortex-api';
 
 import { setPluginsEnabler } from '../actions/settings';
 
-import { NS, JUNCTION_TEXT } from '../common';
+import { NS, JUNCTION_TEXT, MISSING_PLUGINS_NOTIFICATION_ID } from '../common';
 
 import { forceRefresh } from '../util';
 
@@ -33,6 +33,7 @@ export default function Settings(props: IProps) {
 
   const onSetManageLO = React.useCallback(() => {
     store.dispatch(setPluginsEnabler(false));
+    context.api.dismissNotification(MISSING_PLUGINS_NOTIFICATION_ID);
     forceRefresh(context.api);
   }, [context, store]);
 
