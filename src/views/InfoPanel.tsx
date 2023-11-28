@@ -32,7 +32,7 @@ export default function InfoPanel(props: IBaseProps) {
       <Alert bsStyle='warning'>
         <p>
           {t('The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda.')}
-          {t('This means that we expect certain functionality to change in the future, yet we\'re confident enough to provide interim support.')}
+          {t("This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.")}
         </p>
         <p>{t('Vortex is configured to help manage your load order using the Plugins.txt. Click the "View Plugins File" button in the toolbar to view its location.')}</p>
         <p>{t('Controlling your Load Order using external tools may cause interferences between Vortex and any such tools. Please ensure to use them separately.')}</p>
@@ -43,8 +43,7 @@ export default function InfoPanel(props: IBaseProps) {
         )}
       </p>
       <p>{t('Mod descriptions from mod authors may have information to determine the best order.')}</p>
-      <br/>
-      <p>{t('Additional Information:')}</p>
+      <h4>{t('Additional Information:')}</h4>
       <ul>
         <li>{t('Press the "Reset Plugins File" button if your plugins.txt file is in a corrupted state')}</li>
         <li>{t('Press the "Refresh List" button to refresh/sync changes')}</li>
