@@ -2,7 +2,7 @@
 
 import path from 'path';
 
-import { fs, types, selectors, util } from 'vortex-api';
+import { actions, fs, types, selectors, util } from 'vortex-api';
 
 import { getDataPath, testDataPath } from './modTypes/dataPath';
 import { getASIPluginsPath, testASIPluginsPath } from './modTypes/asiMod';
@@ -63,8 +63,12 @@ const gameFinderQuery = {
   xbox: [{ id: XBOX_ID }],
 };
 
-const removePluginsWrap = () => {
-  removePluginsFile();
+const removePluginsWrap = (api: types.IExtensionApi) => {
+  removePluginsFile()
+    .then(() => {
+      // Deployment is not actually required at this stage - but we need to force a refresh.
+      api.store.dispatch(actions.setDeploymentNecessary(GAME_ID, true));
+    });
 }
 
 function main(context: types.IExtensionContext) {
@@ -118,7 +122,7 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
-  context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', removePluginsWrap, (gameId?: string[]) => isStarfield(context, gameId));
+  context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));
 
