@@ -170,16 +170,21 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       loadOrder.push(loEntry);
     }
 
-    let nativeIdx = 0;
-    const nextNativeIdx = () => nativeIdx++;
+    // Looks like the native plugins are not necessary when using a plugin enabler.
+    //  going to remove them for now. I could just filter them out in the code above,
+    //  but I want to keep the code as close to the original as possible.
+    // let nativeIdx = 0;
+    // const nextNativeIdx = () => nativeIdx++;
     for (const plugin of NATIVE_PLUGINS) {
       const idx = loadOrder.findIndex(entry => entry.name.toLowerCase() === plugin);
       if (idx === -1) {
         continue;
       }
-      const nativePlugin = loadOrder.splice(idx, 1);
-      nativePlugin[0].locked = true;
-      loadOrder.splice(nextNativeIdx(), 0, nativePlugin[0]);
+
+      loadOrder.splice(idx, 1);
+      // const nativePlugin = loadOrder.splice(idx, 1);
+      // nativePlugin[0].locked = true;
+      // loadOrder.splice(nextNativeIdx(), 0, nativePlugin[0]);
     }
 
     if (invalidEntries.length > 0) {
