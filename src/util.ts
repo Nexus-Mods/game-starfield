@@ -308,7 +308,7 @@ function pick(lhs: any, rhs: any): any {
 export function getMods(api: types.IExtensionApi, modType: string): types.IMod[] {
   const state = api.getState();
   const mods = util.getSafe(state, ['persistent', 'mods', GAME_ID], {});
-  return Object.values(mods).filter((mod: types.IMod) => mod.type === modType) as types.IMod[];
+  return Object.values(mods).filter((mod: types.IMod) => mod.type === modType || mod.type === '') as types.IMod[];
 }
 
 export async function findModByFile(api: types.IExtensionApi, modType: string, fileName: string): Promise<types.IMod> {
