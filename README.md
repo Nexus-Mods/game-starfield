@@ -62,6 +62,17 @@ To get around this, Vortex can create a specific type of shortcut (called a fold
 Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a `StarfieldCustom.ini` file in the `Documents\My Games\Starfield` folder. If Vortex detects that this ini doesn't exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might've added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.
 current
 
+# Plugin Load Ordering (0.6.X)
+
+The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda. This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.
+
+A new "Load Order" page has been added to the extension to allow users to view their deployed mods and manage their load order. By default this system is disabled and can only be enabled through the Load Order page. The user can disable this feature at any time through the Settings -> Mods -> Starfield -> Manage Load Order Toggle.
+
+Before enabling the plugin management system keep the following in mind:
+  * Vortex will download any required mods/tools for load ordering to function as soon as you enable the plugin management system.
+  * Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield". Any INI entries will block the plugin management functionality from work. This is by Bethesda's design.
+  * Game Pass version of the game will not be able to use SFSE or its plugins - the ("Ultimate-ASI-Loader")[https://github.com/ThirteenAG/Ultimate-ASI-Loader] is used to load plugins to the game instead.
+
 # Known Issues
 
 - This extension has been tested with all of the most popular mods, installers, script extenders, mod fixers etc. Please see this [Mod Compatibility List](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) forum post for details.
