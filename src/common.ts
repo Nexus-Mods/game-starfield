@@ -18,9 +18,9 @@ export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
 // This is the order we expect the native plugins to be arranged.
 export const NATIVE_PLUGINS = [
   'starfield.esm',
-  'constellation.esm',
-  'oldmars.esm',
   'blueprintships-starfield.esm',
+  'oldmars.esm',
+  'constellation.esm',
 ];
 
 export const DATA_SUBFOLDERS = [
