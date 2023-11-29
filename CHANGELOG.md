@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.6.1] - 2023-11-29
 
 - Fixed "sTestFile" pattern matching skipping every other entry.
+- Fixed UI issue where plugins deployed relative to the game's root were not considered to be managed by Vortex
+- Modified native plugins are no longer serialized into the plugins.txt file
 
 ## [0.6.0] - 2023-11-15
 
