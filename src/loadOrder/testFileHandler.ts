@@ -20,11 +20,12 @@ export async function migrateTestFiles(api: types.IExtensionApi): Promise<any> {
     const accum = await accumP;
     try {
       const fileData = await fs.readFileAsync(iniPath, 'utf8');
-      const lines = fileData.split(/\r?\n/);
+      const lines = util.deBOM(fileData).split(/\r?\n/).filter(line => !!line);
       for (const line of lines) {
-        const match = regex.exec(util.deBOM(line).trim());
+        const match = regex.exec(line);
+        regex.lastIndex = -1;
         if (match && match.length > 1) {
-          const testFile = match[1];
+          const testFile = match[1].trim();
           accum[`${path.basename(iniPath)}`].push(testFile);
         }
       }
