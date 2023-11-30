@@ -10,7 +10,7 @@ import { getASIPluginsPath, testASIPluginsPath } from './modTypes/asiMod';
 import { testSFSESupported, installSFSE } from './installers/starfield-sfse-installer';
 import { testASILoaderSupported, installASILoader, testASIModSupported, installASIMod } from './installers/starfield-asi-installer';
 
-import { mergeIni, testMergeIni } from './merges/iniMerge';
+import { mergeASIIni, testASIMergeIni } from './merges/iniMerge';
 
 import { isStarfield, openAppDataPath, openPhotoModePath,
   openSettingsPath, dismissNotifications, linkAsiLoader,
@@ -155,7 +155,7 @@ function main(context: types.IExtensionContext) {
     { deploymentEssential: true, name: 'ASI Mod' }
   );
 
-  context.registerMerge(testMergeIni, mergeIni as any, MOD_TYPE_ASI_MOD);
+  context.registerMerge(testASIMergeIni, mergeASIIni as any, MOD_TYPE_ASI_MOD);
 
   context.once(() => {
     //context.api.setStylesheet('starfield', path.join(__dirname, 'starfield.scss'));

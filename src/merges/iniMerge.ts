@@ -5,7 +5,7 @@ import { GAME_ID, ASI_MOD_INI_NAME } from '../common';
 import { sanitizeIni, deepMerge } from '../util';
 import { fs, types } from 'vortex-api';
 
-export function testMergeIni(game: types.IGame, discovery:
+export function testASIMergeIni(game: types.IGame, discovery:
                              types.IDiscoveryResult): types.IMergeFilter | undefined {
   if (game.id !== GAME_ID) {
     return undefined;
@@ -20,7 +20,7 @@ export function testMergeIni(game: types.IGame, discovery:
   };
 }
 
-export async function mergeIni(filePath: string, mergeDir: string): Promise<void> {
+export async function mergeASIIni(filePath: string, mergeDir: string): Promise<void> {
   const mergedFilePath = path.join(mergeDir, ASI_MOD_INI_NAME);
   const iniContent = (await fs.readFileAsync(filePath, 'utf-8').catch(err => ''));
   const mergedContent = (await fs.readFileAsync(mergedFilePath, 'utf-8').catch(err => ''));

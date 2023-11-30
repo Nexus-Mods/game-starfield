@@ -50,8 +50,9 @@ export default function InfoPanel(props: IBaseProps) {
       <p>{t('Mod descriptions from mod authors may have information to determine the best order.')}</p>
       <h4>{t('Additional Information:')}</h4>
       <ul>
-        <li>{t('Press the "Reset Plugins File" button if your plugins.txt file is in a corrupted state')}</li>
-        <li>{t('Press the "Refresh List" button to refresh/sync changes')}</li>
+        <li>{t('If installing a collection - wait for it to complete before re-visiting this page.')}</li>
+        <li>{t('Press the "Reset Plugins File" button if your plugins.txt file is in a corrupted state.')}</li>
+        <li>{t('Press the "Refresh List" button to refresh/sync changes.')}</li>
       </ul>
       <p>{}</p>
     </>
