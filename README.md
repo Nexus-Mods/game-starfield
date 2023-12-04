@@ -69,10 +69,11 @@ The current implementation of the plugin management system in Starfield is tempo
 A new "Load Order" page has been added to the extension to allow users to view their deployed mods and manage their load order. By default this system is disabled and can only be enabled through the Load Order page. The user can disable this feature at any time through the Settings -> Mods -> Starfield -> Manage Load Order Toggle.
 
 Before enabling the plugin management system keep the following in mind:
-  * Vortex will download any required mods/tools for load ordering to function as soon as you enable the plugin management system.
-  * Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield". Any INI entries will block the plugin management functionality from work. This is by Bethesda's design.
-  * Game Pass version of the game will not be able to use SFSE or its plugins - the [Ultimate-ASI-Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) is used to load plugins to the game instead.
-  * Native plugins are not serialized to the "plugins.txt" file.
+
+- Vortex will download any required mods/tools for load ordering to function as soon as you enable the plugin management system.
+- Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield". Any INI entries will block the plugin management functionality from working. This is by Bethesda's design.
+- Game Pass version of the game will not be able to use SFSE or its plugins - the [Ultimate-ASI-Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) is used to load plugins to the game instead.
+- Native plugins are not serialized to the "plugins.txt" file.
 
 # Known Issues
 
