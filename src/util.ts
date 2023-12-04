@@ -1,7 +1,9 @@
 /* eslint-disable */
 import { fs, log, selectors, types, util } from 'vortex-api';
-import { GAME_ID } from './common';
+import { GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID } from './common';
+import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
+import { getStopPatterns } from './stopPatterns';
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
   log('debug', 'Merging folders', { source, destination, overwrite });
@@ -127,3 +129,116 @@ export const openPhotoModePath = () => {
   const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Photos');
   util.opn(docPath).catch(() => null);
 };
+
+export async function purge(api: types.IExtensionApi): Promise<void> {
+  return new Promise<void>((resolve, reject) =>
+    api.events.emit('purge-mods', true, (err) => err ? reject(err) : resolve()));
+}
+
+export async function deploy(api: types.IExtensionApi): Promise<void> {
+  return new Promise<void>((resolve, reject) =>
+    api.events.emit('deploy-mods', (err) => err ? reject(err) : resolve()));
+}
+
+export async function walkPath(dirPath: string, walkOptions?: IWalkOptions): Promise<IEntry[]> {
+  walkOptions = walkOptions || { skipLinks: true, skipHidden: true, skipInaccessible: true };
+  const walkResults: IEntry[] = [];
+  return new Promise<IEntry[]>(async (resolve, reject) => {
+    await turbowalk(dirPath, (entries: IEntry[]) => {
+      walkResults.push(...entries);
+      return Promise.resolve() as any;
+    }, walkOptions);
+    return resolve(walkResults);
+  });
+}
+
+// Only use this option as part of a migration if/when we need to change our installers or mod paths.
+//  The intented effect is to avoid the external changes dialog for users who have already deployed mods
+//  using the old pathing. This call will be expensive as it will pull the manifests of all existing modTypes.
+export async function nuclearPurge(api: types.IExtensionApi, gameId: string): Promise<void> {
+  const state = api.getState();
+  const profile: types.IProfile = selectors.activeProfile(state);
+  if (profile?.gameId !== gameId) {
+    return Promise.resolve();
+  }
+
+  // The game path should've stayed the same.
+  const discovery = selectors.discoveryByGame(state, gameId);
+  if (!discovery?.path) {
+    return Promise.resolve();
+  }
+  const gamePath = discovery.path;
+  const manifestRegexp = /^vortex.deployment.*json$/i;
+  // Get all the manifests for all modTypes for this game. We can't rely
+  //  on our store selectors as the modPaths may have changed.
+  const entries: IEntry[] = await walkPath(gamePath);
+  const manifests: { [filePath: string] : types.IDeploymentManifest } = await entries.reduce(async (accumP, m) => {
+    const accum = await accumP;
+    if (manifestRegexp.test(path.basename(m.filePath))) {
+      accum[m.filePath] = JSON.parse(await fs.readFileAsync(m.filePath));
+    }
+    return accum;
+  }, {});
+  for (const filePath of Object.keys(manifests)) {
+    const manifest = manifests[filePath];
+    await purgeDeployedFiles(manifest.targetPath, manifest.files);
+    await fs.removeAsync(filePath);
+  }
+}
+
+export async function purgeDeployedFiles(basePath: string,
+                                         files: types.IDeployedFile[]): Promise<void> {
+  for (const file of files) {
+    const fullPath = path.join(basePath, file.relPath);
+    // Timestamp differences of more than a second are considered a manual change. (probably the user, don't delete)
+    await fs.statAsync(fullPath).then(stats => ((stats.mtime.getTime() - file.time) < 1000) ? fs.unlinkAsync(fullPath) : Promise.resolve())
+                                .catch(err => err.code !== 'ENOENT' ? Promise.reject(err) : Promise.resolve());
+  }
+  return Promise.resolve();
+}
+
+export async function getExtensionVersion() {
+  const infoFile = JSON.parse(await fs.readFileAsync(path.join(__dirname, 'info.json')));
+  return infoFile.version;
+}
+
+export async function migrateMod(modPath: string): Promise<void> {
+  const dataPath = path.join(modPath, 'Data');
+  const files = await fs.readdirAsync(dataPath);
+  for (const file of files) {
+    const src = path.join(dataPath, file);
+    const dest = path.join(modPath, file);
+    await fs.moveAsync(src, dest, { overwrite: true });
+  }
+  await fs.rmdirAsync(dataPath);
+  return Promise.resolve();
+}
+
+export async function doesModRequireMigration(modPath: string): Promise<boolean> {
+  const dataPath = path.join(modPath, 'Data');
+  return isDataPathMod(dataPath);
+}
+
+export async function isDataPathMod(modPath: string): Promise<boolean> {
+  const files = await fs.readdirAsync(modPath).catch(() => []);
+  if (files.length === 0) {
+    return Promise.resolve(false);
+  }
+  const stopPatterns = getStopPatterns();
+  for (const patt of stopPatterns) {
+    const regex = new RegExp(patt, 'i');
+    const match = files.find(f => regex.test(f));
+    if (match !== undefined) {
+      return Promise.resolve(true);
+    }
+  }
+  return Promise.resolve(false);
+}
+
+export function dismissNotifications(api: types.IExtensionApi) {
+  const notificationIds = ['starfield-junction-activity',
+    MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, 'starfield-update-notif-0.5.0'];
+  for (const id of notificationIds) {
+    api.dismissNotification(id);
+  }
+}

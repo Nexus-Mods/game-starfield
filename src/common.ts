@@ -3,11 +3,16 @@ export const GAME_ID = 'starfield';
 export const XBOX_ID = 'BethesdaSoftworks.ProjectGold';
 export const STEAMAPP_ID = '1716740';
 
+export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
+export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
+export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
+
 export const DATA_SUBFOLDERS = [
   'Meshes',
   'Textures',
   'FaceGen',
   'Music',
+  'Sound',
   'Sounds',
   'MaxHeights',
   'VIS',
@@ -41,10 +46,11 @@ export const DATA_EXTENSIONS = [
   '.ba2', '.esm', '.esp', '.esl'
 ];
 
-export const ROOT_EXTENSIONS = [
-  // '.ini',
-  '.dll',
-  '.exe'
+export const ROOT_FILE_EXTENSIONS = [
+  '.ini',
+  //'.dll',
+  '.exe',
+  '.txt',
 ];
 
 export const ROOT_FOLDERS = [
@@ -52,7 +58,14 @@ export const ROOT_FOLDERS = [
   'Tools'
 ];
 
+export const MODULE_CONFIG = 'moduleconfig.xml';
+
+// Known top level files - from an executable point of view we can probably assume
+//  that all executables are destined for the root folder. Dlls are a bit more complicated
+//  as they can be SFSE plugins. Fortunately we can specify a couple of well known
+//  assemblies that are generally used for content loading.
 export const SFSE_EXE = 'sfse_loader.exe';
+export const ROOT_ASSEMBLIES = ['dinput8.dll', 'vcruntime140_1.dll'];
 
 export const SFCUSTOM_INI = 'StarfieldCustom.ini';
 

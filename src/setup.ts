@@ -1,10 +1,13 @@
+/* eslint-disable */
 import { fs, types, selectors, util } from 'vortex-api';
 import { isJunctionDir, createJunction, removeJunction } from './util';
 import path from 'path';
 
 import { setDirectoryJunctionEnabled } from './actions/settings';
-import { GAME_ID } from './common';
+import { GAME_ID, MY_GAMES_DATA_WARNING } from './common';
 import { IJunctionProps } from './types';
+
+import { migrateExtension } from './migrations/migrations';
 
 // This code executes when the user first manages Starfield AND each time they swap from another game to Starfield. 
 export async function setup(api: types.IExtensionApi,
@@ -20,6 +23,7 @@ export async function setup(api: types.IExtensionApi,
   }
   // Make sure the folder exists
   await fs.ensureDirAsync(myGamesFolder);
+  await migrateExtension(api);
 }
 
 export async function toggleJunction(api: types.IExtensionApi, enable: boolean): Promise<void> {
@@ -50,6 +54,7 @@ export async function toggleJunction(api: types.IExtensionApi, enable: boolean):
   const func = enable ? enableJunction : disableJunction;
   await func(props);
   api.dismissNotification('starfield-junction-activity');
+  api.dismissNotification(MY_GAMES_DATA_WARNING);
   return Promise.resolve();
 }
 
