@@ -82,6 +82,12 @@ current
 
 - Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` and manually set the location of the game inside Vortex. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
 
+- 0.5.X has introduced a new modType system which is used to define where the mods are deployed. Unfortunately you may be faced with a longstanding bug in Vortex which cannot detect file conflicts between mod types (this is currently being worked on). If you're encountering the "External Changes Dialog" during EVERY deployment event, you're most likely affected by this bug. There are a few things you can try to fix it:
+
+  1. Make sure to always select "revert all" in the changes dialog to maintain the mod files as the mod author intended.
+  2. Re-install your mods - this will ensure that all of your mods are using the new modType system and should ensure that modType conflicts do not occur.
+  3. If all of your mods are using the new modType system and the external changes dialog is still popping up - that means you have one or several mods that are deploying the same files as another mod which is assigned to the data folder. Compare the Vortex deployment JSON files which are found inside the game's root path and 'Data' path to note any conflicting files and their respective mods. Enabling/disabling/modifying the mod inside the staging folder will resolve the conflict.
+
 - Mod management isn't an exact science so [please report any mods](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) that don't install correctly so we can continue to increase our compatibility and coverage
 
 # Migrating this extension to 0.5
