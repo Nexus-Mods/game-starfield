@@ -114,7 +114,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
         const invalid = !mod && !isInDataFolder(file);
         const loEntry = {
           enabled: !invalid,
-          id: !!mod?.id ? isModEnabled(mod.id) ? mod.id : file : file,
+          id: file,
           name: file,
           modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
           locked: invalid,
@@ -142,7 +142,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       const enabled = plugin.startsWith('*');
       const loEntry: types.ILoadOrderEntry = {
         enabled: enabled && !invalid,
-        id: !!mod?.id ? isModEnabled(mod.id) ? mod.id : name : name,
+        id: name,
         name: name,
         modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
         locked: invalid,
@@ -167,7 +167,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, pluginName);
       const loEntry: types.ILoadOrderEntry = {
         enabled: true,
-        id: !!mod?.id ? isModEnabled(mod.id) ? mod.id : pluginName : pluginName,
+        id: pluginName,
         name: pluginName,
         modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
       }
@@ -194,14 +194,14 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       this.mApi.sendNotification({
         type: 'warning',
         title: 'Missing Plugins Detected',
-        message: 'Some plugins are missing from your data folder. These plugins will be disabled and locked at the bottom of your load order screen. To remove them, modify your plugins.txt file manually or click the "Reset Plugins File" button.',
+        message: 'Some plugins are missing from your data folder. These plugins will be commented out in your plugins file. To remove them, modify your plugins.txt file manually or click the "Reset Plugins File" button.',
         id: MISSING_PLUGINS_NOTIFICATION_ID,
       });
     } else {
       this.mApi.dismissNotification(MISSING_PLUGINS_NOTIFICATION_ID);
     }
 
-    const result = [].concat(loadOrder, invalidEntries);
+    const result = [].concat(loadOrder);
 
     // This is a bit hacky but necessary to keep the native plugins at the top of the load order.
     await this.serializeLoadOrder(result, []);

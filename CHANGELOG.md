@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.6.3] - 2023-12-11
 
 - Fixed instance where plugins were still displayed as managed even when the mod was disabled
+- Modified invalid/missing entries are no longer displayed in the load order page
 
 ## [0.6.2] - 2023-11-30
 
