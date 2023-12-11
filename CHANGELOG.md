@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.3] - 2023-12-11
+
+- Fixed instance where plugins were still displayed as managed even when the mod was disabled
+
 ## [0.6.2] - 2023-11-30
 
 - Fixed error/crash when installing collections w/bundled mods.

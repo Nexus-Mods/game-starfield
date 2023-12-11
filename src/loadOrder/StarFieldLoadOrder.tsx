@@ -102,6 +102,11 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     const fileEntries = await walkPath(path.join(dataPath, 'Data'), { recurse: false });
     const plugins = fileEntries.filter(file => DATA_PLUGINS.includes(path.extname(file.filePath)));
     const isInDataFolder = (plugin: string) => plugins.some(file => path.basename(file.filePath).toLowerCase() === plugin.toLowerCase());
+    const isModEnabled = (modId: string) => {
+      const state = this.mApi.getState();
+      const profile = selectors.activeProfile(state);
+      return util.getSafe(profile, ['modState', modId, 'enabled'], false);
+    };
     const testFiles = await migrateTestFiles(this.mApi);
     if (testFiles.length > 0) {
       for (const file of testFiles) {
@@ -109,9 +114,9 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
         const invalid = !mod && !isInDataFolder(file);
         const loEntry = {
           enabled: !invalid,
-          id: mod?.id ?? file,
+          id: !!mod?.id ? isModEnabled(mod.id) ? mod.id : file : file,
           name: file,
-          modId: mod?.id,
+          modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
           locked: invalid,
           data: {
             isInvalid: invalid,
@@ -132,15 +137,14 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       }
       const name = plugin.replace(/\#|\*/g, '');
       const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, name);
-
       // Plugin is invalid if it doesn't exist in the data folder. (And isn't a Vortex mod)
       const invalid = !mod && !isInDataFolder(name);
       const enabled = plugin.startsWith('*');
       const loEntry: types.ILoadOrderEntry = {
         enabled: enabled && !invalid,
-        id: mod?.id ?? name,
+        id: !!mod?.id ? isModEnabled(mod.id) ? mod.id : name : name,
         name: name,
-        modId: mod?.id,
+        modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
         locked: invalid,
         data: {
           isInvalid: invalid,
@@ -163,9 +167,9 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, pluginName);
       const loEntry: types.ILoadOrderEntry = {
         enabled: true,
-        id: mod?.id ?? pluginName,
+        id: !!mod?.id ? isModEnabled(mod.id) ? mod.id : pluginName : pluginName,
         name: pluginName,
-        modId: mod?.id,
+        modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
       }
       loadOrder.push(loEntry);
     }
