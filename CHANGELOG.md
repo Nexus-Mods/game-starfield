@@ -33,6 +33,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added button to allow users to reset their plugins.txt file
 - Modified build scripts to deploy stylesheets
 
+## [0.5.8] - 2023-12-13
+
+- Fixed error when merging data folders as part of the directory junction functionality
+
 ## [0.5.7] - 2023-11-23
 
 - Updated notification and dialog text

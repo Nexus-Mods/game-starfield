@@ -24,7 +24,6 @@ export async function mergeFolderContents(source: string, destination: string, o
     }
     // Check if there's an indentical folder/file in the dest already.
     const destinationMatch = destinationDir.find(f => f.toLowerCase() === sourceFile.toLowerCase());
-
     if (stats.isDirectory()) {
       // Is there already a subfolder? If so, we need to merge the contents
       if (destinationMatch !== undefined) {
@@ -36,11 +35,10 @@ export async function mergeFolderContents(source: string, destination: string, o
     } else if (stats.isFile()) {
       // If the file doesn't exist, merge it over. 
       if (!destinationMatch || overwrite) {
-        await fs.copyAsync(sourceFilePath, path.join(destination, destinationMatch), { overwrite: true, noSelfCopy: true });
+        await fs.copyAsync(sourceFilePath, path.join(destination, sourceFile), { overwrite: true, noSelfCopy: true });
         continue;
       } else {
         log('debug', 'Did not copy file as it already exists', { source: sourceFilePath, destination: path.join(destination, destinationMatch) })
-        // await fs.unlinkAsync(sourceFilePath);
         continue;
       }
     }
