@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.8] - 2023-12-13
+
+- Fixed error when merging data folders as part of the directory junction functionality
+
 ## [0.5.7] - 2023-11-23
 
 - Updated notification and dialog text
