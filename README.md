@@ -35,6 +35,8 @@ You can also manually install it by click the Manual button at the top of the pa
 
 Afterwards, restart Vortex and you can begin installing supported Starfield mods with Vortex.
 
+If you've already got a previous version, the extension should auto update on a Vortex restart.
+
 # Game detection
 
 The Starfield game extension enables Vortex to automatically locate installs from the Steam and Xbox apps.
@@ -60,9 +62,8 @@ To get around this, Vortex can create a specific type of shortcut (called a fold
 > IMPORTANT: Things aren't all perfect though. Using a file syncing\cloud drive service such as OneDrive, Google Drive or Dropbox are known to cause issues with this method due to the inconsistencies in how they handle folder junctions. The most severe of these issues can lead to the loss of data. For compatibility information about individual services, please [read this page on modding.wiki](https://modding.wiki/en/vortex/users/starfield-folder-junction-issues) for more information.
 
 Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a `StarfieldCustom.ini` file in the `Documents\My Games\Starfield` folder. If Vortex detects that this ini doesn't exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might've added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.
-current
 
-# Plugin Load Ordering (0.6.X)
+# Plugin Load Ordering (0.6.x)
 
 The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda. This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.
 
@@ -98,7 +99,7 @@ Before enabling the plugin management system keep the following in mind:
 - Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` Vortex will try to resolve custom game pass locations using the hidden .GamingRoot files which
   the game pass store creates. Alternatively, the location of the game can be set manually. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
 
-- 0.5.X has introduced a new modType system which is used to define where the mods are deployed. Unfortunately you may be faced with a longstanding bug in Vortex which cannot detect file conflicts between mod types (this is currently being worked on). If you're encountering the "External Changes Dialog" during EVERY deployment event, you're most likely affected by this bug. There are a few things you can try to fix it:
+- 0.5.x has introduced a new modType system which is used to define where the mods are deployed. Unfortunately you may be faced with a longstanding bug in Vortex which cannot detect file conflicts between mod types (this is currently being worked on). If you're encountering the "External Changes Dialog" during EVERY deployment event, you're most likely affected by this bug. There are a few things you can try to fix it:
 
   1. Make sure to always select "revert all" in the changes dialog to maintain the mod files as the mod author intended.
   2. Re-install your mods - this will ensure that all of your mods are using the new modType system and should ensure that modType conflicts do not occur.
@@ -143,9 +144,7 @@ Recommendations:
 
 # Addendum
 
-Vortex 0.6.X load ordering functionality is using INI merging for global datasets defined in ASI mods. At the time of writing this addendum, the deepMerge
-utility function was not exported as part of the API. In order to allow users to test this extension without waiting for Vortex 1.9.9+, the extension has
-and identical copy of the deepMerge function included - this should be removed once we confirm 1.9.9+ is stable.
+Vortex 0.6.X load ordering functionality is using INI merging for global datasets defined in ASI mods. At the time of writing this addendum, the deepMerge utility function was not exported as part of the API. In order to allow users to test this extension without waiting for Vortex 1.9.9+, the extension has an identical copy of the deepMerge function included - this should be removed once we confirm 1.9.9+ is stable.
 
 # See also
 
