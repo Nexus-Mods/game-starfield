@@ -20,12 +20,12 @@ export function testSFSESupported(files: string[], gameId: string): Promise<type
 }
 
 export async function installSFSE(api: types.IExtensionApi, files: string[]): Promise<types.IInstallResult> {
-  // Warn SFSE doesn't work with the Xbox release. 
+  // Warn SFSE doesn't work with the Xbox release.
   const discovery = selectors.discoveryByGame(api.getState(), GAME_ID);
   if (!discovery || !discovery.path) {
     return Promise.reject(new util.SetupError('Game not discovered'));
   }
-  const SFSE = files.find(f => f.toLowerCase().endsWith(SFSE_EXE))
+  const SFSE = files.find(f => f.toLowerCase().endsWith(SFSE_EXE));
   if ((discovery?.store && discovery?.store !== 'steam') || !discovery.path.toLowerCase().includes('steamapps')) {
     const platform = discovery.store
       ? discovery.store.charAt(0).toUpperCase() + discovery.store.slice(1)

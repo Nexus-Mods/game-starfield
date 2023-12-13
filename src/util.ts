@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { fs, log, selectors, types, util } from 'vortex-api';
-import { GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID } from './common';
+import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, MISSING_PLUGINS_NOTIFICATION_ID, JUNCTION_NOTIFICATION_ID } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
 import { getStopPatterns } from './stopPatterns';
@@ -119,9 +119,16 @@ export const openSettingsPath = () => {
 };
 
 export const openAppDataPath = () => {
-  const docPath = path.join(util.getVortexPath('localAppData'), 'Starfield');
-  util.opn(docPath).catch(() => null);
+  util.opn(LOCAL_APP_DATA).catch(() => null);
 };
+
+export const removePluginsFile = async () => {
+  try {
+    await fs.unlinkAsync(PLUGINS_TXT);
+  } catch (err) {
+    // File doesn't exist, nothing to do.
+  }
+}
 
 export const openPhotoModePath = () => {
   const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Photos');
@@ -140,12 +147,16 @@ export async function deploy(api: types.IExtensionApi): Promise<void> {
 
 export async function walkPath(dirPath: string, walkOptions?: IWalkOptions): Promise<IEntry[]> {
   walkOptions = walkOptions || { skipLinks: true, skipHidden: true, skipInaccessible: true };
+  // We REALLY don't care for hidden or inaccessible files.
+  walkOptions = { ...walkOptions, skipHidden: true, skipInaccessible: true, skipLinks: true };
   const walkResults: IEntry[] = [];
   return new Promise<IEntry[]>(async (resolve, reject) => {
     await turbowalk(dirPath, (entries: IEntry[]) => {
       walkResults.push(...entries);
       return Promise.resolve() as any;
-    }, walkOptions);
+      // If the directory is missing when we try to walk it; it's most probably down to a collection being
+      //  in the process of being installed/removed. We can safely ignore this.
+    }, walkOptions).catch(err => err.code === 'ENOENT' ? Promise.resolve() : Promise.reject(err));
     return resolve(walkResults);
   });
 }
@@ -234,9 +245,120 @@ export async function isDataPathMod(modPath: string): Promise<boolean> {
 }
 
 export function dismissNotifications(api: types.IExtensionApi) {
+  // TODO: Find a better way to control the update notifications!!!
   const notificationIds = ['starfield-junction-activity',
-    MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, 'starfield-update-notif-0.5.0'];
+    MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, MISSING_PLUGINS_NOTIFICATION_ID,
+    'starfield-update-notif-0.5.0', 'starfield-update-notif-0.6.0'];
   for (const id of notificationIds) {
+    // Can't batch these.
     api.dismissNotification(id);
   }
+}
+
+export function sanitizeIni(iniStr: string) {
+  // Replace whitespace around equals signs.
+  //  Pretty sure the game doesn't care one way or another, but it's nice to be consistent.
+  let text = iniStr.replace(/\s=\s/g, '=');
+  const escapedQuotes = /\\\"/g;
+  if (text.match(escapedQuotes)) {
+    // The library has the bad habit of wrapping values with quotation marks entirely,
+    //  and escaping the existing quotation marks.
+    // We could do some crazy regex here, but it's better to be as simple as possible.
+    // Remove all the quotation marks.
+    text = text.replace(/\"/g, '');
+
+    // Wherever we have an escape character, it's safe to assume that used to be a quotation
+    //  mark so we re-introduce it.
+    text = text.replace(/\\/g, '"');
+  }
+  return text;
+}
+
+/**
+ * At the time of writing this extension, deepMerge was not exported
+ *  as part of the API. We're using a copy of the function here, to ensure
+ *  older versions of Vortex (with the 0.6.X extension) can still run the merging
+ *  functionality - it should be safe to remove once we confirm everyone migrated to
+ *  Vortex 1.9.9+
+ */
+export function deepMerge(lhs: any, rhs: any): any {
+  if (lhs === undefined) {
+    return rhs;
+  } else if (rhs === undefined) {
+    return lhs;
+  }
+
+  const result = {};
+  for (const key of Object.keys(lhs).concat(Object.keys(rhs))) {
+    if ((lhs[key] === undefined) || (rhs[key] === undefined)) {
+      result[key] = pick(lhs[key], rhs[key]);
+    }
+
+    result[key] = ((typeof(lhs[key]) === 'object') && (typeof(rhs[key]) === 'object'))
+      ? result[key] = deepMerge(lhs[key], rhs[key])
+      : (Array.isArray(lhs[key]) && Array.isArray(rhs[key]))
+        ? result[key] = lhs[key].concat(rhs[key])
+        : result[key] = pick(rhs[key], lhs[key]);
+  }
+  return result;
+}
+
+function pick(lhs: any, rhs: any): any {
+  return lhs === undefined ? rhs : lhs;
+}
+
+export function getMods(api: types.IExtensionApi, modType: string): types.IMod[] {
+  const state = api.getState();
+  const mods = util.getSafe(state, ['persistent', 'mods', GAME_ID], {});
+  return Object.values(mods).filter((mod: types.IMod) => mod.type === modType || mod.type === '') as types.IMod[];
+}
+
+export async function findModByFile(api: types.IExtensionApi, modType: string, fileName: string): Promise<types.IMod> {
+  const mods = getMods(api, modType);
+  const installationPath = selectors.installPathForGame(api.getState(), GAME_ID);
+  for (const mod of mods) {
+    const modPath = path.join(installationPath, mod.installationPath);
+    const files = await walkPath(modPath);
+    if (files.find(file => file.filePath.endsWith(fileName))) {
+      return mod;
+    }
+  }
+  return undefined;
+}
+
+export async function linkAsiLoader(api: types.IExtensionApi, lhs: string, rhs: string): Promise<void> {
+  // The asi loader replaces a game assembly - we need to make sure to back up and restore it based on
+  //  the deployment events.
+  const state = api.getState();
+  const pluginEnabler = util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
+  const profile = selectors.activeProfile(state);
+  if (profile?.gameId !== GAME_ID || pluginEnabler === false) {
+    return Promise.resolve();
+  }
+  const discovery = selectors.discoveryByGame(state, GAME_ID);
+  if (discovery?.store !== 'xbox') {
+    return Promise.resolve();
+  }
+
+  const asiLoaderLhs = path.join(discovery.path, lhs);
+  const asiLoaderRhs = path.join(discovery.path, rhs);
+
+  const exists = await fs.statAsync(asiLoaderLhs).then(() => true).catch(() => false);
+  if (exists) {
+    await fs.linkAsync(asiLoaderLhs, asiLoaderRhs).catch(err => Promise.resolve());
+    await fs.unlinkAsync(asiLoaderLhs).catch(err => Promise.resolve());
+  }
+  return Promise.resolve();
+}
+
+export function forceRefresh(api: types.IExtensionApi) {
+  const state = api.getState();
+  const profileId = selectors.lastActiveProfileForGame(state, GAME_ID);
+  const action = {
+    type: 'SET_FB_FORCE_UPDATE',
+    payload: {
+      profileId,
+    },
+  };
+  api.store.dispatch(action);
 }

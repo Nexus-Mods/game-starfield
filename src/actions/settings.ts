@@ -5,3 +5,5 @@ export const setDirectoryJunctionEnabled = createAction('SET_STARFIELD_JUNCTION_
 export const setDirectoryJunctionSuppress = createAction('SET_STARFIELD_JUNCTION_SUPPRESS', (suppress: boolean) => suppress);
 
 export const setMigrationVersion = createAction('SET_STARFIELD_MIGRATION_VERSION', (version: string) => version);
+
+export const setPluginsEnabler = createAction('SET_STARFIELD_PLUGIN_ENABLER', (enabled: boolean) => enabled);

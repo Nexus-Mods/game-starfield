@@ -4,6 +4,11 @@ import { IMod } from "vortex-api/lib/types/IState";
 export type LockedState = "true" | "false" | "always" | "never";
 export type LoadOrder = ILoadOrderEntry[];
 
+export interface IGithubDownload {
+  fileName: string;
+  url: string;
+}
+
 export interface IProps {
   state: types.IState;
   api: types.IExtensionApi;
@@ -17,6 +22,17 @@ export interface IDirectoryProps {
   gameDataFolder: string;
   myGamesFolder: string;
   myGamesData: string;
+}
+
+export interface IPluginRequirement {
+  fileName: string;
+  modType: string;
+  modId?: number;
+  userFacingName?: string;
+  githubUrl?: string;
+  modUrl?: string;
+  findMod: (api: types.IExtensionApi) => Promise<types.IMod>;
+  fileFilter?: (file: string) => boolean;
 }
 
 export type IJunctionProps = IProps & IDirectoryProps;

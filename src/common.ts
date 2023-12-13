@@ -1,11 +1,27 @@
+import path from 'path';
+import { util } from 'vortex-api';
+
+export const LOCAL_APP_DATA = path.join(util.getVortexPath('localAppData'), 'Starfield');
+export const PLUGINS_TXT = path.join(LOCAL_APP_DATA, 'plugins.txt');
+export const PLUGINS_ENABLER_FILENAME = 'SFPluginsTxtEnabler';
 export const NS = 'game-starfield';
 export const GAME_ID = 'starfield';
 export const XBOX_ID = 'BethesdaSoftworks.ProjectGold';
 export const STEAMAPP_ID = '1716740';
 
+export const MOD_TYPE_ASI_MOD = 'starfield-asi-mod';
 export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
 export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
+export const MISSING_PLUGINS_NOTIFICATION_ID = 'starfield-missing-plugins';
 export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
+
+// This is the order we expect the native plugins to be arranged.
+export const NATIVE_PLUGINS = [
+  'starfield.esm',
+  'blueprintships-starfield.esm',
+  'oldmars.esm',
+  'constellation.esm',
+];
 
 export const DATA_SUBFOLDERS = [
   'Meshes',
@@ -42,20 +58,26 @@ export const TOP_LEVEL_COMPATIBILITY_FOLDERS = [
   'Starfield root'
 ];
 
+export const DATA_PLUGINS = [
+  '.esm', '.esp', '.esl',
+];
 export const DATA_EXTENSIONS = [
-  '.ba2', '.esm', '.esp', '.esl'
+  '.ba2', ...DATA_PLUGINS,
 ];
 
+export const DLL_EXT = '.dll';
+export const ASI_EXT = '.asi';
 export const ROOT_FILE_EXTENSIONS = [
+  ASI_EXT,
   '.ini',
-  //'.dll',
   '.exe',
   '.txt',
 ];
 
-export const ROOT_FOLDERS = [
-  'Plugins', //ASI loader uses this... e.g. https://www.nexusmods.com/starfield/mods/252
-  'Tools'
+//ASI loader uses this... e.g. https://www.nexusmods.com/starfield/mods/252
+export const ASI_ROOT_FOLDERS = [
+  'Scripts',
+  'Plugins'
 ];
 
 export const MODULE_CONFIG = 'moduleconfig.xml';
@@ -65,9 +87,27 @@ export const MODULE_CONFIG = 'moduleconfig.xml';
 //  as they can be SFSE plugins. Fortunately we can specify a couple of well known
 //  assemblies that are generally used for content loading.
 export const SFSE_EXE = 'sfse_loader.exe';
-export const ROOT_ASSEMBLIES = ['dinput8.dll', 'vcruntime140_1.dll'];
+
+// The ASI loader comes in a variety of flavours - yum.
+export const ASI_LOADER_ASSEMBLIES = [
+  'd3d8.dll', 'd3d9.dll', 'd3d10.dll', 'd3d11.dll', 'd3d12.dll', 'ddraw.dll',
+  'dinput.dll', 'dinput8.dll', 'dsound.dll', 'msacm32.dll', 'msvfw32.dll', 'version.dll',
+  'wininet.dll', 'winmm.dll', 'winhttp.dll', 'xlive.dll', 'binkw32.dll',
+  'bink2w64.dll', 'vorbisfile.dll', 'binkw32hooked.dll', 'bink2w64hooked.dll', 'vorbishooked.dll'
+];
+
+export const ASI_LOADER_BACKUP = 'bink2w64hooked.dll';
+
+// Whatever flavour of ASI loader the user downloads, we'll always use this name when installing it.
+export const TARGET_ASI_LOADER_NAME = 'bink2w64.dll';
+
+// In order for ASI mods to load global sets, the ini file needs to match the name of the assembly we use.
+export const ASI_MOD_INI_NAME = TARGET_ASI_LOADER_NAME.replace('dll', 'ini');
+
+export const ROOT_ASSEMBLIES = [...ASI_LOADER_ASSEMBLIES, 'vcruntime140_1.dll'];
 
 export const SFCUSTOM_INI = 'StarfieldCustom.ini';
+export const SFPREFS_INI = 'StarfieldPrefs.ini';
 
 export const SFCUSTOM_INI_TEXT = '[Archive]\nbInvalidateOlderFiles=1\nsResourceDataDirsFinal=\n\n';
 

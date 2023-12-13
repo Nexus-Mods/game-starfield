@@ -1,3 +1,4 @@
+// eslint-disable no-console
 import { promises as fs } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,23 +14,23 @@ async function start() {
     const styles = await fs.readdir(stylePath);
     for (const style of styles) {
       try {
-        // eslint-disable-next-line no-console
-        // console.log('Copying stylesheet', { style, destPath });
         await fs.copyFile(
           path.join(stylePath, style),
           path.join(destPath, style)
         );
       }
       catch(err) {
-        // eslint-disable-next-line no-console
         console.error('Error copying style sheet', { style, err });
       }
     }
 
   }
   catch(err) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to copy styles!', err);
+    if (err.code !== 'ENOENT') {
+      console.error('Failed to copy styles!', err);
+    } else {
+      console.log('No styles to copy');
+    }
   }
 }
 

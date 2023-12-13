@@ -27,9 +27,11 @@ Coming Soon
 
 # Installation
 
-This extension requires Vortex 1.8.5 or greater. To install, click the Vortex button at the top of the page to open this extension within Vortex, and then click Install.
+This extension requires Vortex **1.9.10** or greater.
 
-You can also manually install it by downloading the main file and dragging it into the drop target labelled Drop File(s) in the Extensions page at the bottom right.
+To install, click the Vortex button at the top of the [Starfield Extension page on Nexus Mods](https://www.nexusmods.com/site/mods/634), and then click Install.
+
+You can also manually install it by click the Manual button at the top of the page and dragging it into the drop target labelled Drop File(s) in the Extensions page at the bottom right.
 
 Afterwards, restart Vortex and you can begin installing supported Starfield mods with Vortex.
 
@@ -60,6 +62,19 @@ To get around this, Vortex can create a specific type of shortcut (called a fold
 Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a `StarfieldCustom.ini` file in the `Documents\My Games\Starfield` folder. If Vortex detects that this ini doesn't exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might've added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.
 current
 
+# Plugin Load Ordering (0.6.X)
+
+The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda. This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.
+
+A new "Load Order" page has been added to the extension to allow users to view their deployed mods and manage their load order. By default this system is disabled and can only be enabled through the Load Order page. The user can disable this feature at any time through the Settings -> Mods -> Starfield -> Manage Load Order Toggle.
+
+Before enabling the plugin management system keep the following in mind:
+
+- Vortex will download any required mods/tools for load ordering to function as soon as you enable the plugin management system.
+- Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield". Any INI entries will block the plugin management functionality from working. This is by Bethesda's design.
+- Game Pass version of the game will not be able to use SFSE or its plugins - the [Ultimate-ASI-Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) is used to load plugins to the game instead.
+- Native plugins are not serialized to the "plugins.txt" file.
+
 # Known Issues
 
 - This extension has been tested with all of the most popular mods, installers, script extenders, mod fixers etc. Please see this [Mod Compatibility List](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) forum post for details.
@@ -80,7 +95,8 @@ current
 
 - Migrating this extension from version 0.4 to 0.5 may fail if for any reason the files are being actively manipulated by other tools or the game itself. Please make sure to close any such tools (or the game) before migrating to 0.5
 
-- Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` and manually set the location of the game inside Vortex. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
+- Modding Starfield's Xbox game pass version does not allow folder junctions when used with the default `WindowsApps\Starfield` folder. Please ensure to install Starfield to an external location e.g. `C:\XboxGames\` Vortex will try to resolve custom game pass locations using the hidden .GamingRoot files which
+  the game pass store creates. Alternatively, the location of the game can be set manually. Go to Games tab and find Starfield -> 3 dots top right of the game's thumbnail -> manually select location -> choose the game folder that contains `Starfield.exe`
 
 - 0.5.X has introduced a new modType system which is used to define where the mods are deployed. Unfortunately you may be faced with a longstanding bug in Vortex which cannot detect file conflicts between mod types (this is currently being worked on). If you're encountering the "External Changes Dialog" during EVERY deployment event, you're most likely affected by this bug. There are a few things you can try to fix it:
 
@@ -125,6 +141,12 @@ Recommendations:
 - As a curator it is highly advisable to update to 0.5 as soon as possible and re-install any mods you wish to distribute as part of a collection.
 - As a user, although existing collections should still be functional - re-installing the collection is recommended as it will update all your mods to the new mod type system.
 
+# Addendum
+
+Vortex 0.6.X load ordering functionality is using INI merging for global datasets defined in ASI mods. At the time of writing this addendum, the deepMerge
+utility function was not exported as part of the API. In order to allow users to test this extension without waiting for Vortex 1.9.9+, the extension has
+and identical copy of the deepMerge function included - this should be removed once we confirm 1.9.9+ is stable.
+
 # See also
 
 - [Download the Extension (Nexus Mods)](https://www.nexusmods.com/site/mods/634)
@@ -136,6 +158,7 @@ Recommendations:
 
 # Thanks
 
+- [Discord Testing Group](https://discord.com/channels/215154001799413770/1156219174012584087) for helping get things to a stable place
 - [BOTLANNER](https://github.com/BOTLANNER) for helping with INI parsing
 
 # Changelog

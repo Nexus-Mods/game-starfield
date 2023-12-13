@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.4] - 2023-12-13
+
+- Fixed error when merging data folders as part of the directory junction functionality
+
+## [0.6.3] - 2023-12-11
+
+- Fixed instance where plugins were still displayed as managed even when the mod was disabled
+- Modified invalid/missing entries are no longer displayed in the load order page
+
+## [0.6.2] - 2023-11-30
+
+- Fixed error/crash when installing collections w/bundled mods.
+- Guess what, the native plugins are back visually - still not written to the plugins.txt file though!
+
+## [0.6.1] - 2023-11-29
+
+- Fixed "sTestFile" pattern matching skipping every other entry.
+- Fixed UI issue where plugins deployed relative to the game's root were not considered to be managed by Vortex
+- Modified native plugins are no longer serialized into the plugins.txt file
+
+## [0.6.0] - 2023-11-15
+
+- Added ASI Loader installer
+- Added ASI mod support
+- Added support for merging INI files for ASI mods
+- Added automatic plugin enabled downloader
+- Added load order page
+- Added ability to migrate sTestFile entries to the load order page during deserialization
+- Added ability to enable/disable Vortex plugin management through the settings page
+- Added Starfield stylesheet
+- Added button to allow users to reset their plugins.txt file
+- Modified build scripts to deploy stylesheets
+
 ## [0.5.8] - 2023-12-13
 
 - Fixed error when merging data folders as part of the directory junction functionality
