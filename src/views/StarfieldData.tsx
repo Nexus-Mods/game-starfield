@@ -11,7 +11,6 @@ export default function StarfieldData() {
         <p>{t('The following data will be exported as part of your collection:')}</p>
         <ul>
           <li>Starfield extension version</li>
-          <li>Your plugin load order</li>
         </ul>
       </Panel>
     </form>
