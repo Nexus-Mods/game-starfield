@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [0.6.4] - 2023-12-13
 
-- Version bump due to bug in 0.5.7 which was merged as part of 0.5.8 (unreleased)
+- Fixed error when merging data folders as part of the directory junction functionality
 
 ## [0.6.3] - 2023-12-11
 
