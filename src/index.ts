@@ -68,7 +68,7 @@ function main(context: types.IExtensionContext) {
     requiresLauncher: requiresLauncher as any,
     details: {
       supportsSymlinks: false,
-      steamAppId: +STEAMAPP_ID,
+      steamAppId: parseInt(STEAMAPP_ID),
       stopPatterns: getStopPatterns(),
     },
   });
