@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.5] - 2023-12-14
+
+- Added Xbox Game Pass specific information to help users avoid/fix the "This library isn't supported" error
+- Fixed original bink file not hooked correctly for Xbox Game Pass
+
 ## [0.6.4] - 2023-12-13
 
 - Fixed error when merging data folders as part of the directory junction functionality

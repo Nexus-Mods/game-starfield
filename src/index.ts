@@ -205,15 +205,15 @@ async function onWillDeployEvent(api: types.IExtensionApi, profileId: any, deplo
     return Promise.resolve();
   }
   const discovery = selectors.discoveryByGame(state, GAME_ID);
-  if (discovery?.store !== 'xbox') {
+  if (!discovery?.path || discovery?.store !== 'xbox') {
+    // Game not discovered or not Xbox? bail.
     return Promise.resolve();
   }
 
   const backupPath = path.join(discovery.path, ASI_LOADER_BACKUP);
   const exists = await fs.statAsync(backupPath).then(() => true).catch(err => false);
   if (!exists) {
-    const installationPath = selectors.installPathForGame(state, GAME_ID);
-    const entries = (await walkPath(installationPath)).filter((entry) => !entry.isDirectory && path.basename(entry.filePath) === TARGET_ASI_LOADER_NAME);
+    const entries = (await walkPath(discovery.path)).filter((entry) => !entry.isDirectory && path.basename(entry.filePath) === TARGET_ASI_LOADER_NAME);
     const entry = entries.length > 0 ? entries[0] : undefined;
     if (!entry) {
       return Promise.resolve();
