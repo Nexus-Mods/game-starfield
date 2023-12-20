@@ -66,10 +66,17 @@ const gameFinderQuery = {
 };
 
 const removePluginsWrap = (api: types.IExtensionApi) => {
-  removePluginsFile()
-    .then(() => {
-      forceRefresh(api);
-    });
+  api.showDialog('question', 'Reset Plugins File', {
+    text: 'Are you sure you want to reset the plugins file? This will remove all plugins from your load order, and you will need to re-arrange them!',
+  }, [
+    { label: 'Cancel' },
+    { label: 'Reset', action: () => {
+      removePluginsFile()
+        .then(() => {
+          forceRefresh(api);
+        });
+    } },
+  ], 'starfield-remove-plugins-dialog');
 }
 
 function main(context: types.IExtensionContext) {

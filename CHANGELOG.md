@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.6] - 2023-12-14
+
+- Added warning when resetting the plugins file.
+- Load order is no longer removed when purging mods.
+
 ## [0.6.5] - 2023-12-14
 
 - Added Xbox Game Pass specific information to help users avoid/fix the "This library isn't supported" error

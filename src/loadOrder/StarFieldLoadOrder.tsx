@@ -56,6 +56,7 @@ export const PLUGIN_REQUIREMENTS: PluginRequirements = {
 class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
   public gameId: string;
   public toggleableEntries?: boolean | undefined;
+  public clearStateOnPurge?: boolean | undefined;
   public usageInstructions?: React.ComponentType<{}>;
   public noCollectionGeneration?: boolean | undefined;
 
@@ -64,6 +65,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
   constructor(api: types.IExtensionApi) {
     this.gameId = GAME_ID;
+    this.clearStateOnPurge = false;
     this.toggleableEntries = true;
     this.noCollectionGeneration = true;
     this.usageInstructions = () => (<InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />);
