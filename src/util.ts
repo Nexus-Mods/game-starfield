@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { fs, log, selectors, types, util } from 'vortex-api';
-import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, MISSING_PLUGINS_NOTIFICATION_ID, JUNCTION_NOTIFICATION_ID } from './common';
+import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, MISSING_PLUGINS_NOTIFICATION_ID, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import path from 'path';
 import { getStopPatterns } from './stopPatterns';
@@ -124,6 +124,7 @@ export const openAppDataPath = () => {
 
 export const removePluginsFile = async () => {
   try {
+    await fs.removeAsync(PLUGINS_BACKUP).catch(err => null);
     await fs.unlinkAsync(PLUGINS_TXT);
   } catch (err) {
     // File doesn't exist, nothing to do.
