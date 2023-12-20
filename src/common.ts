@@ -3,6 +3,7 @@ import { util } from 'vortex-api';
 
 export const LOCAL_APP_DATA = path.join(util.getVortexPath('localAppData'), 'Starfield');
 export const PLUGINS_TXT = path.join(LOCAL_APP_DATA, 'plugins.txt');
+export const PLUGINS_BACKUP = path.join(util.getVortexPath('temp'), path.basename(PLUGINS_TXT) + '.bak');
 export const PLUGINS_ENABLER_FILENAME = 'SFPluginsTxtEnabler';
 export const NS = 'game-starfield';
 export const GAME_ID = 'starfield';

@@ -5,7 +5,7 @@ import { fs, selectors, types, util } from 'vortex-api';
 
 import { IPluginRequirement } from '../types';
 import {
-  GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, NATIVE_PLUGINS,
+  GAME_ID, PLUGINS_TXT, PLUGINS_BACKUP, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, NATIVE_PLUGINS,
   DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS, MISSING_PLUGINS_NOTIFICATION_ID,
 } from '../common';
 import { download } from '../downloader';
@@ -56,6 +56,7 @@ export const PLUGIN_REQUIREMENTS: PluginRequirements = {
 class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
   public gameId: string;
   public toggleableEntries?: boolean | undefined;
+  public clearStateOnPurge?: boolean | undefined;
   public usageInstructions?: React.ComponentType<{}>;
   public noCollectionGeneration?: boolean | undefined;
 
@@ -64,6 +65,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
   constructor(api: types.IExtensionApi) {
     this.gameId = GAME_ID;
+    this.clearStateOnPurge = true;
     this.toggleableEntries = true;
     this.noCollectionGeneration = true;
     this.usageInstructions = () => (<InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />);
@@ -270,7 +272,10 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
   private async deserializePluginsFile(): Promise<string[]> {
     try {
-      const data = await fs.readFileAsync(PLUGINS_TXT, 'utf8');
+      const targetFile = await fs.statAsync(PLUGINS_BACKUP)
+        .then(() => PLUGINS_BACKUP)
+        .catch(() => PLUGINS_TXT);
+      const data = await fs.readFileAsync(targetFile, 'utf8');
       const lines = data.split('\n').filter(line => line.trim().length > 0);
       return Array.from(new Set(lines));
     } catch (err) {

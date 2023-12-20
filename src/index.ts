@@ -28,8 +28,9 @@ import { getStopPatterns } from './stopPatterns';
 
 import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 
-// IDs for different stores and nexus
-import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD, STEAMAPP_ID, XBOX_ID, JUNCTION_NOTIFICATION_ID, TARGET_ASI_LOADER_NAME, ASI_LOADER_BACKUP } from './common';
+import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
+  STEAMAPP_ID, XBOX_ID, TARGET_ASI_LOADER_NAME,
+  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP } from './common';
 
 const supportedTools: types.ITool[] = [
   {
@@ -66,10 +67,17 @@ const gameFinderQuery = {
 };
 
 const removePluginsWrap = (api: types.IExtensionApi) => {
-  removePluginsFile()
-    .then(() => {
-      forceRefresh(api);
-    });
+  api.showDialog('question', 'Reset Plugins File', {
+    text: 'Are you sure you want to reset the plugins file? This will remove all plugins from your load order, and you will need to re-arrange them!',
+  }, [
+    { label: 'Cancel' },
+    { label: 'Reset', action: () => {
+      removePluginsFile()
+        .then(() => {
+          forceRefresh(api);
+        });
+    } },
+  ], 'starfield-remove-plugins-dialog');
 }
 
 function main(context: types.IExtensionContext) {
@@ -160,8 +168,9 @@ function main(context: types.IExtensionContext) {
   context.once(() => {
     //context.api.setStylesheet('starfield', path.join(__dirname, 'starfield.scss'));
     context.api.events.on('gamemode-activated', () => onGameModeActivated(context.api));
-    context.api.onAsync('did-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
     context.api.onAsync('will-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onWillDeployEvent(context.api, profileId, deployment));
+    context.api.onAsync('did-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
+    context.api.onAsync('will-purge', (profileId: string) => onWillPurgeEvent(context.api, profileId));
     context.api.onAsync('did-purge', (profileId: string) => onDidPurgeEvent(context.api, profileId));
     // context.api.onAsync('intercept-file-changes', (intercepted: types.IFileChange[], cb: (result: types.IFileChange[]) => void) => {
     //   return onInterceptFileChanges(context.api, intercepted, cb);
@@ -190,7 +199,12 @@ async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, dep
   }
   await testDeprecatedFomod(api, false);
   await testPluginsEnabler(api);
+  await fs.removeAsync(PLUGINS_BACKUP).catch(err => null);
   return Promise.resolve();
+}
+
+async function onWillPurgeEvent(api: types.IExtensionApi, profileId: string): Promise<void> {
+  return fs.copyAsync(PLUGINS_TXT, PLUGINS_BACKUP, { overwrite: true }).catch(err => null);
 }
 
 async function onDidPurgeEvent(api: types.IExtensionApi, profileId: string): Promise<void> {
