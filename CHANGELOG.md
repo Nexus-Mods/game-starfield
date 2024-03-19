@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.7] - 2024-03-19
+
+- Modified custom preferences ini test to ensure that the sPhotoModeFolder entry is removed unless manually set by the user.
+
 ## [0.6.6] - 2023-12-20
 
 - Added warning when resetting the plugins file.
