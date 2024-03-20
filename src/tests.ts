@@ -36,55 +36,56 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
   const valid = await isValid();
   return valid
     ? Promise.resolve(undefined)
-    : new Promise<types.ITestResult | undefined>((resolve, reject) => {
-        const res = {
-          description: {
-            short: 'StarfieldCustom.ini not configured',
-            long: 'Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a "StarfieldCustom.ini" file in the "Documents\\My Games\\Starfield" folder. If Vortex detects that this ini doesn\'t exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might\'ve added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\\Textures\\Photos (unless you\'ve already set it to something else) and there is now a button inside Vortex to quickly open this folder.',
-          },
-          severity: 'warning',
-          automaticFix: async () => {
-            try {
-              // Reload ini in case external changes has happened in the meantime.
-              const iniContent = (await fs.readFileAsync(iniPath, 'utf-8')) ?? '';
-              ini = parse(iniContent, { retainComments: true });
+    : new Promise<types.ITestResult>(async (resolve, reject) => {
+      const res: types.ITestResult = {
+        description: {
+          short: 'StarfieldCustom.ini not configured',
+          long: 'Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a "StarfieldCustom.ini" file in the "Documents\\My Games\\Starfield" folder. If Vortex detects that this ini doesn\'t exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might\'ve added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\\Textures\\Photos (unless you\'ve already set it to something else) and there is now a button inside Vortex to quickly open this folder.',
+        },
+        severity: 'warning',
+        automaticFix: ((async () => {
+          try {
+            // Reload ini in case external changes has happened in the meantime.
+            const iniContent = (await fs.readFileAsync(iniPath, 'utf-8')) ?? '';
+            ini = parse(iniContent, { retainComments: true });
 
-              log('info', `${archiveInvalidationTag} - Setting up INI: ${iniPath}`, ini);
+            log('info', `${archiveInvalidationTag} - Setting up INI: ${iniPath}`, ini);
 
-              // Allow modifying file even if it was flagged read-only.
-              await fs.makeFileWritableAsync(iniPath);
+            // Allow modifying file even if it was flagged read-only.
+            await fs.makeFileWritableAsync(iniPath);
 
-              if (!ini.Archive) {
-                ini.Archive = {};
-              }
-              if (!ini.Display) {
-                ini.Display = {};
-              }
+            if (!ini.Archive) {
+              ini.Archive = {};
+            }
+            if (!ini.Display) {
+              ini.Display = {};
+            }
 
-          // Set required settiings on ini object and convert back to writeable string
-          ini.Archive.bInvalidateOlderFiles = '1';
-          ini.Archive.sResourceDataDirsFinal = '';
-          if (ini.Display?.sPhotoModeFolder !== undefined && ini.Display?.sPhotoModeFolder === 'Photos') {
-            delete ini.Display.sPhotoModeFolder;
+            // Set required settiings on ini object and convert back to writeable string
+            ini.Archive.bInvalidateOlderFiles = '1';
+            ini.Archive.sResourceDataDirsFinal = '';
+            if (ini.Display?.sPhotoModeFolder !== undefined && ini.Display?.sPhotoModeFolder === 'Photos') {
+              delete ini.Display.sPhotoModeFolder;
+            }
+            const newIniContent = sanitizeIni(stringify(ini, { retainComments: true, whitespace: true }));
+            log('info', `${archiveInvalidationTag} - New INI: \n${newIniContent}`, ini);
+
+            // Save updates to StarfieldCustom.ini and dismiss the notification as it has been resolved.
+            await fs.writeFileAsync(iniPath, newIniContent, {
+              encoding: 'utf-8'
+            });
+          } catch (err) {
+            log('error', `${archiveInvalidationTag} - Failed fix`, err);
           }
-          const newIniContent = sanitizeIni(stringify(ini, { retainComments: true, whitespace: true }));
-          log('info', `${archiveInvalidationTag} - New INI: \n${newIniContent}`, ini);
-
-          // Save updates to StarfieldCustom.ini and dismiss the notification as it has been resolved.
-          await fs.writeFileAsync(iniPath, newIniContent, {
-            encoding: 'utf-8'
-          });
-        } catch (err) {
-          log('error', `${archiveInvalidationTag} - Failed fix`, err);
+        }) as any),
+        onRecheck: ((async () => {
+          const valid = await isValid();
+          return valid ? resolve(undefined) : resolve(testLooseFiles(api));
         }
-      },
-      onRecheck: async () => {
-        const valid = await isValid();
-        return valid ? resolve(undefined) : resolve(testLooseFiles(api));
+        ) as any)
       }
-    }
-    return res ?? resolve(undefined)
-  });
+      return res !== undefined ? resolve(res) : resolve(undefined)
+    });
 }
 
 export async function raiseJunctionDialog(api: types.IExtensionApi, suppress?: boolean): Promise<void> {
@@ -242,9 +243,9 @@ const fomodInvalidShortText = (t: types.TFunction, invalidNum: number) => t('Dep
 const fomodInvalidLongText = (t: types.TFunction, invalidNum: number) =>
   t(
     'Vortex detected {{num}} FOMODs which are using the deprecated Vortex plugin option. ' +
-      'This option is no longer required and will cause the FOMODs to deploy incorrectly. ' +
-      'Vortex will attempt to fix the FOMODs for you and it is recommended to inform the mod author to change his configuration file and remove the Vortex flag. ' +
-      'Alternatively you can re-install any affected FOMODs manually and select the MO2 plugin option instead.',
+    'This option is no longer required and will cause the FOMODs to deploy incorrectly. ' +
+    'Vortex will attempt to fix the FOMODs for you and it is recommended to inform the mod author to change his configuration file and remove the Vortex flag. ' +
+    'Alternatively you can re-install any affected FOMODs manually and select the MO2 plugin option instead.',
     { replace: { num: invalidNum } }
   );
 
@@ -253,13 +254,13 @@ async function invalidFomodApiTest(api: types.IExtensionApi, invalidFomods: type
   return invalidFomods.length === 0
     ? Promise.resolve(undefined)
     : Promise.resolve({
-        description: {
-          short: fomodInvalidShortText(t, invalidFomods.length),
-          long: fomodInvalidLongText(t, invalidFomods.length),
-        },
-        severity: 'warning',
-        automaticFix: async () => fomodFix(api, invalidFomods, installationPath),
-      });
+      description: {
+        short: fomodInvalidShortText(t, invalidFomods.length),
+        long: fomodInvalidLongText(t, invalidFomods.length),
+      },
+      severity: 'warning',
+      automaticFix: async () => fomodFix(api, invalidFomods, installationPath),
+    });
 }
 
 async function invalidFomodDeployTest(api: types.IExtensionApi, invalidFomods: types.IMod[], installationPath: string) {

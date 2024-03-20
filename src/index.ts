@@ -120,7 +120,7 @@ function main(context: types.IExtensionContext) {
   );
 
   // Bluebird, the bane of my life.
-  context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => Promise.resolve(testLooseFiles(context.api)) as any);
+  context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => testLooseFiles(context.api) as any);
   context.registerTest('starfield-deprecated-fomod-check', 'gamemode-activated', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
 
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
