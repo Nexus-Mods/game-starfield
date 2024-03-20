@@ -61,7 +61,9 @@ To get around this, Vortex can create a specific type of shortcut (called a fold
 
 > IMPORTANT: Things aren't all perfect though. Using a file syncing\cloud drive service such as OneDrive, Google Drive or Dropbox are known to cause issues with this method due to the inconsistencies in how they handle folder junctions. The most severe of these issues can lead to the loss of data. For compatibility information about individual services, please [read this page on modding.wiki](https://modding.wiki/en/vortex/users/starfield-folder-junction-issues) for more information.
 
-Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a `StarfieldCustom.ini` file in the `Documents\My Games\Starfield` folder. If Vortex detects that this ini doesn't exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might've added manually. Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.
+Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order to properly load loose files (i.e. those not packed in BA2 archives). There are a lot of mods out there which provide instructions for users to add these tweaks to a `StarfieldCustom.ini` file in the `Documents\My Games\Starfield` folder. If Vortex detects that this ini doesn't exist or is incorrect, it will notify the user and ask to fix it. If fix is requested, it will add or adjust the "bInvalidateOlderFiles" and "sResourceDataDirsFinal" values without changing any other settings you might've added manually.
+
+~~Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.~~ This was removed in version `0.6.7` of the extension due to a bug in Starfield that was introduced when the game updated to approximately version `1.10.31.0`.
 
 # Plugin Load Ordering (0.6.x)
 
@@ -144,7 +146,7 @@ Recommendations:
 
 # Addendum
 
-Vortex 0.6.X load ordering functionality is using INI merging for global datasets defined in ASI mods. At the time of writing this addendum, the deepMerge utility function was not exported as part of the API. In order to allow users to test this extension without waiting for Vortex 1.9.9+, the extension has an identical copy of the deepMerge function included - this should be removed once we confirm 1.9.9+ is stable.
+Vortex 0.6.x load ordering functionality is using INI merging for global datasets defined in ASI mods. At the time of writing this addendum, the deepMerge utility function was not exported as part of the API. In order to allow users to test this extension without waiting for Vortex 1.9.9+, the extension has an identical copy of the deepMerge function included - this should be removed once we confirm 1.9.9+ is stable.
 
 # See also
 
