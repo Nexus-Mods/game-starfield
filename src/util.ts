@@ -131,11 +131,6 @@ export const removePluginsFile = async () => {
   }
 }
 
-export const openPhotoModePath = () => {
-  const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Photos');
-  util.opn(docPath).catch(() => null);
-};
-
 export async function purge(api: types.IExtensionApi): Promise<void> {
   return new Promise<void>((resolve, reject) =>
     api.events.emit('purge-mods', true, (err) => err ? reject(err) : resolve()));

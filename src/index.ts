@@ -12,8 +12,7 @@ import { testASILoaderSupported, installASILoader, testASIModSupported, installA
 
 import { mergeASIIni, testASIMergeIni } from './merges/iniMerge';
 
-import { isStarfield, openAppDataPath, openPhotoModePath,
-  openSettingsPath, dismissNotifications, linkAsiLoader,
+import { isStarfield, openAppDataPath, openSettingsPath, dismissNotifications, linkAsiLoader,
   walkPath, removePluginsFile, forceRefresh } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
@@ -120,7 +119,7 @@ function main(context: types.IExtensionContext) {
   );
 
   // Bluebird, the bane of my life.
-  context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => Promise.resolve(testLooseFiles(context.api)) as any);
+  context.registerTest('starfield-loose-files-check', 'gamemode-activated', () => testLooseFiles(context.api) as any);
   context.registerTest('starfield-deprecated-fomod-check', 'gamemode-activated', () => Promise.resolve(testDeprecatedFomod(context.api)) as any);
 
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
@@ -129,7 +128,6 @@ function main(context: types.IExtensionContext) {
 
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
-  context.registerAction('mod-icons', 700, 'open-ext', {}, 'Open Game Photo Mode Folder', openPhotoModePath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
 
