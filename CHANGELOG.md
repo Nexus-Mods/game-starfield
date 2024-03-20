@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.6.7] - 2024-03-19
 
 - Modified custom preferences ini test to ensure that the sPhotoModeFolder entry is removed unless manually set by the user.
+- Removed "Open Photos Folder" toolbar button as Vortex no longer manages the photo folder in any way.
 
 ## [0.6.6] - 2023-12-20
 

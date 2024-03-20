@@ -131,11 +131,11 @@ export const removePluginsFile = async () => {
   }
 }
 
-export const openPhotoModePath = (api: types.IExtensionApi) => {
-  const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Data', 'Textures', 'Photos');
-  // Unfortunately the catch block isn't executing - will have to look into that....
-  util.opn(docPath).catch(() => api.showErrorNotification('Error', 'Could not open Photos folder - try taking some screenshots in game first!', { allowReport: false }));
-};
+// export const openPhotoModePath = (api: types.IExtensionApi) => {
+//   const docPath = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield', 'Data', 'Textures', 'Photos');
+//   // Unfortunately the catch block isn't executing - will have to look into that....
+//   util.opn(docPath).catch(() => api.showErrorNotification('Error', 'Could not open Photos folder - try taking some screenshots in game first!', { allowReport: false }));
+// };
 
 export async function purge(api: types.IExtensionApi): Promise<void> {
   return new Promise<void>((resolve, reject) =>
