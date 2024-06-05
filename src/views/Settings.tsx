@@ -1,8 +1,9 @@
+/* eslint-disable */
 import * as React from 'react';
-import { ControlLabel, DropdownButton, FormGroup, Panel, MenuItem, HelpBlock } from 'react-bootstrap';
+import { ControlLabel, Dropdown, DropdownButton, FormGroup, Panel, MenuItem, HelpBlock } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useStore } from 'react-redux';
-import { MainContext, Toggle, selectors, types, util } from 'vortex-api';
+import { useDispatch, useSelector, useStore } from 'react-redux';
+import { FlexLayout, MainContext, Toggle, selectors, types, util } from 'vortex-api';
 
 import { setLoadOrderManagementType, setPluginsEnabler } from '../actions/settings';
 
@@ -25,32 +26,35 @@ interface IConnectedProps {
 
 type IProps = IBaseProps;
 
+const dropDownItems: { [value: string]: string } = {
+  dnd: 'Drag and Drop',
+  gamebryo: 'Automated (LOOT)',
+};
+
 function renderLOManagementType(props: IBaseProps & IConnectedProps): JSX.Element {
   const { t } = useTranslation(NS);
   const { loManagementType, activeProfile } = props;
   const context = React.useContext(MainContext);
+  const [selected, setSelected] = React.useState(dropDownItems[props.loManagementType]);
+  const dispatch = useDispatch();
   const store = useStore();
   const onSetManageType = React.useCallback((evt) => {
-    context.api.sendNotification({
-      type: 'success',
-      message: t('Load order management type set to {{type}}', { type: evt }),
-      displayMS: 5000,
-    });
-    store.dispatch(setLoadOrderManagementType(activeProfile.id, evt));
-    context.api.dismissNotification(MISSING_PLUGINS_NOTIFICATION_ID);
+    dispatch(setLoadOrderManagementType(activeProfile.id, evt));
+    setSelected(dropDownItems[evt]);
     forceRefresh(context.api);
-  }, [context, store]);
+  }, [context, store, setSelected, activeProfile, dispatch]);
   return (
     <DropdownButton
       id='sf-btn-set-management-type'
-      title={t('Set Load Order Management Type')}
+      title={t(selected)}
       onSelect={onSetManageType}
-      value={loManagementType}
       dropup
-      style={{ display: 'block', marginLeft: 'auto', marginRight: 0 }}
     >
-      <MenuItem eventKey='dnd'>{t('Drag and Drop')}</MenuItem>
-      <MenuItem eventKey='gamebryo'>{t('Automated Sorting')}</MenuItem>
+    {
+      Object.entries(dropDownItems).map(([value, text]) => (
+        <MenuItem eventKey={value} selected={value === loManagementType}>{t(text)}</MenuItem>
+      ))
+    }
     </DropdownButton>
   );
 }
@@ -72,6 +76,7 @@ function renderPluginEnablerToggle(props: IBaseProps & IConnectedProps): JSX.Ele
 
   return (
     <>
+      <HelpBlock>{loHelpBlockText}</HelpBlock>
       <Toggle
         disabled={!needsEnabler || !pluginEnabler}
         checked={pluginEnabler}
@@ -79,9 +84,6 @@ function renderPluginEnablerToggle(props: IBaseProps & IConnectedProps): JSX.Ele
       >
         {t('Manage Load Order')}
       </Toggle>
-      <HelpBlock>
-        {loHelpBlockText}
-      </HelpBlock>
     </>
   )
 }
@@ -94,26 +96,30 @@ export default function Settings(props: IProps) {
   }, [onSetDirectoryJunction]);
 
   const connectedProps = useSelector(mapStateToProps);
+  const combined = { ...props, ...connectedProps };
   return (
     <form>
       <FormGroup controlId='default-enable'>
         <Panel>
           <Panel.Body>
             <ControlLabel>{t('Starfield')}</ControlLabel>
-            {props.needsEnabler() && renderPluginEnablerToggle({ ...props, ...connectedProps })}
+            {props.needsEnabler() && renderPluginEnablerToggle(combined)}
             <>
+              <HelpBlock>
+                {t('This will allow you to enable/disable the use of folder junctions for the game.')}
+              </HelpBlock>
               <Toggle
                 checked={connectedProps.enableDirectoryJunction}
                 onToggle={onToggle}
               >
                 {t('Use Folder Junction')}
               </Toggle>
-              <HelpBlock>
-                {t('This will allow you to enable/disable the use of folder junctions for the game.')}
-              </HelpBlock>
             </>
             <>
-              {!props.needsEnabler() && renderLOManagementType({ ...props, ...connectedProps })}
+              <HelpBlock>
+                {t('Allows you to switch between automated LOOT sorting or drag and drop')}
+              </HelpBlock>
+              {!props.needsEnabler() && renderLOManagementType(combined)}
             </>
           </Panel.Body>
         </Panel>
