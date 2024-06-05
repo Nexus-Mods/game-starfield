@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added ability to change LO functionality based on game version
 - Added setting allowing to switch between dnd and auto-sort (classic gamebryo/loot)
 - Added new mid-master plugins
+- SFSE/ASI Loader are now optional and can be downloaded via a notification at startup
 - Fixed game version resolution issues for XBox Game Pass
 - Setting controls will now hide/show depending on the game version.
 - Code cleanup
