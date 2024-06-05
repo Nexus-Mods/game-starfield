@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { fs, types, selectors, util } from 'vortex-api';
-import { isJunctionDir, createJunction, removeJunction } from './util';
+import { isJunctionDir, createJunction, removeJunction, requiresPluginEnabler } from './util';
 import path from 'path';
 
 import { setDirectoryJunctionEnabled } from './actions/settings';
@@ -8,6 +8,8 @@ import { GAME_ID, MY_GAMES_DATA_WARNING } from './common';
 import { IJunctionProps } from './types';
 
 import { migrateExtension } from './migrations/migrations';
+import { download } from './downloader';
+import { PLUGIN_REQUIREMENTS } from './loadOrder/StarFieldLoadOrder';
 
 // This code executes when the user first manages Starfield AND each time they swap from another game to Starfield. 
 export async function setup(api: types.IExtensionApi,
@@ -21,10 +23,38 @@ export async function setup(api: types.IExtensionApi,
   if (myGamesData.toLowerCase() === gameDataFolder.toLowerCase()) {
     throw new Error('Starfield is not detected correctly, please update the location of the game in the "Games" tab. It must point to the folder where the game is installed and not the My Documents folder.');
   }
+  const t = api.translate;
   // Make sure the folder exists
   await fs.ensureDirWritableAsync(myGamesFolder);
   await fs.ensureDirWritableAsync(path.join(discovery.path, 'Plugins'));
   await migrateExtension(api);
+  const requiresEnabler = await requiresPluginEnabler(api);
+  const requiredDownload = PLUGIN_REQUIREMENTS?.[discovery.store]?.[0];
+  if (requiresEnabler || !requiredDownload) {
+    return;
+  }
+
+  const existing = await requiredDownload.findMod(api);
+  if (existing) {
+    return;
+  }
+
+  api.sendNotification({
+    type: 'warning',
+    message: t('Would you like to download "{{requirement}}"', { replace: { requirement: requiredDownload.userFacingName } }),
+    actions: [{
+      title: 'Close',
+      action: async (dismiss) => {
+        return dismiss();
+      }
+    }, {
+      title: 'Download',
+      action: async (dismiss) => {
+        await download(api, [requiredDownload]);
+        return dismiss();
+      }
+    }],
+  });
 }
 
 export async function toggleJunction(api: types.IExtensionApi, enable: boolean): Promise<void> {
