@@ -1,19 +1,22 @@
 /* eslint-disable */
 import React from 'react';
 import path from 'path';
+import semver from 'semver';
 import { fs, selectors, types, util } from 'vortex-api';
 
 import { IPluginRequirement } from '../types';
 import {
-  GAME_ID, PLUGINS_TXT, PLUGINS_BACKUP, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, NATIVE_PLUGINS,
+  GAME_ID, PLUGINS_TXT, PLUGINS_BACKUP, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, ALL_NATIVE_PLUGINS,
   DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS, MISSING_PLUGINS_NOTIFICATION_ID,
+  PLUGIN_ENABLER_CONSTRAINT,
 } from '../common';
 import { download } from '../downloader';
-import InfoPanel from '../views/InfoPanel';
-import { walkPath, findModByFile, forceRefresh } from '../util';
+import { walkPath, findModByFile, forceRefresh, requiresPluginEnabler, getGameVersionSync } from '../util';
 
 import { migrateTestFiles } from './testFileHandler';
 import { setPluginsEnabler } from '../actions/settings';
+import { InfoPanel } from '../views/InfoPanel';
+import { InfoPanelCK } from '../views/InfoPanelCK';
 
 type PluginRequirements = { [gameStore: string]: IPluginRequirement[] };
 export const PLUGIN_REQUIREMENTS: PluginRequirements = {
@@ -68,7 +71,16 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     this.clearStateOnPurge = true;
     this.toggleableEntries = true;
     this.noCollectionGeneration = true;
-    this.usageInstructions = () => (<InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />);
+    this.usageInstructions = (() => {
+      const gameVersion = getGameVersionSync(api);
+      const needsEnabler = semver.satisfies(gameVersion, PLUGIN_ENABLER_CONSTRAINT);
+      return needsEnabler ? (
+        <InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />
+      ) : (
+        <InfoPanelCK />
+      );
+    }) as any;
+
     this.mApi = api;
     this.deserializeLoadOrder = this.deserializeLoadOrder.bind(this);
     this.serializeLoadOrder = this.serializeLoadOrder.bind(this);
@@ -178,7 +190,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
     let nativeIdx = 0;
     const nextNativeIdx = () => nativeIdx++;
-    for (const plugin of NATIVE_PLUGINS) {
+    for (const plugin of ALL_NATIVE_PLUGINS) {
       // Make sure the native plugin is deployed to the game's data folder.
       let idx = plugins.findIndex(entry => path.basename(entry.filePath.toLowerCase()) === plugin);
       if (idx === -1) {
@@ -259,7 +271,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
   private async serializePluginsFile(plugins: types.ILoadOrderEntry[]): Promise<void> {
     const data = plugins.map(plugin => {
       // Strip the native plugins from whatever we write to the file as it's uneccessary.
-      if (NATIVE_PLUGINS.includes(plugin.name.toLowerCase())) {
+      if (ALL_NATIVE_PLUGINS.includes(plugin.name.toLowerCase())) {
         return '';
       }
       const invalid = plugin.data?.isInvalid ? '#' : '';
@@ -283,9 +295,11 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     }
   }
 
-  private isLOManagedByVortex(): boolean {
+  private async isLOManagedByVortex(): Promise<boolean> {
     const state = this.mApi.getState();
-    return util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
+    const needsEnabler = await requiresPluginEnabler(this.mApi);
+    const enablerStatus = util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
+    return needsEnabler ? enablerStatus : true;
   }
 }
 

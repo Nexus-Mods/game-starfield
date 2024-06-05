@@ -1,8 +1,11 @@
 /* eslint-disable */
+import { getFileVersion } from 'exe-version';
 import { fs, log, selectors, types, util } from 'vortex-api';
-import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, MISSING_PLUGINS_NOTIFICATION_ID, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP } from './common';
+import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, MISSING_PLUGINS_NOTIFICATION_ID, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST, PLUGIN_ENABLER_CONSTRAINT } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
+import { parseStringPromise } from 'xml2js';
 import path from 'path';
+import semver from 'semver';
 import { getStopPatterns } from './stopPatterns';
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
@@ -202,6 +205,50 @@ export async function purgeDeployedFiles(basePath: string,
   return Promise.resolve();
 }
 
+export async function requiresPluginEnabler(api: types.IExtensionApi): Promise<boolean> {
+  try {
+    const gameVersion = await getGameVersionAsync(api);
+    return (semver.satisfies(semver.coerce(gameVersion).version, PLUGIN_ENABLER_CONSTRAINT));
+  } catch (err) {
+    // Assume it's required.
+    log('error', 'failed to check plugin enabler constraint', err);
+    return false;
+  }
+}
+
+export function getGameVersionSync(api: types.IExtensionApi): string {
+  const state = api.getState();
+  const gameVersion = util.getSafe(state, ['persistent', 'gameMode', 'versions', GAME_ID], '0.0.0');
+  return semver.coerce(gameVersion).raw;
+}
+
+export async function getGameVersionAsync(api: types.IExtensionApi): Promise<string> {
+  const state = api.getState();
+  const discovery = selectors.discoveryByGame(state, GAME_ID);
+  if (!discovery?.path) {
+    return Promise.reject(new util.GameNotFound(GAME_ID));
+  }
+  if (discovery.store === 'xbox') {
+    try {
+      const appManifest = path.join(discovery.path, XBOX_APP_X_MANIFEST);
+      await fs.statAsync(appManifest);
+      const data = await fs.readFileAsync(appManifest, { encoding: 'utf8' });
+      const parsed = await parseStringPromise(data);
+      return Promise.resolve(parsed?.Package?.Identity?.[0]?.$?.Version);
+    } catch (err) {
+      return Promise.reject(new Error('failed to parse appxmanifest.xml'));
+    }
+  } else {
+    const execPath = path.isAbsolute(discovery.executable) ? discovery.executable : path.join(discovery.path, discovery.executable);
+    try {
+      const version = await getFileVersion(execPath);
+      return Promise.resolve(version);
+    } catch (err) {
+      return Promise.reject(new util.NotFound(execPath));
+    }
+  }
+}
+
 export async function getExtensionVersion() {
   const infoFile = JSON.parse(await fs.readFileAsync(path.join(__dirname, 'info.json')));
   return infoFile.version;
@@ -244,7 +291,7 @@ export function dismissNotifications(api: types.IExtensionApi) {
   // TODO: Find a better way to control the update notifications!!!
   const notificationIds = ['starfield-junction-activity',
     MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, MISSING_PLUGINS_NOTIFICATION_ID,
-    'starfield-update-notif-0.5.0', 'starfield-update-notif-0.6.0'];
+    'starfield-update-notif-0.5.0', 'starfield-update-notif-0.6.0', 'starfield-update-notif-0.7.0'];
   for (const id of notificationIds) {
     // Can't batch these.
     api.dismissNotification(id);

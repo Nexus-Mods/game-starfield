@@ -5,7 +5,7 @@ import { PLUGIN_REQUIREMENTS } from './loadOrder/StarFieldLoadOrder';
 import { actions, fs, types, log, selectors, util } from 'vortex-api';
 import { parse, stringify } from 'ini-comments';
 
-import { isJunctionDir, purge, deploy, migrateMod, sanitizeIni } from './util';
+import { isJunctionDir, purge, deploy, migrateMod, sanitizeIni, requiresPluginEnabler } from './util';
 import { toggleJunction } from './setup';
 import { setDirectoryJunctionSuppress, setDirectoryJunctionEnabled, setPluginsEnabler } from './actions/settings';
 
@@ -152,6 +152,10 @@ export async function testPluginsEnabler(api: types.IExtensionApi): Promise<void
   const state = api.getState();
   const profile: types.IProfile = selectors.activeProfile(state);
   if (profile?.gameId !== GAME_ID) {
+    return Promise.resolve();
+  }
+  const needsEnabler = await requiresPluginEnabler(api);
+  if (!needsEnabler) {
     return Promise.resolve();
   }
   const isModEnabled = (mod: types.IMod) => util.getSafe(profile, ['modState', mod.id, 'enabled'], false);

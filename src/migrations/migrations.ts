@@ -3,30 +3,67 @@ import path from 'path';
 import semver from 'semver';
 import { actions, fs, selectors, types, util } from 'vortex-api';
 import { setMigrationVersion } from '../actions/settings';
-import { DATA_SUBFOLDERS, GAME_ID, MOD_TYPE_DATAPATH, NS } from '../common';
-import { deploy, nuclearPurge, getExtensionVersion } from '../util';
-
-const DEBUG = false;
+import { DATA_SUBFOLDERS, GAME_ID, MOD_TYPE_DATAPATH, NS, PLUGIN_ENABLER_CONSTRAINT } from '../common';
+import { deploy, nuclearPurge, getExtensionVersion, requiresPluginEnabler } from '../util';
 
 // Migrations should be self contained - do not let any errors escape from them.
 //  if a migration fails, it should allow the user to fallback to his previous state,
 //  or to retry the migration.
 export async function migrateExtension(api: types.IExtensionApi) {
-  if (DEBUG) debugger;
   const state = api.getState();
   if (selectors.activeGameId(state) !== GAME_ID) {
     return Promise.resolve();
   }
 
-  const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
+  const currentVersion = '0.0.0';
+  // const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
   const newVersion = await getExtensionVersion();
-  if (semver.gt('0.6.0', currentVersion)) {
+  if (semver.gt('0.7.0', currentVersion)) {
+    await migrate070(api, newVersion);
+  } else if (semver.gt('0.6.0', currentVersion)) {
     await migrate060(api, newVersion);
   } else if (semver.gt('0.5.0', currentVersion)) {
     await migrate050(api, newVersion);
   }
 
   api.store?.dispatch(setMigrationVersion(newVersion));
+}
+
+export async function migrate070(api: types.IExtensionApi, version: string) {
+  const enablePlugins = await requiresPluginEnabler(api);
+  if (enablePlugins) {
+    return migrate060(api, version);
+  }
+
+  const notificationId = 'starfield-update-notif-0.7.0';
+  const t = api.translate;
+  api.sendNotification({
+    message: t('Starfield extension has been updated to v{{newVersion}}', { replace: { newVersion: version }, ns: NS }),
+    noDismiss: true,
+    allowSuppress: false,
+    type: 'success',
+    id: notificationId,
+    actions: [
+      {
+        title: t('More', { ns: NS }),
+        action: () => api.showDialog('success', 'Starfield Extension Update v{{newVersion}}', {
+          parameters: {
+            newVersion: version
+          },
+          bbcode: t('As of version "{{cutoff}}" of the game, the plugin enabler is no longer required as the game '
+                  + 'now fully supports plugins on its own.', { replace: { cutoff: PLUGIN_ENABLER_CONSTRAINT.slice(1) } }),
+        }, [
+          {
+            label: t('Close', { ns: NS }),
+            action: () => {
+              api.dismissNotification(notificationId);
+              api.suppressNotification(notificationId, true);
+            }
+          }
+        ], 'starfield-update-0.7.0')
+      }
+    ],
+  });
 }
 
 export async function migrate060(api: types.IExtensionApi, version: string) {

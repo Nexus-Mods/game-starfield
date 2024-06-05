@@ -17,7 +17,7 @@ interface IConnectedProps {
   discovery: types.IDiscoveryResult;
 }
 
-export default function InfoPanel(props: IBaseProps) {
+export function InfoPanel(props: IBaseProps) {
   const { onInstallPluginsEnabler } = props;
   const { api } = React.useContext(MainContext);
   const [isXbox, setIsXbox] = React.useState(false);

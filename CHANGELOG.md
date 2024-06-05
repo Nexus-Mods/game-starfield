@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.7.0] - 2024-xx-xx
 
 - Added CK tool
+- Added ability to change LO functionality based on game version
+- Added setting allowing to switch between dnd and auto-sort (classic gamebryo/loot)
+- Added new mid-master plugins
+- Fixed game version resolution issues for XBox Game Pass
+- Setting controls will now hide/show depending on the game version.
+- Code cleanup
 
 ## [0.6.7] - 2024-03-19
 
