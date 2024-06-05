@@ -58,6 +58,15 @@ const supportedTools: types.ITool[] = [
     requiredFiles: [],
     parameters: [],
   },
+  {
+    id: 'creation-kit-sf',
+    name: 'Creation Kit',
+    executable: () => 'CreationKit.exe',
+    logo: 'CK.png',
+    requiredFiles: [
+      'CreationKit.exe',
+    ],
+  },
 ];
 
 const gameFinderQuery = {

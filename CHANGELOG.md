@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.7.0] - 2024-xx-xx
+
+- Added CK tool
+
 ## [0.6.7] - 2024-03-19
 
 - Removed all logic pertaining to the sPhotoModeFolder ini entry (Please add/remove/modify the ini entry manually if needed)
