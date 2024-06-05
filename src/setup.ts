@@ -4,7 +4,7 @@ import { isJunctionDir, createJunction, removeJunction, requiresPluginEnabler } 
 import path from 'path';
 
 import { setDirectoryJunctionEnabled } from './actions/settings';
-import { GAME_ID, MY_GAMES_DATA_WARNING } from './common';
+import { GAME_ID, MY_GAMES_DATA_WARNING, NS } from './common';
 import { IJunctionProps } from './types';
 
 import { migrateExtension } from './migrations/migrations';
@@ -41,10 +41,31 @@ export async function setup(api: types.IExtensionApi,
 
   api.sendNotification({
     type: 'warning',
-    message: t('Would you like to download "{{requirement}}"', { replace: { requirement: requiredDownload.userFacingName } }),
+    allowSuppress: true,
+    id: 'sf-download-requirement-notification',
+    message: t('Would you like to download "{{requirement}}"', {
+      ns: NS,
+      replace: { requirement: requiredDownload.userFacingName, }
+    }),
     actions: [{
-      title: 'Close',
+      title: 'More',
       action: async (dismiss) => {
+        await api.showDialog('question', 'Download and install "{{requirement}}"', {
+          bbcode: t('Some mods may require "{{requirement}}" to be installed in order to function correctly.[br][/br][br][/br]'
+                  + 'Would you like to download it now?', {
+            ns: NS,
+            requirement: requiredDownload.userFacingName
+          })
+        }, [
+          { label: 'Close' },
+          {
+            label: 'Download',
+            action: async () => {
+              await download(api, [requiredDownload]);
+              return dismiss();
+            }
+          },
+        ])
         return dismiss();
       }
     }, {
