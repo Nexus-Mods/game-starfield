@@ -2,7 +2,7 @@
 import path from 'path';
 import semver from 'semver';
 import { actions, fs, selectors, types, util } from 'vortex-api';
-import { setMigrationVersion } from '../actions/settings';
+import { setMigrationVersion, setPluginsEnabler } from '../actions/settings';
 import { DATA_SUBFOLDERS, GAME_ID, MOD_TYPE_DATAPATH, NS, PLUGIN_ENABLER_CONSTRAINT } from '../common';
 import { deploy, nuclearPurge, getExtensionVersion, requiresPluginEnabler } from '../util';
 
@@ -31,8 +31,8 @@ export async function migrateExtension(api: types.IExtensionApi) {
 
 export async function migrate070(api: types.IExtensionApi, version: string) {
   const enablePlugins = await requiresPluginEnabler(api);
-  if (enablePlugins) {
-    return migrate060(api, version);
+  if (!enablePlugins) {
+    api.store.dispatch(setPluginsEnabler(false));
   }
 
   const notificationId = 'starfield-update-notif-0.7.0';
