@@ -80,6 +80,8 @@ A new "Load Order" page has been added to the extension to allow users to view t
 
 # Known Issues
 
+- SFSE and ASI Loader are outdated - disable the relevant script loader/extender to ensure your game does not crash.
+
 - This extension has been tested with all of the most popular mods, installers, script extenders, mod fixers etc. Please see this [Mod Compatibility List](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) forum post for details.
 
 - Symlink support has been disabled due inconsistencies with some files working and some not. Animation replacers don’t read symlinked, but textures seem ok. This does match the pattern of older Bethesda games which looked for a while like we could avoid.
