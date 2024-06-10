@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { getFileVersion } from 'exe-version';
-import { fs, log, selectors, types, util } from 'vortex-api';
+import { actions, fs, log, selectors, types, util } from 'vortex-api';
 import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, MISSING_PLUGINS_NOTIFICATION_ID, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST, PLUGIN_ENABLER_CONSTRAINT } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import { parseStringPromise } from 'xml2js';
@@ -239,12 +239,13 @@ export async function getGameVersionAsync(api: types.IExtensionApi): Promise<str
       return Promise.reject(new Error('failed to parse appxmanifest.xml'));
     }
   } else {
-    const execPath = path.isAbsolute(discovery.executable) ? discovery.executable : path.join(discovery.path, discovery.executable);
+    const game = util.getGame(GAME_ID);
+    const exePath = path.join(discovery.path, discovery.executable || game.executable());
     try {
-      const version = await getFileVersion(execPath);
+      const version = await getFileVersion(exePath);
       return Promise.resolve(version);
     } catch (err) {
-      return Promise.reject(new util.NotFound(execPath));
+      return Promise.reject(new util.NotFound(exePath));
     }
   }
 }

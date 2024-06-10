@@ -36,7 +36,7 @@ export function InfoPanel(props: IBaseProps) {
     if (!isXbox && discovery?.store === 'xbox') {
       setIsXbox(true);
     }
-  }, [pluginEnabler, loadOrder, isXbox, setIsXbox, discovery]);
+  }, [isXbox, pluginEnabler, discovery]);
   const renderXboxWarningEnabledSystem = () => {
     return isXbox ? (
       <Alert bsStyle='warning'>
