@@ -51,7 +51,8 @@ export async function migrate070(api: types.IExtensionApi, version: string) {
             newVersion: version
           },
           bbcode: t('As of version "{{cutoff}}" of the game, the plugin enabler is no longer required as the game '
-                  + 'now fully supports plugins on its own.', { replace: { cutoff: PLUGIN_ENABLER_CONSTRAINT.slice(1) } }),
+                  + 'now fully supports plugins on its own. If your game crashes, please disable "SFSE" or the "ASI Loader"'
+                  + 'mods and wait for them to be updated.', { replace: { cutoff: PLUGIN_ENABLER_CONSTRAINT.slice(1) } }),
         }, [
           {
             label: t('Close', { ns: NS }),
