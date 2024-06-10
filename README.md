@@ -69,7 +69,7 @@ Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order t
 
 ~~The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda. This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.~~ The plugin management systen in Starfield has been enabled as of 9th of June 2024; plugin enablers are no longer required.
 
-A new "Load Order" page has been added to the extension to allow users to view their deployed mods and manage their load order. By default this system is disabled and can only be enabled through the Load Order page. The user can disable this feature at any time through the Settings -> Mods -> Starfield -> Manage Load Order Toggle.
+A new "Load Order" page has been added to the extension to allow users to view their deployed mods and manage their load order. ~~By default this system is disabled and can only be enabled through the Load Order page. The user can disable this feature at any time through the Settings -> Mods -> Starfield -> Manage Load Order Toggle.~~
 
 ~~Before enabling the plugin management system keep the following in mind:~~
 
