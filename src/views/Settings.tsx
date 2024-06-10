@@ -49,6 +49,7 @@ function renderLOManagementType(props: IBaseProps & IConnectedProps): JSX.Elemen
       title={t(selected)}
       onSelect={onSetManageType}
       dropup
+      disabled={true} // Temporary
     >
     {
       Object.entries(dropDownItems).map(([value, text]) => (

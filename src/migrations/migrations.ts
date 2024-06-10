@@ -15,8 +15,7 @@ export async function migrateExtension(api: types.IExtensionApi) {
     return Promise.resolve();
   }
 
-  const currentVersion = '0.0.0';
-  // const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
+  const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
   const newVersion = await getExtensionVersion();
   if (semver.gt('0.7.0', currentVersion)) {
     await migrate070(api, newVersion);
