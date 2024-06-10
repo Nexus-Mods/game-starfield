@@ -121,25 +121,28 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       const profile = selectors.activeProfile(state);
       return util.getSafe(profile, ['modState', modId, 'enabled'], false);
     };
-    const testFiles = await migrateTestFiles(this.mApi);
-    if (testFiles.length > 0) {
-      for (const file of testFiles) {
-        const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, file);
-        const invalid = !mod && !isInDataFolder(file);
-        const loEntry = {
-          enabled: !invalid,
-          id: file,
-          name: file,
-          modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
-          locked: invalid,
-          data: {
-            isInvalid: invalid,
+
+    if (await requiresPluginEnabler(this.mApi)) {
+      const testFiles = await migrateTestFiles(this.mApi);
+      if (testFiles.length > 0) {
+        for (const file of testFiles) {
+          const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, file);
+          const invalid = !mod && !isInDataFolder(file);
+          const loEntry = {
+            enabled: !invalid,
+            id: file,
+            name: file,
+            modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
+            locked: invalid,
+            data: {
+              isInvalid: invalid,
+            }
           }
-        }
-        if (invalid) {
-          invalidEntries.push(loEntry);
-        } else {
-          loadOrder.push(loEntry);
+          if (invalid) {
+            invalidEntries.push(loEntry);
+          } else {
+            loadOrder.push(loEntry);
+          }
         }
       }
     }

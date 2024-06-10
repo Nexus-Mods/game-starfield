@@ -22,7 +22,7 @@ export async function testLooseFiles(api: types.IExtensionApi): Promise<types.IT
   const isValid = async () => {
     try {
       // Ensure file is created if it does not exist.
-      await fs.ensureFileAsync(iniPath);
+      await fs.statAsync(iniPath).catch(err => fs.ensureFileAsync(iniPath));
       let iniContent = (await fs.readFileAsync(iniPath, 'utf-8')) ?? '';
       ini = parse(iniContent);
       return ini?.Archive?.bInvalidateOlderFiles === '1'

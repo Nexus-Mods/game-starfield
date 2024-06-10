@@ -18,13 +18,10 @@ export function InfoPanelCK() {
   const t = (input: string) => api.translate(input, { ns: NS });
   const { loadOrder, discovery } = useSelector(mapStateToProps);
   React.useEffect(() => {
-    if (loadOrder.length > 0) {
-      forceRefresh(api);
-    }
     if (!isXbox && discovery?.store === 'xbox') {
       setIsXbox(true);
     }
-  }, [loadOrder, isXbox, setIsXbox, discovery]);
+  }, [isXbox, setIsXbox, discovery]);
   const renderXboxWarningEnabledSystem = () => {
     return isXbox ? (
       <Alert bsStyle='warning'>
