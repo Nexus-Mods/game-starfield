@@ -74,7 +74,7 @@ A new "Load Order" page has been added to the extension to allow users to view t
 ~~Before enabling the plugin management system keep the following in mind:~~
 
 - Vortex will download any required mods/tools for load ordering to function ~~as soon as you enable the plugin management system.~~ at the time of writing, SFSE and the ASI Loader have yet to be updated to support the game - in the meantime if you experience game crashes - disable SFSE or the ASI Loader and any mods that require them.
-~~- Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield".~~ Any sTestFileX INI entries will block the plugin management functionality from working. This is by Bethesda's design. Vortex now assumes that the "sTestFileX" INI edit pattern is no longer required as the creation kit has been released.
+- ~~Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield".~~ Any sTestFileX INI entries will block the plugin management functionality from working. This is by Bethesda's design. Vortex now assumes that the "sTestFileX" INI edit pattern is no longer required as the creation kit has been released.
 - Game Pass version of the game will not be able to use SFSE or its plugins - the [Ultimate-ASI-Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) is used to load plugins to the game instead.
 - Native plugins are not serialized to the "plugins.txt" file.
 
