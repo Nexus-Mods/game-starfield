@@ -117,10 +117,12 @@ export default function Settings(props: IProps) {
               </Toggle>
             </>
             <>
-              <HelpBlock>
-                {t('Allows you to switch between automated LOOT sorting or drag and drop')}
-              </HelpBlock>
-              {!props.needsEnabler() && renderLOManagementType(combined)}
+            {
+              // <HelpBlock>
+              //   {t('Allows you to switch between automated LOOT sorting or drag and drop')}
+              // </HelpBlock>
+              // {!props.needsEnabler() && renderLOManagementType(combined)}
+            }
             </>
           </Panel.Body>
         </Panel>
