@@ -44,7 +44,6 @@ export function InfoPanelCK() {
         <li>{t('If installing a collection - wait for it to complete before re-visiting this page.')}</li>
         <li>{t('Press the "Reset Plugins File" button if your plugins.txt file is in a corrupted state.')}</li>
         <li>{t('Press the "Refresh List" button to refresh/sync changes.')}</li>
-        <li>{t('Press the "Sort with LOOT" button to sort your load order automatically')}</li>
       </ul>
     </>
   );
