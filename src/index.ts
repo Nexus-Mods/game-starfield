@@ -145,9 +145,9 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
-  context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
-    context.api.showErrorNotification('Not Implemented Yet', 'Soon TM');
-  });
+  // context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
+  //   context.api.showErrorNotification('Not Implemented Yet', 'Soon TM');
+  // });
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));
 
