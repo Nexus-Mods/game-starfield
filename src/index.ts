@@ -1,8 +1,9 @@
 /* eslint-disable */
 
 import path from 'path';
+import semver from 'semver';
 
-import { actions, fs, types, selectors, util } from 'vortex-api';
+import { fs, types, selectors, util } from 'vortex-api';
 
 import { getDataPath, testDataPath } from './modTypes/dataPath';
 import { getASIPluginsPath, testASIPluginsPath } from './modTypes/asiMod';
@@ -13,7 +14,7 @@ import { testASILoaderSupported, installASILoader, testASIModSupported, installA
 import { mergeASIIni, testASIMergeIni } from './merges/iniMerge';
 
 import { isStarfield, openAppDataPath, openSettingsPath, dismissNotifications, linkAsiLoader,
-  walkPath, removePluginsFile, forceRefresh } from './util';
+  walkPath, removePluginsFile, forceRefresh, getGameVersionAsync, getGameVersionSync } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
 
@@ -29,7 +30,7 @@ import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 
 import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
   STEAMAPP_ID, XBOX_ID, TARGET_ASI_LOADER_NAME,
-  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP } from './common';
+  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, PLUGIN_ENABLER_CONSTRAINT } from './common';
 
 const supportedTools: types.ITool[] = [
   {
@@ -57,6 +58,15 @@ const supportedTools: types.ITool[] = [
     logo: 'SF1Edit.png',
     requiredFiles: [],
     parameters: [],
+  },
+  {
+    id: 'creation-kit-sf',
+    name: 'Creation Kit',
+    executable: () => 'CreationKit.exe',
+    logo: 'CK.png',
+    requiredFiles: [
+      'CreationKit.exe',
+    ],
   },
 ];
 
@@ -93,6 +103,7 @@ function main(context: types.IExtensionContext) {
     requiredFiles: ['Starfield.exe'],
     setup: (discovery) => setup(context.api, discovery) as any,
     supportedTools,
+    getGameVersion: () => getGameVersionAsync(context.api),
     requiresLauncher: requiresLauncher as any,
     details: {
       supportsSymlinks: false,
@@ -113,6 +124,10 @@ function main(context: types.IExtensionContext) {
           raiseJunctionDialog(context.api, true);
         }
       },
+      needsEnabler: () => {
+        const version = getGameVersionSync(context.api);
+        return semver.satisfies(version, PLUGIN_ENABLER_CONSTRAINT);
+      }
     }),
     () => selectors.activeGameId(context.api.getState()) === GAME_ID,
     150
@@ -130,6 +145,9 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
+  // context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
+  //   context.api.showErrorNotification('Not Implemented Yet', 'Soon TM');
+  // });
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));
 
@@ -170,9 +188,6 @@ function main(context: types.IExtensionContext) {
     context.api.onAsync('did-deploy', (profileId: string, deployment: types.IDeploymentManifest) => onDidDeployEvent(context.api, profileId, deployment));
     context.api.onAsync('will-purge', (profileId: string) => onWillPurgeEvent(context.api, profileId));
     context.api.onAsync('did-purge', (profileId: string) => onDidPurgeEvent(context.api, profileId));
-    // context.api.onAsync('intercept-file-changes', (intercepted: types.IFileChange[], cb: (result: types.IFileChange[]) => void) => {
-    //   return onInterceptFileChanges(context.api, intercepted, cb);
-    // });
   });
 
   return true;

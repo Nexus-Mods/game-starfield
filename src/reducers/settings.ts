@@ -1,5 +1,6 @@
 import { types, util } from 'vortex-api';
 import { setDirectoryJunctionEnabled, setDirectoryJunctionSuppress,
+         setLoadOrderManagementType,
          setMigrationVersion, setPluginsEnabler } from '../actions/settings';
 
 export const settingsReducer: types.IReducerSpec = {
@@ -8,6 +9,10 @@ export const settingsReducer: types.IReducerSpec = {
     [setDirectoryJunctionSuppress as any]: (state, payload) => util.setSafe(state, ['suppressDirectoryJunctionTest'], payload),
     [setMigrationVersion as any]: (state, payload) => util.setSafe(state, ['migrationVersion'], payload),
     [setPluginsEnabler as any]: (state, payload) => util.setSafe(state, ['pluginEnabler'], payload),
+    [setLoadOrderManagementType as any]: (state, payload) => {
+      const { profileId, type } = payload;
+      return util.setSafe(state, ['loadOrderManagementType', profileId], type);
+    },
   },
   defaults: {
     pluginEnabler: false,

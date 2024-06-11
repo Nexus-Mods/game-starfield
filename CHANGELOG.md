@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.7.0] - 2024-06-11
+
+- Tweaks to support latest Starfield update (v1.12)
+- Added Creation Kit as a tool
+- Added new native plugins to locked list
+- SFSE/ASI Loader are now optional and can be downloaded via a notification at startup
+- Fixed game version resolution issues for Xbox Game Pass
+
 ## [0.6.7] - 2024-03-19
 
 - Removed all logic pertaining to the sPhotoModeFolder ini entry (Please add/remove/modify the ini entry manually if needed)

@@ -3,6 +3,7 @@ import { IMod } from "vortex-api/lib/types/IState";
 
 export type LockedState = "true" | "false" | "always" | "never";
 export type LoadOrder = ILoadOrderEntry[];
+export type LoadOrderManagementType = 'gamebryo' | 'dnd';
 
 export interface IGithubDownload {
   fileName: string;

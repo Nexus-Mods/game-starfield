@@ -47,7 +47,7 @@ It is also possible to manually set the game folder if the auto detection doesn'
 
 If your game lacks this file then it is likely that your installation has become corrupted somehow.
 
-## Important note if managing the game through xbox game pass:
+## Important note if managing the game through Xbox Game Pass:
 
 Currently the game discovery will resolve to the game's default `WindowsApps` location - Vortex's access to this directory is very limited due to the game store locking the files in a system owned virtual file system. As a workaround, please install the game into an external location, e.g. `C:/XboxGames/` and manually set the game folder inside Vortex to the `C:\XboxGames\Starfield\Content` folder. You should then be able to create the folder junction and mod your game.
 
@@ -65,20 +65,22 @@ Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order t
 
 ~~Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.~~ This was removed in version `0.6.7` of the extension due to a bug in Starfield that was introduced when the game updated to approximately version `1.10.31.0`.
 
-# Plugin Load Ordering (0.6.x)
+# Plugin Load Ordering (0.7.x)
 
-The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda. This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.
+~~The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda. This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.~~ The plugin management systen in Starfield has been enabled as of 9th of June 2024; plugin enablers are no longer required.
 
-A new "Load Order" page has been added to the extension to allow users to view their deployed mods and manage their load order. By default this system is disabled and can only be enabled through the Load Order page. The user can disable this feature at any time through the Settings -> Mods -> Starfield -> Manage Load Order Toggle.
+A new "Load Order" page has been added to the extension to allow users to view their deployed mods and manage their load order. ~~By default this system is disabled and can only be enabled through the Load Order page. The user can disable this feature at any time through the Settings -> Mods -> Starfield -> Manage Load Order Toggle.~~
 
-Before enabling the plugin management system keep the following in mind:
+~~Before enabling the plugin management system keep the following in mind:~~
 
-- Vortex will download any required mods/tools for load ordering to function as soon as you enable the plugin management system.
-- Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield". Any INI entries will block the plugin management functionality from working. This is by Bethesda's design.
+- Vortex will download any required mods/tools for load ordering to function ~~as soon as you enable the plugin management system.~~ at the time of writing, SFSE and the ASI Loader have yet to be updated to support the game - in the meantime if you experience game crashes - disable SFSE or the ASI Loader and any mods that require them.
+- ~~Vortex will migrate any "sTestFileX=" entries it finds in the INI files to the plugins.txt file located inside "%APPLOCALDATA%/Starfield".~~ Any sTestFileX INI entries will block the plugin management functionality from working. This is by Bethesda's design. Vortex now assumes that the "sTestFileX" INI edit pattern is no longer required as the creation kit has been released.
 - Game Pass version of the game will not be able to use SFSE or its plugins - the [Ultimate-ASI-Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) is used to load plugins to the game instead.
 - Native plugins are not serialized to the "plugins.txt" file.
 
 # Known Issues
+
+- SFSE and ASI Loader are outdated - disable the relevant script loader/extender to ensure your game does not crash.
 
 - This extension has been tested with all of the most popular mods, installers, script extenders, mod fixers etc. Please see this [Mod Compatibility List](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) forum post for details.
 
