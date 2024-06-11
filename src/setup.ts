@@ -29,7 +29,8 @@ export async function setup(api: types.IExtensionApi,
   await fs.ensureDirWritableAsync(path.join(discovery.path, 'Plugins'));
   await migrateExtension(api);
   const requiresEnabler = await requiresPluginEnabler(api);
-  const requiredDownload = PLUGIN_REQUIREMENTS?.[discovery.store]?.[0];
+  const storeId = discovery?.store === 'xbox' ? 'xbox' : 'steam';
+  const requiredDownload = PLUGIN_REQUIREMENTS?.[storeId]?.[0];
   if (requiresEnabler || !requiredDownload) {
     return;
   }
