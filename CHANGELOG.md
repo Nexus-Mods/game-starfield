@@ -4,16 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.7.0] - 2024-xx-xx
+## [0.7.0] - 2024-06-11
 
-- Added CK tool
-- Added ability to change LO functionality based on game version
-- Added setting allowing to switch between dnd and auto-sort (classic gamebryo/loot)
-- Added new mid-master plugins
+- Tweaks to support latest Starfield update (v1.12)
+- Added Creation Kit as a tool
+- Added new native plugins to locked list
 - SFSE/ASI Loader are now optional and can be downloaded via a notification at startup
-- Fixed game version resolution issues for XBox Game Pass
-- Setting controls will now hide/show depending on the game version.
-- Code cleanup
+- Fixed game version resolution issues for Xbox Game Pass
 
 ## [0.6.7] - 2024-03-19
 
