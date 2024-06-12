@@ -16,6 +16,7 @@ export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
 export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
 export const MISSING_PLUGINS_NOTIFICATION_ID = 'starfield-missing-plugins';
 export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
+export const INSTALLING_REQUIREMENTS_NOTIFICATION_ID = 'starfield-installing-requirements';
 
 // Below constraint is used for the GAME version. Not the extension.
 export const PLUGIN_ENABLER_CONSTRAINT = '<1.12.0';

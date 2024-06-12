@@ -4,13 +4,13 @@ import path from 'path';
 import { actions, fs, selectors, types, util } from 'vortex-api';
 import axios from 'axios';
 
-import { GAME_ID } from './common';
+import { GAME_ID, INSTALLING_REQUIREMENTS_NOTIFICATION_ID } from './common';
 import { IPluginRequirement, IGithubDownload } from './types';
 
 export async function download(api: types.IExtensionApi, requirements: IPluginRequirement[]) {
   api.sendNotification({
-    id: 'plugins-enabler-installing',
-    message: 'Installing plugin enabler',
+    id: INSTALLING_REQUIREMENTS_NOTIFICATION_ID,
+    message: 'Installing modding requirements',
     type: 'activity',
     noDismiss: true,
     allowSuppress: false,
@@ -40,7 +40,7 @@ export async function download(api: types.IExtensionApi, requirements: IPluginRe
     if (batchActions.length > 0) {
       util.batchDispatch(api.store, batchActions);
     }
-    api.dismissNotification('plugins-enabler-installing');
+    api.dismissNotification(INSTALLING_REQUIREMENTS_NOTIFICATION_ID);
   }
 }
 
