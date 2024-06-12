@@ -123,7 +123,8 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       return util.getSafe(profile, ['modState', modId, 'enabled'], false);
     };
 
-    if (await requiresPluginEnabler(this.mApi)) {
+    const pluginEnablerRequired = await requiresPluginEnabler(this.mApi);
+    if (pluginEnablerRequired) {
       const testFiles = await migrateTestFiles(this.mApi);
       if (testFiles.length > 0) {
         for (const file of testFiles) {
@@ -149,6 +150,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     }
 
     const currentLO = await this.deserializePluginsFile();
+    const deploymentNeeded = util.getSafe(this.mApi.getState(), ['persistent', 'deployment', 'needToDeploy', GAME_ID], false);
     for (const plugin of currentLO) {
       if (plugin.startsWith('#') && !DATA_PLUGINS.includes(path.extname(plugin.trim().slice(1)))) {
         // Only esm, esp, esl
@@ -156,8 +158,11 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       }
       const name = plugin.replace(/\#|\*/g, '');
       const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, name);
-      // Plugin is only invalid if it's not located inside the data folder.
-      const invalid = !isInDataFolder(name);
+      const invalid = deploymentNeeded
+        ? false
+        : mod !== undefined
+          ? isModEnabled(mod.id) && !isInDataFolder(name)
+          : !isInDataFolder(name);
       const enabled = plugin.startsWith('*');
       const loEntry: types.ILoadOrderEntry = {
         enabled: enabled && !invalid,
@@ -213,7 +218,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       this.mApi.sendNotification({
         type: 'warning',
         title: 'Missing Plugins Detected',
-        message: 'Some plugins are missing from your data folder. These plugins will be commented out in your plugins file. To remove them, modify your plugins.txt file manually or click the "Reset Plugins File" button.',
+        message: 'Some plugins are missing from your data folder. Please deploy your mods.',
         id: MISSING_PLUGINS_NOTIFICATION_ID,
       });
     } else {
