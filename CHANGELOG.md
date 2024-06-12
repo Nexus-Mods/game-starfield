@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.7.1] - 2024-06-12
 
 - Fixed user facing names of requirements missing from different dialogs and notifications.
-- Fixed Vortex complaining about missing plugins erroneously
+- Fixed Vortex incorrectly reporting about missing plugins
 
 ## [0.7.0] - 2024-06-11
 
