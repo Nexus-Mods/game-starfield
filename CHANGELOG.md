@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.7.1] - 2024-06-12
+
+- Fixed user facing names of requirements missing from different dialogs and notifications.
+- Fixed Vortex complaining about missing plugins erroneously
+
 ## [0.7.0] - 2024-06-11
 
 - Tweaks to support latest Starfield update (v1.12)

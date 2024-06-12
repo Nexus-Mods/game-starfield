@@ -25,6 +25,7 @@ export const PLUGIN_REQUIREMENTS: PluginRequirements = {
       fileName: SFSE_EXE,
       modType: '',
       modId: 106,
+      userFacingName: 'Starfield Script Extender',
       modUrl: 'https://www.nexusmods.com/starfield/mods/106?tab=files',
       findMod: (api: types.IExtensionApi) => findModByFile(api, '', SFSE_EXE),
     },
@@ -149,13 +150,14 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
     const currentLO = await this.deserializePluginsFile();
     for (const plugin of currentLO) {
-      if (currentLO.indexOf(plugin) === 0 && plugin.startsWith('#')) {
+      if (plugin.startsWith('#') && !DATA_PLUGINS.includes(path.extname(plugin.trim().slice(1)))) {
+        // Only esm, esp, esl
         continue;
       }
       const name = plugin.replace(/\#|\*/g, '');
       const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, name);
-      // Plugin is invalid if it doesn't exist in the data folder. (And isn't a Vortex mod)
-      const invalid = !mod && !isInDataFolder(name);
+      // Plugin is only invalid if it's not located inside the data folder.
+      const invalid = !isInDataFolder(name);
       const enabled = plugin.startsWith('*');
       const loEntry: types.ILoadOrderEntry = {
         enabled: enabled && !invalid,

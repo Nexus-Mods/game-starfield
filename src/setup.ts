@@ -13,7 +13,7 @@ import { PLUGIN_REQUIREMENTS } from './loadOrder/StarFieldLoadOrder';
 
 // This code executes when the user first manages Starfield AND each time they swap from another game to Starfield. 
 export async function setup(api: types.IExtensionApi,
-                            discovery: types.IDiscoveryResult): Promise<void> {
+  discovery: types.IDiscoveryResult): Promise<void> {
   if (!discovery || !discovery.path) return;
   const gameDataFolder = path.join(discovery.path, 'Data');
   // Build the Starfield path in My Games
@@ -53,10 +53,11 @@ export async function setup(api: types.IExtensionApi,
       action: async (dismiss) => {
         await api.showDialog('question', 'Download and install "{{requirement}}"', {
           bbcode: t('Some mods may require "{{requirement}}" to be installed in order to function correctly.[br][/br][br][/br]'
-                  + 'Would you like to download it now?', {
+            + 'Would you like to download it now?', {
             ns: NS,
-            requirement: requiredDownload.userFacingName
-          })
+            replace: { requirement: requiredDownload.userFacingName }, // dialog parameters aren't applied to bbcode it seems
+          }),
+          parameters: { requirement: requiredDownload.userFacingName }
         }, [
           { label: 'Close' },
           {
@@ -102,8 +103,10 @@ export async function toggleJunction(api: types.IExtensionApi, enable: boolean):
   const myGamesFolder = path.join(util.getVortexPath('documents'), 'My Games', 'Starfield');
   const myGamesData = path.join(myGamesFolder, 'Data');
 
-  const props: IJunctionProps = { api, discovery, profile, state,
-    gameDataFolder, myGamesData, myGamesFolder };
+  const props: IJunctionProps = {
+    api, discovery, profile, state,
+    gameDataFolder, myGamesData, myGamesFolder
+  };
   const func = enable ? enableJunction : disableJunction;
   await func(props);
   api.dismissNotification('starfield-junction-activity');
