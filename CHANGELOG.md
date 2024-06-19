@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.8.0] - 2024-06-19
+
+- Added settings option to switch between regular drag and drop and automatic sorting using LOOT.
+- Added Sort via LOOT button to the FBLO action bar to allow sorting and dnd.
+
 ## [0.7.1] - 2024-06-12
 
 - Fixed user facing names of requirements missing from different dialogs and notifications.

@@ -14,7 +14,10 @@ import { testASILoaderSupported, installASILoader, testASIModSupported, installA
 import { mergeASIIni, testASIMergeIni } from './merges/iniMerge';
 
 import { isStarfield, openAppDataPath, openSettingsPath, dismissNotifications, linkAsiLoader,
-  walkPath, removePluginsFile, forceRefresh, getGameVersionAsync, getGameVersionSync } from './util';
+  walkPath, removePluginsFile, forceRefresh, getGameVersionAsync, getGameVersionSync, 
+  getManagementType, 
+  serializePluginsFile,
+  deserializePluginsFile} from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
 
@@ -30,7 +33,9 @@ import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 
 import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
   STEAMAPP_ID, XBOX_ID, TARGET_ASI_LOADER_NAME,
-  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, PLUGIN_ENABLER_CONSTRAINT } from './common';
+  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, PLUGIN_ENABLER_CONSTRAINT, 
+  DATA_PLUGINS} from './common';
+import { discoveryByGame } from 'vortex-api/lib/util/selectors';
 
 const supportedTools: types.ITool[] = [
   {
@@ -109,6 +114,7 @@ function main(context: types.IExtensionContext) {
       supportsSymlinks: false,
       steamAppId: parseInt(STEAMAPP_ID),
       stopPatterns: getStopPatterns(),
+      dataModType: MOD_TYPE_DATAPATH,
     },
   });
 
@@ -145,9 +151,36 @@ function main(context: types.IExtensionContext) {
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
-  // context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
-  //   context.api.showErrorNotification('Not Implemented Yet', 'Soon TM');
-  // });
+  context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
+    const toLOEntry = (plugin: string): types.ILoadOrderEntry => ({
+      name: plugin,
+      enabled: true,
+      id: plugin,
+      data: {
+        isInvalid: false,
+      }
+    })
+    const onSortCallback = async (sorted: string[]) => {
+      serializePluginsFile(sorted.map(toLOEntry));
+      forceRefresh(context.api);
+    }
+    if (context.api.ext.lootSortAsync !== undefined) {
+      const dataPath = getDataPath(context.api, { id: GAME_ID } as any);
+      deserializePluginsFile().then((rawData) => {
+        const pluginNames = rawData.reduce((accum, p) => {
+          if (p.startsWith('#') && !DATA_PLUGINS.includes(path.extname(p.trim().slice(1)))) {
+            // Only esm, esp, esl
+            return accum;
+          }
+          accum.push(p.replace(/\#|\*|\r|\n/g, ''));
+          return accum;
+        }, []);
+        const pluginFilePaths = pluginNames.map((p) => path.join(dataPath, p));
+        context.api.ext.lootSortAsync({ pluginFilePaths, onSortCallback });
+      });
+    }
+    return true;
+  });
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));
 
