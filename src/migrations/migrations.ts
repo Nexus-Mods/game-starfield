@@ -17,7 +17,9 @@ export async function migrateExtension(api: types.IExtensionApi) {
 
   const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
   const newVersion = await getExtensionVersion();
-  if (semver.gt('0.7.0', currentVersion)) {
+  if (semver.gt('0.8.0', currentVersion)) {
+    await migrate080(api, newVersion);
+  } else if (semver.gt('0.7.0', currentVersion)) {
     await migrate070(api, newVersion);
   } else if (semver.gt('0.6.0', currentVersion)) {
     await migrate060(api, newVersion);
@@ -26,6 +28,43 @@ export async function migrateExtension(api: types.IExtensionApi) {
   }
 
   api.store?.dispatch(setMigrationVersion(newVersion));
+}
+
+export async function migrate080(api: types.IExtensionApi, version: string) {
+  const enablePlugins = await requiresPluginEnabler(api);
+  if (!enablePlugins) {
+    api.store.dispatch(setPluginsEnabler(false));
+  }
+  const notificationId = 'starfield-update-notif-0.8.0';
+  const t = api.translate;
+  api.sendNotification({
+    message: t('Starfield extension has been updated to v{{newVersion}}', { replace: { newVersion: version }, ns: NS }),
+    noDismiss: true,
+    allowSuppress: false,
+    type: 'success',
+    id: notificationId,
+    actions: [
+      {
+        title: t('More', { ns: NS }),
+        action: () => api.showDialog('success', 'Starfield Extension Update v{{newVersion}}', {
+          parameters: {
+            newVersion: version
+          },
+          bbcode: t('Version 0.8.x of the Starfield extension allows users to switch between automatic sorting using LOOT, '
+                  + 'same as other Bethesda games. Alternatively the Drag and Drop functionality is still available, and has '
+                  + 'been enhanced to also support LOOT sorting, although this is still experimental.'),
+        }, [
+          {
+            label: t('Close', { ns: NS }),
+            action: () => {
+              api.dismissNotification(notificationId);
+              api.suppressNotification(notificationId, true);
+            }
+          }
+        ], notificationId)
+      }
+    ],
+  });
 }
 
 export async function migrate070(api: types.IExtensionApi, version: string) {
