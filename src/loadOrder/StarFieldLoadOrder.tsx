@@ -8,7 +8,7 @@ import { IPluginRequirement } from '../types';
 import {
   GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, ALL_NATIVE_PLUGINS,
   DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS,
-  MISSING_PLUGINS_NOTIFICATION_ID, PLUGIN_ENABLER_CONSTRAINT,
+  PLUGIN_ENABLER_CONSTRAINT,
 } from '../common';
 import { download } from '../downloader';
 import { walkPath, findModByFile, forceRefresh, requiresPluginEnabler,
@@ -73,7 +73,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     this.gameId = GAME_ID;
     this.clearStateOnPurge = false;
     this.toggleableEntries = true;
-    this.noCollectionGeneration = false;
+    this.noCollectionGeneration = undefined;
     this.usageInstructions = (() => {
       const gameVersion = getGameVersionSync(api);
       const needsEnabler = semver.satisfies(gameVersion, PLUGIN_ENABLER_CONSTRAINT);
@@ -215,17 +215,6 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       let nativePlugin: types.ILoadOrderEntry[] = loadOrder.splice(idx, 1);
       nativePlugin[0].locked = true;
       loadOrder.splice(nextNativeIdx(), 0, nativePlugin[0]);
-    }
-
-    if (invalidEntries.length > 0) {
-      this.mApi.sendNotification({
-        type: 'warning',
-        title: 'Missing Plugins Detected',
-        message: 'Some plugins are missing from your data folder. Please deploy your mods.',
-        id: MISSING_PLUGINS_NOTIFICATION_ID,
-      });
-    } else {
-      this.mApi.dismissNotification(MISSING_PLUGINS_NOTIFICATION_ID);
     }
 
     const result = [].concat(loadOrder);

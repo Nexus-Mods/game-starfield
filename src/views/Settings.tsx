@@ -7,7 +7,7 @@ import { actions, MainContext, Toggle, selectors, types, util } from 'vortex-api
 
 import { setLoadOrderManagementType, setPluginsEnabler } from '../actions/settings';
 
-import { NS, MISSING_PLUGINS_NOTIFICATION_ID, GAME_ID } from '../common';
+import { NS, GAME_ID } from '../common';
 
 import { forceRefresh, setPluginManagementEnabled } from '../util';
 import { LoadOrderManagementType } from '../types';
@@ -76,7 +76,6 @@ function renderPluginEnablerToggle(props: IBaseProps & IConnectedProps): JSX.Ele
   const store = useStore();
   const onSetManageLO = React.useCallback(() => {
     store.dispatch(setPluginsEnabler(false));
-    context.api.dismissNotification(MISSING_PLUGINS_NOTIFICATION_ID);
     forceRefresh(context.api);
   }, [context, store]);
 

@@ -14,7 +14,6 @@ export const STEAMAPP_ID = '1716740';
 export const MOD_TYPE_ASI_MOD = 'starfield-asi-mod';
 export const MOD_TYPE_DATAPATH = 'starfield-data-folder';
 export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
-export const MISSING_PLUGINS_NOTIFICATION_ID = 'starfield-missing-plugins';
 export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
 export const INSTALLING_REQUIREMENTS_NOTIFICATION_ID = 'starfield-installing-requirements';
 
