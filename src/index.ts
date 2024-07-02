@@ -13,11 +13,13 @@ import { testASILoaderSupported, installASILoader, testASIModSupported, installA
 
 import { mergeASIIni, testASIMergeIni } from './merges/iniMerge';
 
-import { isStarfield, openAppDataPath, openSettingsPath, dismissNotifications, linkAsiLoader,
-  walkPath, removePluginsFile, forceRefresh, getGameVersionAsync, getGameVersionSync, 
-  getManagementType, 
+import {
+  isStarfield, openAppDataPath, openSettingsPath, dismissNotifications, linkAsiLoader,
+  walkPath, removePluginsFile, forceRefresh, getGameVersionAsync, getGameVersionSync,
+  getManagementType,
   serializePluginsFile,
-  deserializePluginsFile} from './util';
+  deserializePluginsFile
+} from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
 
@@ -31,11 +33,14 @@ import { getStopPatterns } from './stopPatterns';
 
 import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 
-import { GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
+import {
+  GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
   STEAMAPP_ID, XBOX_ID, TARGET_ASI_LOADER_NAME,
-  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, PLUGIN_ENABLER_CONSTRAINT, 
-  DATA_PLUGINS} from './common';
+  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, PLUGIN_ENABLER_CONSTRAINT,
+  DATA_PLUGINS
+} from './common';
 import { discoveryByGame } from 'vortex-api/lib/util/selectors';
+import { log } from 'console';
 
 const supportedTools: types.ITool[] = [
   {
@@ -85,12 +90,14 @@ const removePluginsWrap = (api: types.IExtensionApi) => {
     text: 'Are you sure you want to reset the plugins file? This will remove all plugins from your load order, and you will need to re-arrange them!',
   }, [
     { label: 'Cancel' },
-    { label: 'Reset', action: () => {
-      removePluginsFile()
-        .then(() => {
-          forceRefresh(api);
-        });
-    } },
+    {
+      label: 'Reset', action: () => {
+        removePluginsFile()
+          .then(() => {
+            forceRefresh(api);
+          });
+      }
+    },
   ], 'starfield-remove-plugins-dialog');
 }
 
@@ -152,6 +159,11 @@ function main(context: types.IExtensionContext) {
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
+    context.api.sendNotification({
+      type: 'activity',
+      message: 'Sorting plugins via LOOT...',
+      id: 'starfield-fblo-loot-sorting'
+    });
     const toLOEntry = (plugin: string): types.ILoadOrderEntry => ({
       name: plugin,
       enabled: true,
@@ -161,22 +173,23 @@ function main(context: types.IExtensionContext) {
       }
     })
     const onSortCallback = async (sorted: string[]) => {
+      context.api.dismissNotification('starfield-fblo-loot-sorting');
       serializePluginsFile(sorted.map(toLOEntry));
       forceRefresh(context.api);
     }
     if (context.api.ext.lootSortAsync !== undefined) {
       const dataPath = getDataPath(context.api, { id: GAME_ID } as any);
-      deserializePluginsFile().then((rawData) => {
-        const pluginNames = rawData.reduce((accum, p) => {
-          if (p.startsWith('#') && !DATA_PLUGINS.includes(path.extname(p.trim().slice(1)))) {
-            // Only esm, esp, esl
-            return accum;
-          }
-          accum.push(p.replace(/\#|\*|\r|\n/g, ''));
+      fs.readdirAsync(dataPath).then(contents => {
+        const pluginFilePaths = contents.reduce((accum, p) => {
+          DATA_PLUGINS.includes(path.extname(p)) && accum.push(path.join(dataPath, p));
           return accum;
         }, []);
-        const pluginFilePaths = pluginNames.map((p) => path.join(dataPath, p));
         context.api.ext.lootSortAsync({ pluginFilePaths, onSortCallback });
+      }).catch(err => {
+        log('error', 'Could not read data folder to sort plugins', err)
+        context.api.dismissNotification('starfield-fblo-loot-sorting');
+        context.api.showErrorNotification('Could not read the data folder to sort plugins.', err);
+        return Promise.resolve();
       });
     }
     return true;
@@ -285,18 +298,6 @@ async function onWillDeployEvent(api: types.IExtensionApi, profileId: any, deplo
     }
   }
 }
-
-// async function onInterceptFileChanges(api: types.IExtensionApi,
-//                                       intercepted: types.IFileChange[],
-//                                       cb: (result: types.IFileChange[]) => void): Promise<void> {
-//   const state = api.getState();
-//   const gameId = selectors.activeGameId(state);
-//   if (gameId !== GAME_ID) {
-//     return Promise.resolve();
-//   }
-//   cb(intercepted.filter((change) => path.basename(change.filePath) !== TARGET_ASI_LOADER_NAME));
-//   return Promise.resolve();
-// }
 
 async function requiresLauncher(gamePath: string, store?: string) {
   // If Xbox, we'll launch via Xbox app

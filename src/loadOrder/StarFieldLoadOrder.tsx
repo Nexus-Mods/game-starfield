@@ -71,9 +71,9 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
   constructor(api: types.IExtensionApi) {
     this.gameId = GAME_ID;
-    this.clearStateOnPurge = true;
+    this.clearStateOnPurge = false;
     this.toggleableEntries = true;
-    this.noCollectionGeneration = true;
+    this.noCollectionGeneration = false;
     this.usageInstructions = (() => {
       const gameVersion = getGameVersionSync(api);
       const needsEnabler = semver.satisfies(gameVersion, PLUGIN_ENABLER_CONSTRAINT);
