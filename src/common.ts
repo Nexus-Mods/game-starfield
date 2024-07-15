@@ -36,7 +36,7 @@ export const ALL_NATIVE_PLUGINS = [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
 export const DATA_SUBFOLDERS = [
   'Meshes',
   'Textures',
-  'ceGen',
+  'FaceGen',
   'Music',
   'Sound',
   'Sounds',
