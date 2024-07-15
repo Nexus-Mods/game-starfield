@@ -16,10 +16,9 @@ import { mergeASIIni, testASIMergeIni } from './merges/iniMerge';
 import {
   isStarfield, openAppDataPath, openSettingsPath, dismissNotifications, linkAsiLoader,
   walkPath, removePluginsFile, forceRefresh, getGameVersionAsync, getGameVersionSync,
-  getManagementType,
   serializePluginsFile,
-  deserializePluginsFile,
-  lootSortingAllowed
+  lootSortingAllowed,
+  resolvePluginsFilePath
 } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
@@ -37,7 +36,7 @@ import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 import {
   GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
   STEAMAPP_ID, XBOX_ID, TARGET_ASI_LOADER_NAME,
-  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, CONSTRAINT_PLUGIN_ENABLER,
+  ASI_LOADER_BACKUP, PLUGINS_BACKUP, CONSTRAINT_PLUGIN_ENABLER,
   DATA_PLUGINS
 } from './common';
 import { discoveryByGame } from 'vortex-api/lib/util/selectors';
@@ -93,7 +92,7 @@ const removePluginsWrap = (api: types.IExtensionApi) => {
     { label: 'Cancel' },
     {
       label: 'Reset', action: () => {
-        removePluginsFile()
+        removePluginsFile(api)
           .then(() => {
             forceRefresh(api);
           });
@@ -179,7 +178,7 @@ function main(context: types.IExtensionContext) {
     })
     const onSortCallback = async (sorted: string[]) => {
       context.api.dismissNotification('starfield-fblo-loot-sorting');
-      serializePluginsFile(sorted.map(toLOEntry));
+      serializePluginsFile(context.api, sorted.map(toLOEntry));
       forceRefresh(context.api);
     }
     if (context.api.ext.lootSortAsync !== undefined) {
@@ -268,7 +267,8 @@ async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, dep
 }
 
 async function onWillPurgeEvent(api: types.IExtensionApi, profileId: string): Promise<void> {
-  return fs.copyAsync(PLUGINS_TXT, PLUGINS_BACKUP, { overwrite: true }).catch(err => null);
+  const pluginsPath = await resolvePluginsFilePath(api);
+  return fs.copyAsync(pluginsPath, PLUGINS_BACKUP, { overwrite: true }).catch(err => null);
 }
 
 async function onDidPurgeEvent(api: types.IExtensionApi, profileId: string): Promise<void> {

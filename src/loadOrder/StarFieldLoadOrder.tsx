@@ -97,7 +97,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       return Promise.resolve();
     }
     await fs.ensureDirWritableAsync(path.dirname(PLUGINS_TXT));
-    return serializePluginsFile(loadOrder);
+    return serializePluginsFile(this.mApi, loadOrder);
   }
 
   public async deserializeLoadOrder(): Promise<types.LoadOrder> {
