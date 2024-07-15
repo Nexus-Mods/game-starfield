@@ -3,7 +3,7 @@ import path from 'path';
 import semver from 'semver';
 import { actions, fs, selectors, types, util } from 'vortex-api';
 import { setMigrationVersion, setPluginsEnabler } from '../actions/settings';
-import { DATA_SUBFOLDERS, GAME_ID, MOD_TYPE_DATAPATH, NS, PLUGIN_ENABLER_CONSTRAINT } from '../common';
+import { CONSTRAINT_LOOT_FUNCTIONALITY, DATA_SUBFOLDERS, GAME_ID, MOD_TYPE_DATAPATH, NS, CONSTRAINT_PLUGIN_ENABLER } from '../common';
 import { deploy, nuclearPurge, getExtensionVersion, requiresPluginEnabler } from '../util';
 
 // Migrations should be self contained - do not let any errors escape from them.
@@ -90,7 +90,7 @@ export async function migrate070(api: types.IExtensionApi, version: string) {
           },
           bbcode: t('As of version "{{cutoff}}" of the game, the plugin enabler is no longer required as the game '
                   + 'now fully supports plugins on its own. If your game crashes, please disable "SFSE" or the "ASI Loader"'
-                  + 'mods and wait for them to be updated.', { replace: { cutoff: PLUGIN_ENABLER_CONSTRAINT.slice(1) } }),
+                  + 'mods and wait for them to be updated.', { replace: { cutoff: CONSTRAINT_PLUGIN_ENABLER.slice(1) } }),
         }, [
           {
             label: t('Close', { ns: NS }),

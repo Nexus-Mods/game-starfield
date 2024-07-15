@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { getFileVersion } from 'exe-version';
 import { actions, fs, log, selectors, types, util } from 'vortex-api';
-import { ALL_NATIVE_PLUGINS, PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST, PLUGIN_ENABLER_CONSTRAINT, INSTALLING_REQUIREMENTS_NOTIFICATION_ID } from './common';
+import { ALL_NATIVE_PLUGINS, PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST, CONSTRAINT_PLUGIN_ENABLER, INSTALLING_REQUIREMENTS_NOTIFICATION_ID, CONSTRAINT_LOOT_FUNCTIONALITY, DEBUG_ENABLED, DEBUG_APP_VERSION } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import { parseStringPromise } from 'xml2js';
 import path from 'path';
@@ -209,7 +209,7 @@ export async function purgeDeployedFiles(basePath: string,
 export async function requiresPluginEnabler(api: types.IExtensionApi): Promise<boolean> {
   try {
     const gameVersion = await getGameVersionAsync(api);
-    return (semver.satisfies(semver.coerce(gameVersion).version, PLUGIN_ENABLER_CONSTRAINT));
+    return (semver.satisfies(semver.coerce(gameVersion).version, CONSTRAINT_PLUGIN_ENABLER));
   } catch (err) {
     // Assume it's required.
     log('error', 'failed to check plugin enabler constraint', err);
@@ -454,4 +454,10 @@ export function getManagementType(api: types.IExtensionApi): LoadOrderManagement
   const state = api.store.getState();
   const profileId = selectors.lastActiveProfileForGame(state, GAME_ID);
   return util.getSafe(state, ['settings', GAME_ID, 'loadOrderManagementType', profileId], 'dnd');
+}
+
+export const lootSortingAllowed = (api: types.IExtensionApi) => {
+  const state = api.getState();
+  const appVersion = DEBUG_ENABLED ? DEBUG_APP_VERSION : util.getSafe(state, ['app', 'appVersion'], '0.0.1');
+  return semver.satisfies(appVersion, CONSTRAINT_LOOT_FUNCTIONALITY);
 }

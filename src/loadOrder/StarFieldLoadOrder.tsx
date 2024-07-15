@@ -8,7 +8,7 @@ import { IPluginRequirement } from '../types';
 import {
   GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, ALL_NATIVE_PLUGINS,
   DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS,
-  PLUGIN_ENABLER_CONSTRAINT,
+  CONSTRAINT_PLUGIN_ENABLER,
 } from '../common';
 import { download } from '../downloader';
 import { walkPath, findModByFile, forceRefresh, requiresPluginEnabler,
@@ -76,7 +76,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     this.noCollectionGeneration = undefined;
     this.usageInstructions = (() => {
       const gameVersion = getGameVersionSync(api);
-      const needsEnabler = semver.satisfies(gameVersion, PLUGIN_ENABLER_CONSTRAINT);
+      const needsEnabler = semver.satisfies(gameVersion, CONSTRAINT_PLUGIN_ENABLER);
       return needsEnabler ? (
         <InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />
       ) : (

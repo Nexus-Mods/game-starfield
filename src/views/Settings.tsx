@@ -15,6 +15,7 @@ import { LoadOrderManagementType } from '../types';
 interface IBaseProps {
   onSetDirectoryJunction: (enabled: boolean) => void;
   needsEnabler: () => boolean;
+  allowLootSorting: () => boolean;
 }
 
 interface IConnectedProps {
@@ -39,20 +40,22 @@ function renderLOManagementType(props: IBaseProps & IConnectedProps): JSX.Elemen
   const dispatch = useDispatch();
   const store = useStore();
   const onSetManageType = React.useCallback((evt) => {
-    context.api.showDialog('info', t('Setting Load Order Management Type'), {
-      text: t('This operation requires Vortex to restart. Are you sure you want to change the load order management type?'),
-    }, [
-      { label: 'Cancel' },
-      { label: 'Restart' },
-    ])
-    .then((res) => {
-      if (res.action === 'Restart') {
-        dispatch(setLoadOrderManagementType(activeProfile.id, evt));
-        setSelected(dropDownItems[evt]);
-        setPluginManagementEnabled(context.api, evt === 'gamebryo');
-        context.api.events.emit('relaunch-application', GAME_ID);
-      }
-    });
+    if (props.allowLootSorting()) {
+      context.api.showDialog('info', t('Setting Load Order Management Type'), {
+        text: t('This operation requires Vortex to restart. Are you sure you want to change the load order management type?'),
+      }, [
+        { label: 'Cancel' },
+        { label: 'Restart' },
+      ])
+      .then((res) => {
+        if (res.action === 'Restart') {
+          dispatch(setLoadOrderManagementType(activeProfile.id, evt));
+          setSelected(dropDownItems[evt]);
+          setPluginManagementEnabled(context.api, evt === 'gamebryo');
+          context.api.events.emit('relaunch-application', GAME_ID);
+        }
+      })
+    }
   }, [context, store, setSelected, activeProfile, dispatch]);
   return (
     <DropdownButton
@@ -60,6 +63,7 @@ function renderLOManagementType(props: IBaseProps & IConnectedProps): JSX.Elemen
       title={t(selected)}
       onSelect={onSetManageType}
       dropup
+      disabled={!props.allowLootSorting()}
     >
     {
       Object.entries(dropDownItems).map(([value, text]) => (

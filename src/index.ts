@@ -18,7 +18,8 @@ import {
   walkPath, removePluginsFile, forceRefresh, getGameVersionAsync, getGameVersionSync,
   getManagementType,
   serializePluginsFile,
-  deserializePluginsFile
+  deserializePluginsFile,
+  lootSortingAllowed
 } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
@@ -36,7 +37,7 @@ import StarFieldLoadOrder from './loadOrder/StarFieldLoadOrder';
 import {
   GAME_ID, SFSE_EXE, MOD_TYPE_DATAPATH, MOD_TYPE_ASI_MOD,
   STEAMAPP_ID, XBOX_ID, TARGET_ASI_LOADER_NAME,
-  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, PLUGIN_ENABLER_CONSTRAINT,
+  ASI_LOADER_BACKUP, PLUGINS_TXT, PLUGINS_BACKUP, CONSTRAINT_PLUGIN_ENABLER,
   DATA_PLUGINS
 } from './common';
 import { discoveryByGame } from 'vortex-api/lib/util/selectors';
@@ -139,8 +140,9 @@ function main(context: types.IExtensionContext) {
       },
       needsEnabler: () => {
         const version = getGameVersionSync(context.api);
-        return semver.satisfies(version, PLUGIN_ENABLER_CONSTRAINT);
-      }
+        return semver.satisfies(version, CONSTRAINT_PLUGIN_ENABLER);
+      },
+      allowLootSorting: () => lootSortingAllowed(context.api),
     }),
     () => selectors.activeGameId(context.api.getState()) === GAME_ID,
     150
@@ -159,6 +161,9 @@ function main(context: types.IExtensionContext) {
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
+    if (!lootSortingAllowed(context.api)) {
+      return;
+    }
     context.api.sendNotification({
       type: 'activity',
       message: 'Sorting plugins via LOOT...',
@@ -193,7 +198,7 @@ function main(context: types.IExtensionContext) {
       });
     }
     return true;
-  });
+  }, (gameId?: string[]) => isStarfield(context, gameId) && lootSortingAllowed(context.api));
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));
 
