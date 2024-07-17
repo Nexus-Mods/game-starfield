@@ -3,7 +3,7 @@
 import path from 'path';
 import semver from 'semver';
 
-import { fs, types, selectors, util } from 'vortex-api';
+import { fs, types, log, selectors, util } from 'vortex-api';
 
 import { getDataPath, testDataPath } from './modTypes/dataPath';
 import { getASIPluginsPath, testASIPluginsPath } from './modTypes/asiMod';
@@ -39,8 +39,6 @@ import {
   ASI_LOADER_BACKUP, PLUGINS_BACKUP, CONSTRAINT_PLUGIN_ENABLER,
   DATA_PLUGINS
 } from './common';
-import { discoveryByGame } from 'vortex-api/lib/util/selectors';
-import { log } from 'console';
 
 const supportedTools: types.ITool[] = [
   {
