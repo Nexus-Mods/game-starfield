@@ -10,15 +10,14 @@ import * as child_process from 'child_process';
 
 const exec = nodeUtil.promisify(child_process.exec);
 
-// Run 5 concurrent Divine processes - retry each process 5 times if it fails.
-const concurrencyLimiter: util.ConcurrencyLimiter = new util.ConcurrencyLimiter(5, () => true);
+const concurrencyLimiter: util.ConcurrencyLimiter = new util.ConcurrencyLimiter(20, () => true);
 
 // This is probably overkill - mod extraction shouldn't take
 //  more than a few seconds.
 const TIMEOUT_MS = 10000;
 const SAVE_TOOL_EXEC = 'StarfieldSaveTool.exe';
 
-type SFSaveToolAction = 'output-json-file' | 'output-raw-file';
+type SFSaveToolAction = 'output-json-file' | 'output-raw-file' | 'output-stdout';
 interface ISFSaveToolOptions {
   saveFilePath: string;
 }
@@ -66,8 +65,7 @@ async function sfSaveTool(api: types.IExtensionApi,
   execOpts: child_process.ExecOptions): Promise<ISaveGame> {
   return new Promise<ISaveGame>(async (resolve, reject) => {
     const exe = path.join(__dirname, SAVE_TOOL_EXEC);
-    const args = [`--${action}`];
-
+    const args = action === 'output-stdout' ? [] : [`--${action}`];
     try {
       const command = `"${exe}" "${opts.saveFilePath}" ${args.join(' ')}`;
       const { stdout, stderr } = await exec(command, execOpts);
@@ -95,6 +93,10 @@ async function sfSaveTool(api: types.IExtensionApi,
       return reject(error);
     }
   });
+}
+
+export async function outputStdout(api: types.IExtensionApi, saveFilePath: string) {
+  return runSFSaveTool(api, 'output-stdout', { saveFilePath });
 }
 
 export async function outputRaw(api: types.IExtensionApi, saveFilePath: string) {

@@ -54,16 +54,16 @@ export default function SavePage(props: SavePageProps): JSX.Element {
   );
 
   const reloadSaves = useCallback(async () => {
+    setSortedSaveGames([]);
+    setSelectedSave(null);
+    setSelectedRowSave(null);
+    setCurrentSaveNumber(0);
     const saveList = await getSaves(api);
     setSortedSaveGames(Object.entries(saveList).sort(([, saveA], [, saveB]) => saveA.Header.SaveNumber - saveB.Header.SaveNumber));
     const foundSave = Object.values(saveList).find((value) => value.Header.SaveNumber === currentSaveNumber);
     if (foundSave) {
       setSelectedSave(foundSave);
       setSelectedRowSave(foundSave);
-    } else {
-      setSelectedSave(null);
-      setSelectedRowSave(null);
-      setCurrentSaveNumber(0);
     }
   }, [currentSaveNumber]);
 

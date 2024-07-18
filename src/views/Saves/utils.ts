@@ -4,16 +4,14 @@ import { fs, log, types, util } from 'vortex-api';
 import { ISaveGame, ISaveList } from './types';
 import { useTranslation } from 'react-i18next';
 import { mygamesPath, walkPath } from '../../util';
-import { outputJSON } from '../../SFSaveToolWrapper';
+import { outputJSON, outputStdout } from '../../SFSaveToolWrapper';
 
 import { IEntry } from 'turbowalk';
 
 const createSaveGame = async (api: types.IExtensionApi, saveFilePath: string): Promise<ISaveGame> => {
   try {
-    await outputJSON(api, saveFilePath);
-    const jsonPath = path.join(path.dirname(saveFilePath), path.basename(saveFilePath, path.extname(saveFilePath)) +'.json');
-    const data = await fs.readFileAsync(jsonPath, 'utf8');
-    return JSON.parse(data);
+    const result = await outputStdout(api, saveFilePath);
+    return result;
   } catch (err) {
     api.showErrorNotification('Failed to read savegame', err);
     return null;

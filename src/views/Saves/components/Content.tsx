@@ -37,7 +37,11 @@ export const Content = (props: ContentProps): JSX.Element => {
           </FlexLayout.Fixed>
           <FlexLayout type="row">
             <FlexLayout.Flex>
-              {sortedSaveGameList.length === 0 && <Spinner />}
+              {sortedSaveGameList.length === 0 &&
+                <>
+                  <Spinner />
+                  <p>{t('Reading savegame folder...')}</p>
+                </>}
               {sortedSaveGameList.length > 0 && <Table
                 tableId="starfield-savegames"
                 data={sortedSaveGameList}
