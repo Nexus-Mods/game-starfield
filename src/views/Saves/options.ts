@@ -5,7 +5,7 @@ import { GAME_ID } from '../../common';
 export class SavePageOptions implements types.IMainPageOptions {
   private context: types.IExtensionContext;
 
-  public id = 'bannerlord-saves';
+  public id = 'starfield-saves';
   public hotkey = 'A';
   public group: 'dashboard' | 'global' | 'per-game' | 'support' | 'hidden' = 'per-game';
 
