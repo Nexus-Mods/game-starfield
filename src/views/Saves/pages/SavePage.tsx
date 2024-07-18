@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { IconBar, ITableRowAction, MainPage, ToolbarIcon, types, util } from 'vortex-api';
 import { Content, StatusView } from '../components';
 import { ISaveGame } from '../types';
-import { generateSaveName, getSaves } from '../utils';
+import { formatPlaytime, generateSaveName, getSaves } from '../utils';
 import { useTranslation } from 'react-i18next';
 import path from 'path';
 import { mygamesPath } from '../../../util';
@@ -87,7 +87,7 @@ export default function SavePage(props: SavePageProps): JSX.Element {
   }, []);
 
   return (
-    <>
+    <div className='main-page-inner'>
       <MainPage.Header>
         <IconBar
           group='starfield-saves-icons'
@@ -106,7 +106,7 @@ export default function SavePage(props: SavePageProps): JSX.Element {
           saveRowSelected: saveRowSelected,
         })}
       </MainPage.Body>
-    </>
+    </div>
   );
 };
 
@@ -142,7 +142,7 @@ const getTableAttributes = (
     {
       id: 'playTime',
       name: t('PlayTime'),
-      calc: ([, save]) => save.Header.Playtime ?? '',
+      calc: ([, save]) => formatPlaytime(save.Header.Playtime) ?? '',
       placement: 'both',
       edit: {},
     },

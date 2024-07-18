@@ -15,13 +15,14 @@ export const Sidebar = (props: SidebarProps): JSX.Element => {
 
   // if nothing is selected
   if (!save) {
-    return <></>;
+    return <h4>Choose a save</h4>;
   }
 
   // something is selected
   return (
     <>
-      {<h3>{generateSaveName(save)}</h3>}
+      <h4>{generateSaveName(save)}</h4>
+
       {IssueSnippet({
         issueHeading: t('Master Plugins:'),
         issue: save.PluginInfo.Plugins,

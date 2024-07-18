@@ -1,0 +1,73 @@
+#table-starfield-savegames {
+
+    .radio input[type='radio'] {
+        margin: 0;
+        position: inherit;
+    }
+
+    .header-name {
+        width: 50%;
+    }
+
+    .header-characterName {
+        width: 50%;
+    }
+
+    .header-characterLevel {
+        max-width: 4em;
+        min-width: 4em;
+    }
+
+    .header-playTime {
+        max-width: 8em;
+        min-width: 8em;
+    }
+
+    .header-status {
+        max-width: 5em;
+        min-width: 5em;
+    }
+}
+
+#page-starfield-saves {
+
+    .starfield-save-reading-spinner {
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .icon-spinner_new {
+            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    .starfield-save-container {
+
+        gap: 8px;
+
+        .starfield-save-sidebar {
+
+            background-color: $brand-bg;
+            padding: $panel-body-padding;
+            border-radius: $panel-border-radius;
+            border: 1px solid $panel-default-border;
+            overflow-y: auto;
+
+            width: 25em;
+
+            *:first-child {
+                margin-top: 0;
+            }
+
+            *:not(:first-child) {
+                margin-top: 0.5em;
+            }
+        }
+
+    }
+
+
+}

@@ -13,7 +13,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "copyassets": "copyfiles -f ./src/assets/* ./dist/",
-    "build": "npx webpack && yarn copyassets && node createinfojson.js && yarn packplugin && yarn copystyles",
+    "build": "npx webpack && yarn copyassets && yarn copystyles && node createinfojson.js && yarn packplugin",
     "buildcopydev": "yarn build && yarn copyplugindev",
     "copystyles": "node copystyles.js",
     "copyplugin": "node copyplugin.js",

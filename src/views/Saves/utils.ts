@@ -18,14 +18,23 @@ const createSaveGame = async (api: types.IExtensionApi, saveFilePath: string): P
   }
 };
 
+export const formatPlaytime = (playtime: string): string => {
+  // 0d.0h.4m.0 days.0 hours.4 minutes
+  const regexp = /(\d+)d\.(\d+)h\.(\d+)m\.\d+ days\.\d+ hours\.\d+ minutes/g;
+  const match = playtime.matchAll(regexp);
+  const groups = [...match][0];
+
+  return `${groups[1]}d ${groups[2]}h ${groups[3]}m`;
+};
+
 export const generateSaveName = (save: ISaveGame): string => {
   return !!save ? `${save.Header.PlayerName} (${save.Header.PlayerLevel}) - ${save.Header.PlayerLocation}` : 'No Save Selected';
-}
+};
 
 export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => {
   const saveLocation = path.join(mygamesPath(), 'Saves');
   const filePaths: IEntry[] = await walkPath(saveLocation, { recurse: false, skipLinks: true, skipInaccessible: true, skipHidden: true });
-  const saveFilePaths: IEntry[] = filePaths.filter(file => path.extname(file.filePath) === '.sfs');
+  const saveFilePaths: IEntry[] = filePaths.filter((file) => path.extname(file.filePath) === '.sfs');
   const saves: ISaveList = await saveFilePaths.reduce(async (accumP, file) => {
     const accum = await accumP;
     try {
@@ -40,4 +49,4 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
     return accum;
   }, Promise.resolve({}));
   return Promise.resolve(saves);
-}
+};

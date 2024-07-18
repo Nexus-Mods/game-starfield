@@ -1,6 +1,6 @@
 import React from 'react';
 import { Panel } from 'react-bootstrap';
-import { FlexLayout, ITableRowAction, Spinner, Table, types } from 'vortex-api';
+import { DNDContainer, FlexLayout, ITableRowAction, Spinner, Table, types } from 'vortex-api';
 import { Sidebar } from './Sidebar';
 import { ISaveGame } from '../types';
 import { useTranslation } from 'react-i18next';
@@ -23,42 +23,31 @@ export const Content = (props: ContentProps): JSX.Element => {
   return (
     <Panel>
       <Panel.Body>
-        <FlexLayout type="column">
-          <FlexLayout.Fixed id="instructions">
-            <p>
-              {t(
-                `Instructions: Select a row to see more information.`
-              )}
-            </p>
-            <p>
-              {t(`Currently selected save: `)}
-              {`${generateSaveName(selectedSave)}` || t('No Save')}
-            </p>
-          </FlexLayout.Fixed>
-          <FlexLayout type="row">
-            <FlexLayout.Flex>
-              {sortedSaveGameList.length === 0 &&
-                <>
-                  <Spinner />
-                  <p>{t('Reading savegame folder...')}</p>
-                </>}
-              {sortedSaveGameList.length > 0 && <Table
-                tableId="starfield-savegames"
-                data={sortedSaveGameList}
-                staticElements={tableAttributes}
-                actions={saveActions}
-                multiSelect={false}
-                hasActions={false}
-                showDetails={false}
-                onChangeSelection={(ids: string[]) => saveRowSelected(sortedSaveGameList[parseInt(ids[0]!)]![1])}
-              />}
-            </FlexLayout.Flex>
+        {
+          sortedSaveGameList.length === 0 ?
+            <div className='starfield-save-reading-spinner'>
+              <Spinner /> {t('Reading Saves folder...')}
+            </div>
+            :
+            <FlexLayout type="row" className="starfield-save-container">
+              <FlexLayout.Flex className="starfield-save-table">
+                <Table
+                  tableId="starfield-savegames"
+                  data={sortedSaveGameList}
+                  staticElements={tableAttributes}
+                  actions={saveActions}
+                  multiSelect={false}
+                  hasActions={false}
+                  showDetails={false}
+                  onChangeSelection={(ids: string[]) => saveRowSelected(sortedSaveGameList[parseInt(ids[0]!)]![1])}
+                />
+              </FlexLayout.Flex>
 
-            <FlexLayout.Fixed id="sidebar">
-              <Sidebar save={selectedRowSave} />
-            </FlexLayout.Fixed>
-          </FlexLayout>
-        </FlexLayout>
+              <FlexLayout.Fixed className="starfield-save-sidebar">
+                <Sidebar save={selectedRowSave} />
+              </FlexLayout.Fixed>
+            </FlexLayout>
+        }
       </Panel.Body>
     </Panel>
   );
