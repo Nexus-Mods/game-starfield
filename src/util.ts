@@ -477,3 +477,7 @@ export const resolvePluginsFilePath = async (api: types.IExtensionApi): Promise<
     return Promise.resolve(PLUGINS_TXT);
   }
 }
+
+export function mygamesPath(): string {
+  return path.join(util.getVortexPath('documents'), 'My Games', 'Starfield');
+}

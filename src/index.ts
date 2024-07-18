@@ -40,6 +40,8 @@ import {
   DATA_PLUGINS
 } from './common';
 
+import { SavePage, SavePageOptions } from './views/Saves/index';
+
 const supportedTools: types.ITool[] = [
   {
     id: 'sfse',
@@ -122,6 +124,8 @@ function main(context: types.IExtensionContext) {
       dataModType: MOD_TYPE_DATAPATH,
     },
   });
+
+  context.registerMainPage('savegame', 'Saves', SavePage, new SavePageOptions(context));
 
   context.registerSettings(
     'Mods',
