@@ -40,7 +40,8 @@ import {
   DATA_PLUGINS
 } from './common';
 
-import { SavePage, SavePageOptions } from './views/Saves/index';
+import SavePage from './views/Saves/pages/SavePage';
+import { SavePageOptions } from './views/Saves/index';
 
 const supportedTools: types.ITool[] = [
   {
@@ -125,7 +126,8 @@ function main(context: types.IExtensionContext) {
     },
   });
 
-  context.registerMainPage('savegame', 'Saves', SavePage, new SavePageOptions(context));
+  const savePageOptions = new SavePageOptions(context);
+  context.registerMainPage('savegame', 'Saves', SavePage, savePageOptions);
 
   context.registerSettings(
     'Mods',

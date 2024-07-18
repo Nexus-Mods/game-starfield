@@ -9,7 +9,7 @@ export type SavePageProps = {
   api: types.IExtensionApi;
 };
 
-export const SavePage = (props: SavePageProps): JSX.Element => {
+export default function SavePage(props: SavePageProps): JSX.Element {
   const { api } = props;
 
   const [t] = useTranslation('game-starfield');
