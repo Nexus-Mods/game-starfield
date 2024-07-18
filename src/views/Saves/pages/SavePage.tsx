@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { IconBar, ITableRowAction, MainPage, ToolbarIcon, types } from 'vortex-api';
+import { IconBar, ITableRowAction, MainPage, ToolbarIcon, types, util } from 'vortex-api';
 import { Content, StatusView } from '../components';
 import { ISaveGame } from '../types';
 import { generateSaveName, getSaves } from '../utils';
 import { useTranslation } from 'react-i18next';
+import path from 'path';
+import { mygamesPath } from '../../../util';
 
 export type SavePageProps = {
   api: types.IExtensionApi;
@@ -25,6 +27,19 @@ export default function SavePage(props: SavePageProps): JSX.Element {
         className: `load-order-refresh-list`,
         onClick: (): void => {
           reloadSaves();
+        },
+      }),
+    },
+    {
+      component: ToolbarIcon,
+      props: () => ({
+        id: `btn-open-saves`,
+        key: `btn-open-saves`,
+        icon: `open-ext`,
+        text: t(`Open Saves Folder`),
+        className: `starfield-open-saves`,
+        onClick: (): void => {
+          util.opn(path.join(mygamesPath(), 'Saves')).catch(() => null);
         },
       }),
     },
