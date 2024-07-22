@@ -6,11 +6,15 @@
     }
 
     .header-name {
-        width: 50%;
+        width: 33%;
     }
 
     .header-characterName {
-        width: 50%;
+        width: 20%;
+    }
+
+    .header-playerLocation {
+        width: 33%;
     }
 
     .header-characterLevel {
@@ -21,6 +25,16 @@
     .header-playTime {
         max-width: 8em;
         min-width: 8em;
+    }
+
+    .header-version {
+        max-width: 8em;
+        min-width: 8em;
+    }
+
+    .header-lastPlayed {
+        max-width: 15em;
+        min-width: 10em;
     }
 
     .header-status {
@@ -55,6 +69,7 @@
             border-radius: $panel-border-radius;
             border: 1px solid $panel-default-border;
             overflow-y: auto;
+            word-break: break-word;
 
             width: 25em;
 

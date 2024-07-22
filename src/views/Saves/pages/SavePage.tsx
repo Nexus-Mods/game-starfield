@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { IconBar, ITableRowAction, MainPage, ToolbarIcon, types, util } from 'vortex-api';
 import { Content, StatusView } from '../components';
 import { ISaveGame } from '../types';
-import { formatPlaytime, generateSaveName, getSaves } from '../utils';
+import { formatlastPlayed, formatPlaytime, generateSaveName, getSaves } from '../utils';
 import { useTranslation } from 'react-i18next';
 import path from 'path';
 import { mygamesPath } from '../../../util';
@@ -133,6 +133,13 @@ const getTableAttributes = (
       edit: {},
     },
     {
+      id: 'playerLocation',
+      name: t('Location'),
+      calc: ([, save]) => save.Header.PlayerLocation ?? '',
+      placement: 'both',
+      edit: {},
+    },
+    {
       id: 'characterLevel',
       name: t('Level'),
       calc: ([, save]) => save.Header.PlayerLevel ?? '',
@@ -143,6 +150,20 @@ const getTableAttributes = (
       id: 'playTime',
       name: t('PlayTime'),
       calc: ([, save]) => formatPlaytime(save.Header.Playtime) ?? '',
+      placement: 'both',
+      edit: {},
+    },
+    {
+      id: 'version',
+      name: t('Version'),
+      calc: ([, save]) => save.CurrentGameVersion ?? '',
+      placement: 'both',
+      edit: {},
+    },
+    {
+      id: 'lastPlayed',
+      name: t('Last Played'),
+      calc: ([, save]) => formatlastPlayed(save.Header.DateTime) ?? '',
       placement: 'both',
       edit: {},
     },

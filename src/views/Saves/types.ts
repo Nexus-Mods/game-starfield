@@ -2,6 +2,7 @@ export interface ISaveGamePlugin {
   PluginName: string;
 }
 export interface ISaveGame {
+  Filename: string;
   JsonVersion: number;
   Header: {
     EngineVersion: number;
@@ -15,7 +16,7 @@ export interface ISaveGame {
     Gender: number;
     Experience: number;
     ExperienceRequired: number;
-    DateTime: Date;
+    DateTime: string;
   };
   SaveVersion: number;
   CurrentGameVersion: string;

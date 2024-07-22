@@ -50,11 +50,17 @@ const execOpts: child_process.ExecOptions = {
 async function runSFSaveTool(api: types.IExtensionApi, action: SFSaveToolAction, opts: ISFSaveToolOptions): Promise<ISaveGame> {
   return new Promise((resolve, reject) =>
     concurrencyLimiter.do(async () => {
+      const startTime = performance.now();
+      let endTime: number;
+
       try {
         const result = await sfSaveTool(api, action, opts, execOpts);
         return resolve(result);
       } catch (err) {
         return reject(err);
+      } finally {
+        endTime = performance.now();
+        log('debug', `sfSaveTool took ${(endTime - startTime).toFixed(2)} milliseconds to run.`);
       }
     })
   );

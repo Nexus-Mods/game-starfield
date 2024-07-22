@@ -27,8 +27,15 @@ export const formatPlaytime = (playtime: string): string => {
   return `${groups[1]}d ${groups[2]}h ${groups[3]}m`;
 };
 
+export const formatlastPlayed = (lastPlayed: string): string => {
+  // 2023-09-19T17:08:30.7238343Z
+  const lastPlayedDate = new Date(lastPlayed);
+  return `${lastPlayedDate.toLocaleString()}`;
+};
+
 export const generateSaveName = (save: ISaveGame): string => {
-  return !!save ? `${save.Header.PlayerName} (${save.Header.PlayerLevel}) - ${save.Header.PlayerLocation}` : 'No Save Selected';
+  return !!save ? `${save.Filename}` : 'No Save Selected';
+  //return !!save ? `${save.Header.PlayerName} (${save.Header.PlayerLevel}) - ${save.Header.PlayerLocation}` : 'No Save Selected';
 };
 
 export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => {
@@ -40,6 +47,7 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
     try {
       const save = await createSaveGame(api, file.filePath);
       if (save) {
+        save.Filename = path.basename(file.filePath);
         accum[path.basename(file.filePath)] = save;
       }
     } catch (err) {
