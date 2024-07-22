@@ -31,8 +31,8 @@ export class SFSaveToolMissing extends Error {
 
 export class SFSaveToolMissingDotNet extends Error {
   constructor() {
-    super('LSLib requires .NET 8 Desktop Runtime to be installed.');
-    this.name = 'DivineMissingDotNet';
+    super('SFSaveTool requires .NET 8 Desktop Runtime to be installed.');
+    this.name = 'SFSaveToolMissingDotNet';
   }
 }
 
@@ -47,22 +47,20 @@ const execOpts: child_process.ExecOptions = {
   timeout: TIMEOUT_MS,
 };
 
-async function runSFSaveTool(api: types.IExtensionApi,
-  action: SFSaveToolAction, opts: ISFSaveToolOptions) : Promise<ISaveGame> {
-  return new Promise((resolve, reject) => concurrencyLimiter.do(async () => {
-    try {
-      const result = await sfSaveTool(api, action, opts, execOpts);
-      return resolve(result);
-    } catch (err) {
-      return reject(err);
-    }
-  }));
+async function runSFSaveTool(api: types.IExtensionApi, action: SFSaveToolAction, opts: ISFSaveToolOptions): Promise<ISaveGame> {
+  return new Promise((resolve, reject) =>
+    concurrencyLimiter.do(async () => {
+      try {
+        const result = await sfSaveTool(api, action, opts, execOpts);
+        return resolve(result);
+      } catch (err) {
+        return reject(err);
+      }
+    })
+  );
 }
 
-async function sfSaveTool(api: types.IExtensionApi,
-  action: SFSaveToolAction,
-  opts: ISFSaveToolOptions,
-  execOpts: child_process.ExecOptions): Promise<ISaveGame> {
+async function sfSaveTool(api: types.IExtensionApi, action: SFSaveToolAction, opts: ISFSaveToolOptions, execOpts: child_process.ExecOptions): Promise<ISaveGame> {
   return new Promise<ISaveGame>(async (resolve, reject) => {
     const exe = path.join(__dirname, SAVE_TOOL_EXEC);
     const args = action === 'output-stdout' ? [] : [`--${action}`];
@@ -72,7 +70,7 @@ async function sfSaveTool(api: types.IExtensionApi,
       if (!!stderr) {
         return reject(new Error(`StarfieldSaveTool.exe failed: ${stderr}`));
       }
-      if (['error', 'fatal'].some(x => stdout.toLowerCase().startsWith(x))) {
+      if (['error', 'fatal'].some((x) => stdout.toLowerCase().startsWith(x))) {
         // Really?
         return reject(new Error(`StarfieldSaveTool.exe failed: ${stdout}`));
       } else {
@@ -85,7 +83,7 @@ async function sfSaveTool(api: types.IExtensionApi,
       }
 
       if (err.message.includes('You must install or update .NET')) {
-        return reject(new SFSaveToolMissingDotNet);
+        return reject(new SFSaveToolMissingDotNet());
       }
 
       const error = new Error(`StarfieldSaveTool.exe failed: ${err.message}`);
@@ -110,20 +108,25 @@ export async function outputJSON(api: types.IExtensionApi, saveFilePath: string)
   } catch (error) {
     if (error instanceof SFSaveToolMissingDotNet) {
       log('error', 'Missing .NET', error.message);
-      api.dismissNotification('bg3-reading-paks-activity');
-      api.showErrorNotification('LSLib requires .NET 8',
-        'LSLib requires .NET 8 Desktop Runtime to be installed.' +
-        '[br][/br][br][/br]' +
-        '[list=1][*]Download and Install [url=https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.3-windows-x64-installer].NET 8.0 Desktop Runtime from Microsoft[/url]' +
-        '[*]Close Vortex' +
-        '[*]Restart Computer' +
-        '[*]Open Vortex[/list]',
-        { id: 'bg3-dotnet-error', allowReport: false, isBBCode: true });
+      api.dismissNotification('sfsavetool-activity');
+      api.showErrorNotification(
+        'SFSaveTool requires .NET 8',
+        'SFSaveTool requires .NET 8 Desktop Runtime to be installed.' +
+          '[br][/br][br][/br]' +
+          '[list=1][*]Download and Install [url=https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.3-windows-x64-installer].NET 8.0 Desktop Runtime from Microsoft[/url]' +
+          '[*]Close Vortex' +
+          '[*]Restart Computer' +
+          '[*]Open Vortex[/list]',
+        { id: 'sfsavetool-dotnet-error', allowReport: false, isBBCode: true }
+      );
     }
   }
 
   //logDebug(`listPackage res=`, res);
-  const lines = (res?.stdout || '').split('\n').map(line => line.trim()).filter(line => line.length !== 0);
+  const lines = (res?.stdout || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length !== 0);
 
   //logDebug(`listPackage lines=`, lines);
 
