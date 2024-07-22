@@ -461,7 +461,7 @@ export function getManagementType(api: types.IExtensionApi): LoadOrderManagement
 export const lootSortingAllowed = (api: types.IExtensionApi) => {
   const state = api.getState();
   const appVersion = DEBUG_ENABLED ? DEBUG_APP_VERSION : util.getSafe(state, ['app', 'appVersion'], '0.0.1');
-  return semver.satisfies(appVersion, CONSTRAINT_LOOT_FUNCTIONALITY);
+  return appVersion === '0.0.1' || semver.satisfies(appVersion, CONSTRAINT_LOOT_FUNCTIONALITY, { includePrerelease: true });
 }
 
 export const resolvePluginsFilePath = async (api: types.IExtensionApi): Promise<string> => {
