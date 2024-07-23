@@ -5,7 +5,7 @@ import { Alert } from 'react-bootstrap';
 import { MainContext, selectors, tooltip, types, util } from 'vortex-api';
 
 import { GAME_ID, NS } from '../common';
-import { forceRefresh } from '../util';
+import { forceRefresh, lootSortingAllowed } from '../util';
 
 interface IConnectedProps {
   loadOrder: types.ILoadOrderEntry[];
@@ -44,12 +44,18 @@ export function InfoPanelCK() {
         <li>{t('If installing a collection - wait for it to complete before re-visiting this page.')}</li>
         <li>{t('Press the "Reset Plugins File" button if your plugins.txt file is in a corrupted state.')}</li>
         <li>{t('Press the "Refresh List" button to refresh/sync changes.')}</li>
-        <li>{t('Press the "Sort via LOOT" button to sort your plugins based on the Starfield masterlist.')}</li>
+        {displayLootInstruction(api, t)}
       </ul>
       <h4>{t('Note:')}</h4>
       <p>{t('LOOT is a volunteer based service which uses plugin metadata added by the community to arrange your load order in the most optimal way - it\'s possible for certain plugin metadata to be unavailable (especially if it\'s a new mod) which can result in incorrect sorting.')}</p>
     </>
   );
+}
+
+function displayLootInstruction(api: types.IExtensionApi, t: any) {
+  return lootSortingAllowed(api)
+    ? <li>{t('Press the "Sort via LOOT" button to sort your plugins based on the Starfield masterlist.')}</li>
+    : null;
 }
 
 function mapStateToProps(state: any): IConnectedProps {
