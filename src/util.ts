@@ -1,7 +1,12 @@
 /* eslint-disable */
 import { getFileVersion } from 'exe-version';
 import { actions, fs, log, selectors, types, util } from 'vortex-api';
-import { ALL_NATIVE_PLUGINS, PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST, CONSTRAINT_PLUGIN_ENABLER, INSTALLING_REQUIREMENTS_NOTIFICATION_ID, CONSTRAINT_LOOT_FUNCTIONALITY, DEBUG_ENABLED, DEBUG_APP_VERSION, PLUGINS_CCC_PATTERN } from './common';
+import { PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING,
+  JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST,
+  CONSTRAINT_PLUGIN_ENABLER, INSTALLING_REQUIREMENTS_NOTIFICATION_ID,
+  CONSTRAINT_LOOT_FUNCTIONALITY, DEBUG_ENABLED, DEBUG_APP_VERSION,
+  PLUGINS_CCC_PATTERN, NATIVE_PLUGINS, NATIVE_MID_PLUGINS,
+} from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import { parseStringPromise } from 'xml2js';
 import path from 'path';
@@ -412,9 +417,10 @@ export function forceRefresh(api: types.IExtensionApi) {
 }
 
 export async function serializePluginsFile(api: types.IExtensionApi, plugins: types.ILoadOrderEntry[]): Promise<void> {
+  const nativePlugins = await resolveNativePlugins(api);
   const data = plugins.map(plugin => {
     // Strip the native plugins from whatever we write to the file as it's uneccessary.
-    if (ALL_NATIVE_PLUGINS.includes(plugin.name.toLowerCase())) {
+    if (nativePlugins.includes(plugin.name.toLowerCase())) {
       return '';
     }
     const invalid = plugin.data?.isInvalid ? '#' : '';
@@ -465,16 +471,20 @@ export const lootSortingAllowed = (api: types.IExtensionApi) => {
 }
 
 export const resolvePluginsFilePath = async (api: types.IExtensionApi): Promise<string> => {
+  return Promise.resolve(PLUGINS_TXT);
+}
+
+export const resolveNativePlugins = async (api: types.IExtensionApi): Promise<string[]> => {
   const state = api.getState();
   const discovery = selectors.discoveryByGame(state, GAME_ID);
   const cccFilePath = PLUGINS_CCC_PATTERN.replace('{{prefix}}', discovery?.path || '');
   try {
-    const stats = await fs.statAsync(cccFilePath);
-    if (stats.isFile()) {
-      return Promise.resolve(cccFilePath);
-    }
+    await fs.statAsync(cccFilePath);
+    const data = await fs.readFileAsync(cccFilePath, 'utf8');
+    const lines = data.split('\r\n').filter(plugin => plugin !== '');
+    return lines;
   } catch (err) {
-    return Promise.resolve(PLUGINS_TXT);
+    return [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
   }
 }
 
