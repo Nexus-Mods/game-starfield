@@ -55,12 +55,13 @@ async function runSFSaveTool(api: types.IExtensionApi, action: SFSaveToolAction,
 
       try {
         const result = await sfSaveTool(api, action, opts, execOpts);
+        endTime = performance.now();
+        log('debug', `sfSaveTool took ${(endTime - startTime).toFixed(2)} milliseconds to run. ${opts.saveFilePath}`);
         return resolve(result);
       } catch (err) {
+        log('debug', `sfSaveTool failed: ${opts.saveFilePath}`);
         return reject(err);
       } finally {
-        endTime = performance.now();
-        log('debug', `sfSaveTool took ${(endTime - startTime).toFixed(2)} milliseconds to run.`);
       }
     })
   );

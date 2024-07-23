@@ -23,6 +23,9 @@ export const Sidebar = (props: SidebarProps): JSX.Element => {
     <>
       <h4>{generateSaveName(save)}</h4>
 
+      <p>Game Version: {save.CurrentGameVersion}</p>
+      <p>Experience: {save.Header.Experience}</p>
+
       {IssueSnippet({
         issueHeading: t('Master Plugins:'),
         issue: save.PluginInfo.Plugins,

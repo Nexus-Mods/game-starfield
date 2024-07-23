@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { IconBar, ITableRowAction, MainPage, ToolbarIcon, types, util } from 'vortex-api';
 import { Content, StatusView } from '../components';
 import { ISaveGame } from '../types';
-import { formatlastPlayed, formatPlaytime, generateSaveName, getSaves } from '../utils';
+import { formatlastPlayed as formatLastPlayed, formatPlaytime, generateSaveName, getSaves } from '../utils';
 import { useTranslation } from 'react-i18next';
 import path from 'path';
 import { mygamesPath } from '../../../util';
@@ -118,10 +118,11 @@ const getTableAttributes = (
   const [t] = useTranslation('game-starfield');
 
   const tableAttributes: types.ITableAttribute<[string, ISaveGame]>[] = [
+
     {
-      id: 'name',
-      name: t('Name'),
-      calc: ([, save]) => generateSaveName(save),
+      id: 'lastPlayed',
+      name: t('Last Played'),
+      calc: ([, save]) => formatLastPlayed(save.Header.DateTime) ?? '',
       placement: 'both',
       edit: {},
     },
@@ -152,31 +153,10 @@ const getTableAttributes = (
       calc: ([, save]) => formatPlaytime(save.Header.Playtime) ?? '',
       placement: 'both',
       edit: {},
-    },
-    {
-      id: 'version',
-      name: t('Version'),
-      calc: ([, save]) => save.CurrentGameVersion ?? '',
-      placement: 'both',
-      edit: {},
-    },
-    {
-      id: 'lastPlayed',
-      name: t('Last Played'),
-      calc: ([, save]) => formatlastPlayed(save.Header.DateTime) ?? '',
-      placement: 'both',
-      edit: {},
-    },
-    {
-      id: 'status',
-      name: t('Status'),
-      customRenderer: (data): JSX.Element => {
-        if (data.length && typeof data[0] === 'string' && !Array.isArray(data[1])) {
-          const save = data[1];
-          return <StatusView api={api} save={save} />;
-        }
-        return <></>;
-      },
+    }, {
+      id: 'name',
+      name: t('Name'),
+      calc: ([, save]) => generateSaveName(save),
       placement: 'both',
       edit: {},
     },
