@@ -27,7 +27,7 @@ export const INSTALLING_REQUIREMENTS_NOTIFICATION_ID = 'starfield-installing-req
 export const CONSTRAINT_PLUGIN_ENABLER = '<1.12.0';
 
 // This is used for Vortex's version. (pre-1.12.0 will not support FBLO loot sort)
-export const CONSTRAINT_LOOT_FUNCTIONALITY = '>=1.12.0';
+export const CONSTRAINT_LOOT_FUNCTIONALITY = '^1.12.0';
 //#endregion
 
 // This is the order we expect the native plugins to be arranged.
