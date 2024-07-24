@@ -1,8 +1,7 @@
 /* eslint-disable */
 import * as path from 'path';
-import { log, selectors, types, util } from 'vortex-api';
+import { log, types, util } from 'vortex-api';
 
-import { GAME_ID } from './common';
 import { ISaveGame } from './views/Saves/types';
 
 import * as nodeUtil from 'util';
@@ -20,6 +19,7 @@ const SAVE_TOOL_EXEC = 'StarfieldSaveTool.exe';
 type SFSaveToolAction = 'output-json-file' | 'output-raw-file' | 'output-stdout';
 interface ISFSaveToolOptions {
   saveFilePath: string;
+  ignoreSaveVersion?: boolean;
 }
 
 export class SFSaveToolMissing extends Error {
@@ -59,7 +59,6 @@ async function runSFSaveTool(api: types.IExtensionApi, action: SFSaveToolAction,
         log('debug', `sfSaveTool took ${(endTime - startTime).toFixed(2)} milliseconds to run. ${opts.saveFilePath}`);
         return resolve(result);
       } catch (err) {
-        log('debug', `sfSaveTool failed: ${opts.saveFilePath}`);
         return reject(err);
       } finally {
       }
@@ -71,6 +70,10 @@ async function sfSaveTool(api: types.IExtensionApi, action: SFSaveToolAction, op
   return new Promise<ISaveGame>(async (resolve, reject) => {
     const exe = path.join(__dirname, SAVE_TOOL_EXEC);
     const args = action === 'output-stdout' ? [] : [`--${action}`];
+
+    if (opts.ignoreSaveVersion) {
+      args.push('--ignore-version');
+    }
     try {
       const command = `"${exe}" "${opts.saveFilePath}" ${args.join(' ')}`;
       const { stdout, stderr } = await exec(command, execOpts);

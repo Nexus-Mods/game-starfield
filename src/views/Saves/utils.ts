@@ -9,13 +9,7 @@ import { outputJSON, outputStdout } from '../../SFSaveToolWrapper';
 import { IEntry } from 'turbowalk';
 
 const createSaveGame = async (api: types.IExtensionApi, saveFilePath: string): Promise<ISaveGame> => {
-  try {
-    const result = await outputStdout(api, saveFilePath);
-    return result;
-  } catch (err) {
-    api.showErrorNotification('Failed to read savegame', err);
-    return null;
-  }
+  return outputStdout(api, saveFilePath);
 };
 
 export const formatPlaytime = (playtime: string): string => {
@@ -42,6 +36,7 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
   const saveLocation = path.join(mygamesPath(), 'Saves');
   const filePaths: IEntry[] = await walkPath(saveLocation, { recurse: false, skipLinks: true, skipInaccessible: true, skipHidden: true });
   const saveFilePaths: IEntry[] = filePaths.filter((file) => path.extname(file.filePath) === '.sfs');
+  const failedSaves: string[] = [];
   const saves: ISaveList = await saveFilePaths.reduce(async (accumP, file) => {
     const accum = await accumP;
     try {
@@ -51,10 +46,31 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
         accum[path.basename(file.filePath)] = save;
       }
     } catch (err) {
-      log('error', 'Failed to read savegame', err);
+      failedSaves.push(file.filePath);
+      log('error', `sfSaveTool failed: ${path.basename(file.filePath)} - ${err.message}`);
       return accum;
     }
     return accum;
   }, Promise.resolve({}));
+  const t = api.translate;
+  if (failedSaves.length > 0) {
+    api.sendNotification({
+      type: 'warning',
+      message: `Failed to read ${failedSaves.length} savegame(s)`,
+      actions: [
+        {
+          title: 'More', action: (dismiss) => {
+            api.showDialog('info', 'Failed to read savegame(s)', {
+              text: `Failed to read ${failedSaves.length} savegame(s). See log for more information.`,
+              message: failedSaves.join('\n'),
+            }, [
+              { label: 'Close', action: () => dismiss() },
+            ])
+          }
+        },
+      ]
+    })
+  }
+
   return Promise.resolve(saves);
 };
