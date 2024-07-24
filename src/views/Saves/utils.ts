@@ -61,7 +61,7 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
         {
           title: 'More', action: (dismiss) => {
             api.showDialog('info', 'Failed to read savegame(s)', {
-              text: `Failed to read ${failedSaves.length} savegame(s). See log for more information.`,
+              text: `Failed to read ${failedSaves.length} savegame(s). This may be simply down to being an old save (< 122). Vortex only works with save games saved since the Creation update. See log for more information.`,
               message: failedSaves.join('\n'),
             }, [
               { label: 'Close', action: () => dismiss() },
