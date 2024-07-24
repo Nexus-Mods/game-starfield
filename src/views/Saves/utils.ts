@@ -48,7 +48,7 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
         accum[path.basename(file.filePath)] = save;
       }
     } catch (err) {
-      failedSaves.push(file.filePath);
+      failedSaves.push(path.basename(file.filePath));
       log('error', `sfSaveTool failed: ${path.basename(file.filePath)} - ${err.message}`);
       return accum;
     }
@@ -73,6 +73,6 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
       ]
     })
   }
-
+  log('debug', `Finished reading saves directory, found ${Object.keys(saves).length} saves`);
   return Promise.resolve(saves);
 };
