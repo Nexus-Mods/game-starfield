@@ -48,7 +48,7 @@ export const Content = (props: ContentProps): JSX.Element => {
                   <Sidebar save={selectedRowSave} />
                 </FlexLayout.Fixed>
               </FlexLayout>
-              : <EmptyPlaceholder icon={'savegame'} text={'No Saves Found'} subtext={'Go fight off some space pirates...'} />
+              : <EmptyPlaceholder icon={'savegame'} text={'No saves found!'} subtext={'Go fight some space pirates...'} />
         }
       </Panel.Body>
     </Panel>
