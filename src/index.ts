@@ -27,6 +27,8 @@ import {
   serializePluginsFile,
   lootSortingAllowed,
   resolvePluginsFilePath,
+  lootSort,
+  switchToLoot,
 } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';
@@ -52,7 +54,6 @@ import {
   ASI_LOADER_BACKUP,
   PLUGINS_BACKUP,
   CONSTRAINT_PLUGIN_ENABLER,
-  DATA_PLUGINS,
 } from './common';
 
 import SavePage from './views/Saves/pages/SavePage';
@@ -165,6 +166,7 @@ function main(context: types.IExtensionContext) {
         return semver.satisfies(version, CONSTRAINT_PLUGIN_ENABLER);
       },
       allowLootSorting: () => lootSortingAllowed(context.api),
+      sort: () => lootSort(context.api),
     }),
     () => selectors.activeGameId(context.api.getState()) === GAME_ID,
     150
@@ -197,45 +199,7 @@ function main(context: types.IExtensionContext) {
     {},
     'Sort via LOOT',
     () => {
-      if (!lootSortingAllowed(context.api)) {
-        return;
-      }
-      context.api.sendNotification({
-        type: 'activity',
-        message: 'Sorting plugins via LOOT...',
-        id: 'starfield-fblo-loot-sorting',
-      });
-      const toLOEntry = (plugin: string): types.ILoadOrderEntry => ({
-        name: plugin,
-        enabled: true,
-        id: plugin,
-        data: {
-          isInvalid: false,
-        },
-      });
-      const onSortCallback = async (sorted: string[]) => {
-        context.api.dismissNotification('starfield-fblo-loot-sorting');
-        serializePluginsFile(context.api, sorted.map(toLOEntry));
-        forceRefresh(context.api);
-      };
-      if (context.api.ext.lootSortAsync !== undefined) {
-        const dataPath = getDataPath(context.api, { id: GAME_ID } as any);
-        fs.readdirAsync(dataPath)
-          .then((contents) => {
-            const pluginFilePaths = contents.reduce((accum, p) => {
-              DATA_PLUGINS.includes(path.extname(p)) && accum.push(path.join(dataPath, p));
-              return accum;
-            }, []);
-            context.api.ext.lootSortAsync({ pluginFilePaths, onSortCallback });
-          })
-          .catch((err) => {
-            log('error', 'Could not read data folder to sort plugins', err);
-            context.api.dismissNotification('starfield-fblo-loot-sorting');
-            context.api.showErrorNotification('Could not read the data folder to sort plugins.', err);
-            return Promise.resolve();
-          });
-      }
-      return true;
+      lootSort(context.api)
     },
     (gameId?: string[]) => isStarfield(context, gameId) && lootSortingAllowed(context.api)
   );

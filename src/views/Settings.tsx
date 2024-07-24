@@ -9,13 +9,14 @@ import { setLoadOrderManagementType, setPluginsEnabler } from '../actions/settin
 
 import { NS, GAME_ID } from '../common';
 
-import { forceRefresh, setPluginManagementEnabled } from '../util';
+import { forceRefresh, setPluginManagementEnabled, switchToLoot } from '../util';
 import { LoadOrderManagementType } from '../types';
 
 interface IBaseProps {
   onSetDirectoryJunction: (enabled: boolean) => void;
   needsEnabler: () => boolean;
   allowLootSorting: () => boolean;
+  sort: () => Promise<void>;
 }
 
 interface IConnectedProps {
@@ -42,17 +43,29 @@ function renderLOManagementType(props: IBaseProps & IConnectedProps): JSX.Elemen
   const onSetManageType = React.useCallback((evt) => {
     if (props.allowLootSorting()) {
       context.api.showDialog('info', t('Setting Load Order Management Type'), {
-        text: t('This operation requires Vortex to restart. Are you sure you want to change the load order management type?'),
+        text: t('Are you sure you want to change the load order management type?'),
       }, [
         { label: 'Cancel' },
-        { label: 'Restart' },
+        { label: 'Change' },
       ])
-      .then((res) => {
-        if (res.action === 'Restart') {
+      .then(async (res) => {
+        if (res.action === 'Change') {
+          const api = context.api;
+          const prev = props.loManagementType;
           dispatch(setLoadOrderManagementType(activeProfile.id, evt));
           setSelected(dropDownItems[evt]);
           setPluginManagementEnabled(context.api, evt === 'gamebryo');
-          context.api.events.emit('relaunch-application', GAME_ID);
+          if (evt === 'gamebryo') {
+            try {
+              await switchToLoot(api);
+            } catch (err) {
+              dispatch(setLoadOrderManagementType(activeProfile.id, prev));
+              setSelected(dropDownItems[prev]);
+              setPluginManagementEnabled(context.api, false);
+              return;
+            }
+          }
+          api.events.emit('show-main-page', 'Dashboard', false);
         }
       })
     }

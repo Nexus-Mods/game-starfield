@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { fs, types, selectors, util } from 'vortex-api';
-import { isJunctionDir, createJunction, removeJunction, requiresPluginEnabler } from './util';
+import { isJunctionDir, createJunction, removeJunction, requiresPluginEnabler, lootSort, switchToLoot } from './util';
 import path from 'path';
 
 import { setDirectoryJunctionEnabled } from './actions/settings';
