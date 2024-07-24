@@ -54,6 +54,50 @@
     }
 }
 
+#settings-tab {
+
+    #starfield-settings-form {
+
+        .form-group {
+
+            .starfield-settings-heading {
+                font-size: 1.5em;
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .starfield-settings-subheading {
+                //font-size: 1.3em;
+                //margin-top: 12px;
+                font-weight: bold;
+            }
+
+
+
+
+
+            .panel {
+                overflow: visible;
+
+                .panel-body {
+                    padding: 4px 12px;
+
+                    .toggle-container {
+                        margin: 0;
+                    }
+                }
+            }
+        }
+
+
+
+    }
+}
+
+
+
+
+
 #page-starfield-saves {
 
     .placeholder {
