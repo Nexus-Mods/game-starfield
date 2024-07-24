@@ -68,16 +68,19 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
               'info',
               `Failed to read ${failedSaves.length} ${failedSaves.length == 1 ? 'save' : 'saves'}`,
               {
-                text: `This issue is likely due to the ${
+                text: `This issue is likely (but not definitely) due to the ${
                   failedSaves.length == 1 ? 'file' : 'files'
                 } being created before the 1.12.30 game update as Vortex only supports saves created with that version or later. Any save file created prior to this update has a version number lower than 122, which Vortex does not process by default. Please refer to the log for further details.`,
                 message: failedSaves.join('\n'),
               },
               [
-                { label: 'Open Saves Folder', action: () => {
-                  dismiss();
-                  util.opn(path.join(mygamesPath(), 'Saves')).catch(() => null);
-                }},
+                {
+                  label: 'Open Saves Folder',
+                  action: () => {
+                    dismiss();
+                    util.opn(path.join(mygamesPath(), 'Saves')).catch(() => null);
+                  },
+                },
                 { label: 'Close', action: () => dismiss() },
               ]
             );

@@ -33,13 +33,24 @@
     }
 
     .header-lastPlayed {
-        max-width: 15em;
-        min-width: 10em;
+        max-width: 13em;
+        min-width: 13em;
+
+
     }
 
     .header-status {
         max-width: 5em;
         min-width: 5em;
+    }
+
+    .table-header-cell {
+
+        .flex-fill {
+            div:first-child {
+                width: 100%;
+            }
+        }
     }
 }
 
