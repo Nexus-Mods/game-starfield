@@ -1,10 +1,9 @@
 /* eslint-disable */
 import path from 'path';
-import { fs, log, types, util } from 'vortex-api';
+import { log, types, util } from 'vortex-api';
 import { ISaveGame, ISaveList } from './types';
-import { useTranslation } from 'react-i18next';
 import { mygamesPath, walkPath } from '../../util';
-import { outputJSON, outputStdout } from '../../SFSaveToolWrapper';
+import { outputStdout } from '../../SFSaveToolWrapper';
 
 import { IEntry } from 'turbowalk';
 
@@ -68,9 +67,7 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
               'info',
               `Failed to read ${failedSaves.length} ${failedSaves.length == 1 ? 'save' : 'saves'}`,
               {
-                text: `This issue is likely (but not definitely) due to the ${
-                  failedSaves.length == 1 ? 'file' : 'files'
-                } being created before the 1.12.30 game update as Vortex only supports saves created with that version or later. Any save file created prior to this update has a version number lower than 122, which Vortex does not process by default. Please refer to the log for further details.`,
+                text: 'Please refer to the log for further details.',
                 message: failedSaves.join('\n'),
               },
               [

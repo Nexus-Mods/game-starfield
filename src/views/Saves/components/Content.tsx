@@ -1,6 +1,6 @@
 import React from 'react';
 import { Panel } from 'react-bootstrap';
-import { FlexLayout, ITableRowAction, Spinner, Table, types } from 'vortex-api';
+import { FlexLayout, ITableRowAction, Spinner, Table, types, EmptyPlaceholder } from 'vortex-api';
 import { Sidebar } from './Sidebar';
 import { ISaveGame } from '../types';
 import { useTranslation } from 'react-i18next';
@@ -28,25 +28,27 @@ export const Content = (props: ContentProps): JSX.Element => {
             <div className='starfield-save-reading-spinner'>
               <Spinner /> {t('Reading Saves folder...')}
             </div>
-            :
-            <FlexLayout type="row" className="starfield-save-container">
-              <FlexLayout.Flex className="starfield-save-table">
-                <Table
-                  tableId="starfield-savegames"
-                  data={sortedSaveGameList}
-                  staticElements={tableAttributes}
-                  actions={saveActions}
-                  multiSelect={false}
-                  hasActions={false}
-                  showDetails={false}
-                  onChangeSelection={(ids: string[]) => saveRowSelected(sortedSaveGameList[parseInt(ids[0]!)]![1])}
-                />
-              </FlexLayout.Flex>
+            : sortedSaveGameList.length > 0
+              ?
+              <FlexLayout type="row" className="starfield-save-container">
+                <FlexLayout.Flex className="starfield-save-table">
+                  <Table
+                    tableId="starfield-savegames"
+                    data={sortedSaveGameList}
+                    staticElements={tableAttributes}
+                    actions={saveActions}
+                    multiSelect={false}
+                    hasActions={false}
+                    showDetails={false}
+                    onChangeSelection={(ids: string[]) => saveRowSelected(sortedSaveGameList[parseInt(ids[0]!)]![1])}
+                  />
+                </FlexLayout.Flex>
 
-              <FlexLayout.Fixed className="starfield-save-sidebar">
-                <Sidebar save={selectedRowSave} />
-              </FlexLayout.Fixed>
-            </FlexLayout>
+                <FlexLayout.Fixed className="starfield-save-sidebar">
+                  <Sidebar save={selectedRowSave} />
+                </FlexLayout.Fixed>
+              </FlexLayout>
+              : <EmptyPlaceholder icon={'savegame'} text={'No Saves Found'} subtext={'Go fight off some space pirates...'} />
         }
       </Panel.Body>
     </Panel>

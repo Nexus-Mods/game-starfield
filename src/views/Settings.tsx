@@ -117,6 +117,10 @@ function renderPluginEnablerToggle(props: IBaseProps & IConnectedProps): JSX.Ele
 }
 
 function renderIgnoreSaveVersion(props: IBaseProps & IConnectedProps): JSX.Element {
+  // This functional component was used to render the Ignore Save Game Version option.
+  //  As the sfSaveTool is now able to parse older save games created by older versions
+  //  of the game (pre-creation) it's theoretically no longer needed.
+  //  However, it's kept here in case it is needed in the future.
   const { t } = useTranslation(NS);
   const context = React.useContext(MainContext);
   const store = useStore();
@@ -169,7 +173,6 @@ export default function Settings(props: IProps) {
                 {t('Use Folder Junction')}
               </Toggle>
             </>
-            {renderIgnoreSaveVersion(combined)}
             <>
               <HelpBlock>
                 {t('Allows you to switch between automated LOOT sorting or drag and drop')}
