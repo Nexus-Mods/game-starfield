@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { generateSaveName } from '../utils';
 
 export type ContentProps = {
+  isLoading: boolean;
   selectedSave: ISaveGame | null;
   saveActions: ITableRowAction[];
   sortedSaveGameList: [string, ISaveGame][];
@@ -16,7 +17,7 @@ export type ContentProps = {
 };
 
 export const Content = (props: ContentProps): JSX.Element => {
-  const { selectedSave, saveActions, sortedSaveGameList, tableAttributes, selectedRowSave, saveRowSelected } = props;
+  const { isLoading, saveActions, sortedSaveGameList, tableAttributes, selectedRowSave, saveRowSelected } = props;
 
   const [t] = useTranslation('game-starfield');
 
@@ -24,7 +25,7 @@ export const Content = (props: ContentProps): JSX.Element => {
     <Panel>
       <Panel.Body>
         {
-          sortedSaveGameList.length === 0 ?
+          isLoading ?
             <div className='starfield-save-reading-spinner'>
               <Spinner /> {t('Reading Saves folder...')}
             </div>

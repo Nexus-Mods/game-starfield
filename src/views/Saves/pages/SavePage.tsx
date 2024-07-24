@@ -16,6 +16,7 @@ export default function SavePage(props: SavePageProps): JSX.Element {
 
   const [t] = useTranslation('game-starfield');
   const [currentSaveNumber, setCurrentSaveNumber] = useState(0);
+  const [loading, setLoading] = useState(true);
   const mainButtonList = [
     {
       component: ToolbarIcon,
@@ -69,6 +70,7 @@ export default function SavePage(props: SavePageProps): JSX.Element {
   );
 
   const reloadSaves = useCallback(async () => {
+    setLoading(true);
     setSortedSaveGames([]);
     setSelectedSave(null);
     setSelectedRowSave(null);
@@ -80,6 +82,7 @@ export default function SavePage(props: SavePageProps): JSX.Element {
       setSelectedSave(foundSave);
       setSelectedRowSave(foundSave);
     }
+    setLoading(false);
   }, [currentSaveNumber]);
 
   useEffect(() => {
@@ -98,6 +101,7 @@ export default function SavePage(props: SavePageProps): JSX.Element {
       </MainPage.Header>
       <MainPage.Body>
         {Content({
+          isLoading: loading,
           selectedSave: selectedSave,
           saveActions: saveActions,
           sortedSaveGameList: sortedSaveGameList,
