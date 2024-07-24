@@ -147,7 +147,7 @@ function main(context: types.IExtensionContext) {
   });
 
   const savePageOptions = new SavePageOptions(context);
-  context.registerMainPage('savegame', 'Saves', SavePage, savePageOptions);
+  context.registerMainPage('savegame', 'Save Games', SavePage, savePageOptions);
 
   context.registerSettings(
     'Mods',

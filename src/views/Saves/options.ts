@@ -7,6 +7,7 @@ export class SavePageOptions implements types.IMainPageOptions {
 
   public id = 'starfield-saves';
   public hotkey = 'A';
+  public priority = 500;
   public group: 'dashboard' | 'global' | 'per-game' | 'support' | 'hidden' = 'per-game';
 
   constructor(context: types.IExtensionContext) {
