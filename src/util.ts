@@ -530,6 +530,9 @@ export async function lootSort(api: types.IExtensionApi) {
           api.showErrorNotification('Could not read the data folder to sort plugins.', err);
           return Promise.resolve();
         });
+    } else {
+      api.showErrorNotification('LOOT sort API extension is unavailable', 'Please ensure the Gamebryo Plugins Management extension is enabled');
+      api.dismissNotification('starfield-fblo-loot-sorting');
     }
     return Promise.resolve();
   }
