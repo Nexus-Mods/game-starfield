@@ -57,6 +57,7 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
   const t = api.translate;
   if (failedSaves.length > 0) {
     api.sendNotification({
+      id: 'starfield-failed-parsing-saves',
       type: 'warning',
       message: `Failed to read ${failedSaves.length} ${failedSaves.length == 1 ? 'save' : 'saves'}`,
       actions: [
@@ -72,7 +73,13 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
                 } being created before the 1.12.30 game update as Vortex only supports saves created with that version or later. Any save file created prior to this update has a version number lower than 122, which Vortex does not process by default. Please refer to the log for further details.`,
                 message: failedSaves.join('\n'),
               },
-              [{ label: 'Close', action: () => dismiss() }]
+              [
+                { label: 'Open Saves Folder', action: () => {
+                  dismiss();
+                  util.opn(path.join(mygamesPath(), 'Saves')).catch(() => null);
+                }},
+                { label: 'Close', action: () => dismiss() },
+              ]
             );
           },
         },
