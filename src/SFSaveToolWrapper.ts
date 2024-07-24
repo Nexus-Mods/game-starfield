@@ -103,18 +103,18 @@ async function sfSaveTool(api: types.IExtensionApi, action: SFSaveToolAction, op
   });
 }
 
-export async function outputStdout(api: types.IExtensionApi, saveFilePath: string) {
-  return runSFSaveTool(api, 'output-stdout', { saveFilePath });
+export async function outputStdout(api: types.IExtensionApi, opts: ISFSaveToolOptions) {
+  return runSFSaveTool(api, 'output-stdout', opts);
 }
 
-export async function outputRaw(api: types.IExtensionApi, saveFilePath: string) {
-  return runSFSaveTool(api, 'output-raw-file', { saveFilePath });
+export async function outputRaw(api: types.IExtensionApi, opts: ISFSaveToolOptions) {
+  return runSFSaveTool(api, 'output-raw-file', opts);
 }
 
-export async function outputJSON(api: types.IExtensionApi, saveFilePath: string): Promise<ISaveGame> {
+export async function outputJSON(api: types.IExtensionApi, opts: ISFSaveToolOptions): Promise<ISaveGame> {
   let res;
   try {
-    res = await runSFSaveTool(api, 'output-json-file', { saveFilePath });
+    res = await runSFSaveTool(api, 'output-json-file', opts);
   } catch (error) {
     if (error instanceof SFSaveToolMissingDotNet) {
       log('error', 'Missing .NET', error.message);

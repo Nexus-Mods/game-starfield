@@ -9,7 +9,9 @@ import { outputJSON, outputStdout } from '../../SFSaveToolWrapper';
 import { IEntry } from 'turbowalk';
 
 const createSaveGame = async (api: types.IExtensionApi, saveFilePath: string): Promise<ISaveGame> => {
-  return outputStdout(api, saveFilePath);
+  const state = api.getState();
+  const ignoreSaveVersion = util.getSafe(state, ['settings', 'starfield', 'ignoreSaveVersion'], undefined);
+  return outputStdout(api, { saveFilePath, ignoreSaveVersion });
 };
 
 export const formatPlaytime = (playtime: string): string => {

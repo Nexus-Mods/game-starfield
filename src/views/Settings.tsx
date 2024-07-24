@@ -3,11 +3,11 @@ import * as React from 'react';
 import { ControlLabel, DropdownButton, FormGroup, Panel, MenuItem, HelpBlock } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector, useStore } from 'react-redux';
-import { actions, MainContext, Toggle, selectors, types, util } from 'vortex-api';
+import { MainContext, Toggle, selectors, types, util } from 'vortex-api';
 
-import { setLoadOrderManagementType, setPluginsEnabler } from '../actions/settings';
+import { setIgnoreSaveGameVersion, setLoadOrderManagementType, setPluginsEnabler } from '../actions/settings';
 
-import { NS, GAME_ID } from '../common';
+import { NS } from '../common';
 
 import { forceRefresh, setPluginManagementEnabled, switchToLoot } from '../util';
 import { LoadOrderManagementType } from '../types';
@@ -24,6 +24,7 @@ interface IConnectedProps {
   pluginEnabler: boolean;
   activeProfile: types.IProfile;
   loManagementType: LoadOrderManagementType;
+  ignoreSaveVersion: boolean;
 }
 
 type IProps = IBaseProps;
@@ -115,6 +116,32 @@ function renderPluginEnablerToggle(props: IBaseProps & IConnectedProps): JSX.Ele
   )
 }
 
+function renderIgnoreSaveVersion(props: IBaseProps & IConnectedProps): JSX.Element {
+  const { t } = useTranslation(NS);
+  const context = React.useContext(MainContext);
+  const store = useStore();
+  const onSetIgnoreVersion = React.useCallback((evt) => {
+    store.dispatch(setIgnoreSaveGameVersion(evt));
+  }, [context, store]);
+
+  const { ignoreSaveVersion } = props;
+  const helpBlockText = t('The save game parser is designed to work with save game version 122 and above. '
+                          + 'That being said, some older versions can still be parsed partially. Please '
+                          + 'be aware that enabling this option could cause unexpected behaviour during savegame parsing.');
+
+  return (
+    <>
+      <HelpBlock>{helpBlockText}</HelpBlock>
+      <Toggle
+        checked={ignoreSaveVersion}
+        onToggle={onSetIgnoreVersion}
+      >
+        {t('Ignore Save Game Version')}
+      </Toggle>
+    </>
+  )
+}
+
 export default function Settings(props: IProps) {
   const { t } = useTranslation(NS);
   const { onSetDirectoryJunction } = props;
@@ -142,6 +169,7 @@ export default function Settings(props: IProps) {
                 {t('Use Folder Junction')}
               </Toggle>
             </>
+            {renderIgnoreSaveVersion(combined)}
             <>
               <HelpBlock>
                 {t('Allows you to switch between automated LOOT sorting or drag and drop')}
@@ -162,5 +190,6 @@ function mapStateToProps(state: any): IConnectedProps {
     pluginEnabler: util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false),
     activeProfile: profile,
     loManagementType: util.getSafe(state, ['settings', 'starfield', 'loadOrderManagementType', profile.id], 'dnd'),
+    ignoreSaveVersion: util.getSafe(state, ['settings', 'starfield', 'ignoreSaveVersion'], false),
   };
 }

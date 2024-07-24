@@ -1,10 +1,9 @@
 import React from 'react';
 import { Panel } from 'react-bootstrap';
-import { DNDContainer, FlexLayout, ITableRowAction, Spinner, Table, types } from 'vortex-api';
+import { FlexLayout, ITableRowAction, Spinner, Table, types } from 'vortex-api';
 import { Sidebar } from './Sidebar';
 import { ISaveGame } from '../types';
 import { useTranslation } from 'react-i18next';
-import { generateSaveName } from '../utils';
 
 export type ContentProps = {
   isLoading: boolean;
