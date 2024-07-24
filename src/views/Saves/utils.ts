@@ -58,20 +58,26 @@ export const getSaves = async (api: types.IExtensionApi): Promise<ISaveList> => 
   if (failedSaves.length > 0) {
     api.sendNotification({
       type: 'warning',
-      message: `Failed to read ${failedSaves.length} savegame(s)`,
+      message: `Failed to read ${failedSaves.length} ${failedSaves.length == 1 ? 'save' : 'saves'}`,
       actions: [
         {
-          title: 'More', action: (dismiss) => {
-            api.showDialog('info', 'Failed to read savegame(s)', {
-              text: `Failed to read ${failedSaves.length} savegame(s). This may be simply down to being an old save (< 122). Vortex only works with save games saved since the Creation update. See log for more information.`,
-              message: failedSaves.join('\n'),
-            }, [
-              { label: 'Close', action: () => dismiss() },
-            ])
-          }
+          title: 'More',
+          action: (dismiss) => {
+            api.showDialog(
+              'info',
+              `Failed to read ${failedSaves.length} ${failedSaves.length == 1 ? 'save' : 'saves'}`,
+              {
+                text: `This issue is likely due to the ${
+                  failedSaves.length == 1 ? 'file' : 'files'
+                } being created before the 1.12.30 game update as Vortex only supports saves created with that version or later. Any save file created prior to this update has a version number lower than 122, which Vortex does not process by default. Please refer to the log for further details.`,
+                message: failedSaves.join('\n'),
+              },
+              [{ label: 'Close', action: () => dismiss() }]
+            );
+          },
         },
-      ]
-    })
+      ],
+    });
   }
   log('debug', `Finished reading saves directory, found ${Object.keys(saves).length} saves`);
   return Promise.resolve(saves);
