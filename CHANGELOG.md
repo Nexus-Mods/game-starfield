@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.8.5] - 2024-07-25
+
+- Fixed hanging sort activity if LOOT is unavailable.
+
 ## [0.8.4] - 2024-07-24
 
 - Added settings option to switch between regular drag and drop and automatic sorting using LOOT.
