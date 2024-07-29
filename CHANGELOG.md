@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.8.6] - 2024-07-29
+
+- Adding fallback to playtime parser
+
 ## [0.8.5] - 2024-07-29
 
 - Fixed hanging sort activity if LOOT is unavailable
@@ -169,6 +173,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Initial release for basic mod support
 
+[0.8.6]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.8.6
 [0.8.5]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.8.5
 [0.7.1]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.7.1
 [0.7.0]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.7.0
