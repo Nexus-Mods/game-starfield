@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.8.5] - 2024-07-25
 
 - Fixed hanging sort activity if LOOT is unavailable.
+- Refactored plugin enabler check to ensure it executes on game startup regardless of Vortex version
 
 ## [0.8.4] - 2024-07-24
 

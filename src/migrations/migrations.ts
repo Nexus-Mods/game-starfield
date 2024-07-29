@@ -3,7 +3,7 @@ import path from 'path';
 import semver from 'semver';
 import { actions, fs, selectors, types, util } from 'vortex-api';
 import { setMigrationVersion, setPluginsEnabler } from '../actions/settings';
-import { CONSTRAINT_LOOT_FUNCTIONALITY, DATA_SUBFOLDERS, GAME_ID, MOD_TYPE_DATAPATH, NS, CONSTRAINT_PLUGIN_ENABLER } from '../common';
+import { DATA_SUBFOLDERS, GAME_ID, MOD_TYPE_DATAPATH, NS, CONSTRAINT_PLUGIN_ENABLER } from '../common';
 import { deploy, nuclearPurge, getExtensionVersion, requiresPluginEnabler } from '../util';
 
 // Migrations should be self contained - do not let any errors escape from them.

@@ -96,6 +96,8 @@ A new "Load Order" page has been added to the extension to allow users to view t
 
 # Known Issues
 
+- Updating from Vortex 1.11.7 to 1.12.x beta while having Starfield 0.8.5 installed may present UI glitches upon Vortex re-launch (missing management type dropdown button, plugin enabler still being mentioned on the load order page) - please restart Vortex if you are affected - this should only happen one time after Vortex update.
+
 - Save Games functionality is not available for Xbox game pass users.
 
 - ASI Loader is outdated - disable the relevant script loader/extender to ensure your game does not crash.
