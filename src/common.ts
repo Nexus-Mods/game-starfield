@@ -1,8 +1,13 @@
 import path from 'path';
+import { resolveNativePlugins } from './util';
 import { util } from 'vortex-api';
+
+export const DEBUG_ENABLED = false;
+export const DEBUG_APP_VERSION = '1.12.0';
 
 export const LOCAL_APP_DATA = path.join(util.getVortexPath('localAppData'), 'Starfield');
 export const PLUGINS_TXT = path.join(LOCAL_APP_DATA, 'plugins.txt');
+export const PLUGINS_CCC_PATTERN = '{{prefix}}\\starfield.ccc';
 export const PLUGINS_BACKUP = path.join(util.getVortexPath('temp'), path.basename(PLUGINS_TXT) + '.bak');
 export const PLUGINS_ENABLER_FILENAME = 'SFPluginsTxtEnabler';
 export const NS = 'game-starfield';
@@ -17,13 +22,17 @@ export const JUNCTION_NOTIFICATION_ID = 'starfield-junction-notif';
 export const MY_GAMES_DATA_WARNING = 'starfield-my-games-data-warning';
 export const INSTALLING_REQUIREMENTS_NOTIFICATION_ID = 'starfield-installing-requirements';
 
+//#region Constraints
 // Below constraint is used for the GAME version. Not the extension.
-export const PLUGIN_ENABLER_CONSTRAINT = '<1.12.0';
+export const CONSTRAINT_PLUGIN_ENABLER = '<1.12.0';
+
+// This is used for Vortex's version. (pre-1.12.0 will not support FBLO loot sort)
+export const CONSTRAINT_LOOT_FUNCTIONALITY = '^1.12.0';
+//#endregion
 
 // This is the order we expect the native plugins to be arranged.
 export const NATIVE_PLUGINS = ['starfield.esm', 'blueprintships-starfield.esm', 'oldmars.esm', 'constellation.esm'];
 export const NATIVE_MID_PLUGINS = ['sfbgs003.esm', 'sfbgs006.esm', 'sfbgs007.esm', 'sfbgs008.esm'];
-export const ALL_NATIVE_PLUGINS = [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
 
 export const DATA_SUBFOLDERS = [
   'Meshes',

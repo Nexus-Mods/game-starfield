@@ -1,0 +1,147 @@
+#table-starfield-savegames {
+
+    .radio input[type='radio'] {
+        margin: 0;
+        position: inherit;
+    }
+
+    .header-name {
+        width: 33%;
+    }
+
+    .header-characterName {
+        width: 20%;
+    }
+
+    .header-playerLocation {
+        width: 33%;
+    }
+
+    .header-characterLevel {
+        max-width: 4em;
+        min-width: 4em;
+    }
+
+    .header-playTime {
+        max-width: 8em;
+        min-width: 8em;
+    }
+
+    .header-version {
+        max-width: 8em;
+        min-width: 8em;
+    }
+
+    .header-lastPlayed {
+        max-width: 13em;
+        min-width: 13em;
+
+
+    }
+
+    .header-status {
+        max-width: 5em;
+        min-width: 5em;
+    }
+
+    .table-header-cell {
+
+        .flex-fill {
+            div:first-child {
+                width: 100%;
+            }
+        }
+    }
+}
+
+#settings-tab {
+
+    #starfield-settings-form {
+
+        .form-group {
+
+            .starfield-settings-heading {
+                font-size: 1.5em;
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .starfield-settings-subheading {
+                //font-size: 1.3em;
+                //margin-top: 12px;
+                font-weight: bold;
+            }
+
+
+
+
+
+            .panel {
+                overflow: visible;
+
+                .panel-body {
+                    padding: 4px 12px;
+
+                    .toggle-container {
+                        margin: 0;
+                    }
+                }
+            }
+        }
+
+
+
+    }
+}
+
+
+
+
+
+#page-starfield-saves {
+
+    .placeholder {
+        gap: 12px;
+    }
+
+    .starfield-save-reading-spinner {
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .icon-spinner_new {
+            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    .starfield-save-container {
+
+        gap: 8px;
+
+        .starfield-save-sidebar {
+
+            background-color: $brand-bg;
+            padding: $panel-body-padding;
+            border-radius: $panel-border-radius;
+            border: 1px solid $panel-default-border;
+            overflow-y: auto;
+            word-break: break-word;
+
+            width: 25em;
+
+            *:first-child {
+                margin-top: 0;
+            }
+
+            *:not(:first-child) {
+                margin-top: 0.5em;
+            }
+        }
+
+    }
+
+
+}

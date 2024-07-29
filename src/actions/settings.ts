@@ -12,3 +12,5 @@ export const setPluginsEnabler = createAction('SET_STARFIELD_PLUGIN_ENABLER', (e
 
 export const setLoadOrderManagementType = createAction('SET_STARFIELD_LOAD_ORDER_MANAGEMENT_TYPE',
   (profileId: string, type: LoadOrderManagementType) => ({ profileId, type }));
+
+export const setIgnoreSaveGameVersion = createAction('SET_STARFIELD_SAVE_IGNORE_VERSION', (ignore: boolean) => ignore);

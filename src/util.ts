@@ -1,13 +1,21 @@
 /* eslint-disable */
 import { getFileVersion } from 'exe-version';
-import { actions, fs, log, selectors, types, util } from 'vortex-api';
-import { ALL_NATIVE_PLUGINS, PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING, JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST, PLUGIN_ENABLER_CONSTRAINT, INSTALLING_REQUIREMENTS_NOTIFICATION_ID } from './common';
+import { fs, log, selectors, types, util } from 'vortex-api';
+import {
+  PLUGINS_TXT, LOCAL_APP_DATA, GAME_ID, MY_GAMES_DATA_WARNING,
+  JUNCTION_NOTIFICATION_ID, PLUGINS_BACKUP, XBOX_APP_X_MANIFEST,
+  CONSTRAINT_PLUGIN_ENABLER, INSTALLING_REQUIREMENTS_NOTIFICATION_ID,
+  CONSTRAINT_LOOT_FUNCTIONALITY, DEBUG_ENABLED, DEBUG_APP_VERSION,
+  PLUGINS_CCC_PATTERN, NATIVE_PLUGINS, NATIVE_MID_PLUGINS,
+  DATA_PLUGINS,
+} from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import { parseStringPromise } from 'xml2js';
 import path from 'path';
 import semver from 'semver';
 import { getStopPatterns } from './stopPatterns';
 import { LoadOrderManagementType } from './types';
+import { getDataPath } from './modTypes/dataPath';
 
 export async function mergeFolderContents(source: string, destination: string, overwrite = false): Promise<void> {
   log('debug', 'Merging folders', { source, destination, overwrite });
@@ -62,8 +70,8 @@ export const isJunctionDir = async (filePath: string): Promise<boolean> => {
 }
 
 export const createJunction = async (source: string,
-                                     destination: string,
-                                     backup?: boolean): Promise<void> => {
+  destination: string,
+  backup?: boolean): Promise<void> => {
   // Make sure the parent folder exists before attempting to create the junction.
   //  Plenty of reasons why this might be missing at this stage, lets just make sure.
   await fs.ensureDirWritableAsync(path.dirname(source));
@@ -126,10 +134,11 @@ export const openAppDataPath = () => {
   util.opn(LOCAL_APP_DATA).catch(() => null);
 };
 
-export const removePluginsFile = async () => {
+export const removePluginsFile = async (api: types.IExtensionApi) => {
   try {
+    const pluginsPath = await resolvePluginsFilePath(api)
     await fs.removeAsync(PLUGINS_BACKUP).catch(err => null);
-    await fs.unlinkAsync(PLUGINS_TXT);
+    await fs.unlinkAsync(pluginsPath);
   } catch (err) {
     // File doesn't exist, nothing to do.
   }
@@ -181,7 +190,7 @@ export async function nuclearPurge(api: types.IExtensionApi, gameId: string): Pr
   // Get all the manifests for all modTypes for this game. We can't rely
   //  on our store selectors as the modPaths may have changed.
   const entries: IEntry[] = await walkPath(gamePath);
-  const manifests: { [filePath: string] : types.IDeploymentManifest } = await entries.reduce(async (accumP, m) => {
+  const manifests: { [filePath: string]: types.IDeploymentManifest } = await entries.reduce(async (accumP, m) => {
     const accum = await accumP;
     if (manifestRegexp.test(path.basename(m.filePath))) {
       accum[m.filePath] = JSON.parse(await fs.readFileAsync(m.filePath));
@@ -196,12 +205,12 @@ export async function nuclearPurge(api: types.IExtensionApi, gameId: string): Pr
 }
 
 export async function purgeDeployedFiles(basePath: string,
-                                         files: types.IDeployedFile[]): Promise<void> {
+  files: types.IDeployedFile[]): Promise<void> {
   for (const file of files) {
     const fullPath = path.join(basePath, file.relPath);
     // Timestamp differences of more than a second are considered a manual change. (probably the user, don't delete)
     await fs.statAsync(fullPath).then(stats => ((stats.mtime.getTime() - file.time) < 1000) ? fs.unlinkAsync(fullPath) : Promise.resolve())
-                                .catch(err => err.code !== 'ENOENT' ? Promise.reject(err) : Promise.resolve());
+      .catch(err => err.code !== 'ENOENT' ? Promise.reject(err) : Promise.resolve());
   }
   return Promise.resolve();
 }
@@ -209,7 +218,7 @@ export async function purgeDeployedFiles(basePath: string,
 export async function requiresPluginEnabler(api: types.IExtensionApi): Promise<boolean> {
   try {
     const gameVersion = await getGameVersionAsync(api);
-    return (semver.satisfies(semver.coerce(gameVersion).version, PLUGIN_ENABLER_CONSTRAINT));
+    return (semver.satisfies(semver.coerce(gameVersion).version, CONSTRAINT_PLUGIN_ENABLER));
   } catch (err) {
     // Assume it's required.
     log('error', 'failed to check plugin enabler constraint', err);
@@ -341,7 +350,7 @@ export function deepMerge(lhs: any, rhs: any): any {
       result[key] = pick(lhs[key], rhs[key]);
     }
 
-    result[key] = ((typeof(lhs[key]) === 'object') && (typeof(rhs[key]) === 'object'))
+    result[key] = ((typeof (lhs[key]) === 'object') && (typeof (rhs[key]) === 'object'))
       ? result[key] = deepMerge(lhs[key], rhs[key])
       : (Array.isArray(lhs[key]) && Array.isArray(rhs[key]))
         ? result[key] = lhs[key].concat(rhs[key])
@@ -410,10 +419,11 @@ export function forceRefresh(api: types.IExtensionApi) {
   api.store.dispatch(action);
 }
 
-export async function serializePluginsFile(plugins: types.ILoadOrderEntry[]): Promise<void> {
+export async function serializePluginsFile(api: types.IExtensionApi, plugins: types.ILoadOrderEntry[]): Promise<void> {
+  const nativePlugins = await resolveNativePlugins(api);
   const data = plugins.map(plugin => {
     // Strip the native plugins from whatever we write to the file as it's uneccessary.
-    if (ALL_NATIVE_PLUGINS.includes(plugin.name.toLowerCase())) {
+    if (nativePlugins.includes(plugin.name.toLowerCase())) {
       return '';
     }
     const invalid = plugin.data?.isInvalid ? '#' : '';
@@ -421,7 +431,8 @@ export async function serializePluginsFile(plugins: types.ILoadOrderEntry[]): Pr
     return `${invalid}${enabled}${plugin.name}`
   });
   data.splice(0, 0, '# This file was automatically generated by Vortex. Do not edit this file.');
-  await fs.writeFileAsync(PLUGINS_TXT, data.filter(plug => !!plug).join('\n'), { encoding: 'utf8' });
+  const pluginsFile = await resolvePluginsFilePath(api);
+  await fs.writeFileAsync(pluginsFile, data.filter(plug => !!plug).join('\n'), { encoding: 'utf8' });
 }
 
 export async function deserializePluginsFile(): Promise<string[]> {
@@ -454,4 +465,101 @@ export function getManagementType(api: types.IExtensionApi): LoadOrderManagement
   const state = api.store.getState();
   const profileId = selectors.lastActiveProfileForGame(state, GAME_ID);
   return util.getSafe(state, ['settings', GAME_ID, 'loadOrderManagementType', profileId], 'dnd');
+}
+
+export const lootSortingAllowed = (api: types.IExtensionApi) => {
+  const state = api.getState();
+  const appVersion = DEBUG_ENABLED ? DEBUG_APP_VERSION : util.getSafe(state, ['app', 'appVersion'], '0.0.1');
+  return appVersion === '0.0.1' || semver.satisfies(semver.coerce(appVersion), CONSTRAINT_LOOT_FUNCTIONALITY);
+}
+
+export const resolvePluginsFilePath = async (api: types.IExtensionApi): Promise<string> => {
+  return Promise.resolve(PLUGINS_TXT);
+}
+
+export const resolveNativePlugins = async (api: types.IExtensionApi): Promise<string[]> => {
+  const state = api.getState();
+  const discovery = selectors.discoveryByGame(state, GAME_ID);
+  const cccFilePath = PLUGINS_CCC_PATTERN.replace('{{prefix}}', discovery?.path || '');
+  try {
+    await fs.statAsync(cccFilePath);
+    const data = await fs.readFileAsync(cccFilePath, 'utf8');
+    const lines = data.split('\r\n').filter(plugin => plugin !== '');
+    return lines;
+  } catch (err) {
+    return [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
+  }
+}
+
+export async function lootSort(api: types.IExtensionApi) {
+  {
+    if (!lootSortingAllowed(api)) {
+      return;
+    }
+    api.sendNotification({
+      type: 'activity',
+      message: 'Sorting plugins via LOOT...',
+      id: 'starfield-fblo-loot-sorting',
+    });
+    const toLOEntry = (plugin: string): types.ILoadOrderEntry => ({
+      name: plugin,
+      enabled: true,
+      id: plugin,
+      data: {
+        isInvalid: false,
+      },
+    });
+    const onSortCallback = async (sorted: string[]) => {
+      api.dismissNotification('starfield-fblo-loot-sorting');
+      serializePluginsFile(api, sorted.map(toLOEntry));
+      forceRefresh(api);
+    };
+    if (api.ext.lootSortAsync !== undefined) {
+      const dataPath = getDataPath(api, { id: GAME_ID } as any);
+      fs.readdirAsync(dataPath)
+        .then((contents) => {
+          const pluginFilePaths = contents.reduce((accum, p) => {
+            DATA_PLUGINS.includes(path.extname(p)) && accum.push(path.join(dataPath, p));
+            return accum;
+          }, []);
+          api.ext.lootSortAsync({ pluginFilePaths, onSortCallback });
+        })
+        .catch((err) => {
+          log('error', 'Could not read data folder to sort plugins', err);
+          api.dismissNotification('starfield-fblo-loot-sorting');
+          api.showErrorNotification('Could not read the data folder to sort plugins.', err);
+          return Promise.resolve();
+        });
+    } else {
+      api.showErrorNotification('LOOT sort API extension is unavailable', 'Please ensure the Gamebryo Plugins Management extension is enabled');
+      api.dismissNotification('starfield-fblo-loot-sorting');
+    }
+    return Promise.resolve();
+  }
+}
+
+export async function switchToLoot(api: types.IExtensionApi) {
+  const state = api.getState();
+  const profileId = selectors.lastActiveProfileForGame(state, GAME_ID);
+  const loadOrder: types.ILoadOrderEntry[] = util.getSafe(state, ['persistent', 'loadOrder', profileId], []);
+  const nativePlugins = await resolveNativePlugins(api);
+  const enabled = loadOrder.filter(l => l.enabled && !nativePlugins.includes(l.name.toLowerCase())).map(l => l.name);
+  try {
+    await deploy(api);
+    const enablePluginActions = enabled.map(p => ({
+      type: 'SET_PLUGIN_ENABLED',
+      payload: {
+        pluginName: p,
+        enabled: true,
+      },
+    }));
+    util.batchDispatch(api.store, enablePluginActions);
+  } catch (err) {
+    api.showErrorNotification('Failed to switch to automated sorting', err);
+    throw err;
+  }
+}
+
+export function mygamesPath(): string {
+  return path.join(util.getVortexPath('documents'), 'My Games', 'Starfield');
 }

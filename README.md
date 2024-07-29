@@ -27,7 +27,7 @@ Coming Soon
 
 # Installation
 
-This extension requires Vortex **1.9.10** or greater.
+This extension requires Vortex **1.9.10** or greater. LOOT sorting functionality requires Vortex **1.12.0** or greater.
 
 To install, click the Vortex button at the top of the [Starfield Extension page on Nexus Mods](https://www.nexusmods.com/site/mods/634), and then click Install.
 
@@ -65,6 +65,22 @@ Similar to Fallout 4, Starfield requires certain INI tweaks to be set in order t
 
 ~~Additionally, Vortex will apply a tweak to re-route your Photo Mode captures to Data\Textures\Photos (unless you've already set it to something else) and there is now a button inside Vortex to quickly open this folder.~~ This was removed in version `0.6.7` of the extension due to a bug in Starfield that was introduced when the game updated to approximately version `1.10.31.0`.
 
+# Save Games (0.8.x)
+
+A basic Save Games page has been added to allow users to view information regarding their save games. This functionality is unfortunately not available for
+Xbox game pass users as the saves themselves are inaccessible by default. Vortex will attempt to parse any existing saves within the "Documents/My Games/Starfield/Saves" directory and display information such as Character name, level, experience and more importantly, the plugins that have been loaded to the save game.
+
+# Plugin Load Ordering (0.8.x)
+
+The current implementation allows the user to select between two different plugin management methodologies. By default the Starfield extension is configured
+to use the Drag and Drop functionality which has been available in previous versions of the extension, with an added "Sort via LOOT" button in the Load Order
+page for users of Vortex 1.12.x or greater.
+
+Alternatively it is possible to switch to a completely automated sorting functionality controlled by LOOT; similar to the plugin management system available
+for other Bethesda games.
+
+To switch between the two systems, the user needs to go to the Settings Page -> Mods Tab and choose between the Drag and Drop or Automated sorting functionalities.
+
 # Plugin Load Ordering (0.7.x)
 
 ~~The current implementation of the plugin management system in Starfield is temporary while we wait for the official creation kit from Bethesda. This means that we expect certain functionality to change in the future, yet we're confident enough to provide interim support.~~ The plugin management systen in Starfield has been enabled as of 9th of June 2024; plugin enablers are no longer required.
@@ -80,7 +96,11 @@ A new "Load Order" page has been added to the extension to allow users to view t
 
 # Known Issues
 
-- SFSE and ASI Loader are outdated - disable the relevant script loader/extender to ensure your game does not crash.
+- Updating from Vortex 1.11.7 to 1.12.x beta while having Starfield 0.8.5 installed may present UI glitches upon Vortex re-launch (missing management type dropdown button, plugin enabler still being mentioned on the load order page) - please restart Vortex if you are affected - this should only happen one time after Vortex update.
+
+- Save Games functionality is not available for Xbox game pass users.
+
+- ASI Loader is outdated - disable the relevant script loader/extender to ensure your game does not crash.
 
 - This extension has been tested with all of the most popular mods, installers, script extenders, mod fixers etc. Please see this [Mod Compatibility List](https://forums.nexusmods.com/index.php?/topic/13262847-starfield-mod-compatibility-megathread/) forum post for details.
 

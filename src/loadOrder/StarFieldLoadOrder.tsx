@@ -6,13 +6,14 @@ import { fs, selectors, types, util } from 'vortex-api';
 
 import { IPluginRequirement } from '../types';
 import {
-  GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME, ALL_NATIVE_PLUGINS,
+  GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME,
   DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS,
-  PLUGIN_ENABLER_CONSTRAINT,
+  CONSTRAINT_PLUGIN_ENABLER,
 } from '../common';
 import { download } from '../downloader';
 import { walkPath, findModByFile, forceRefresh, requiresPluginEnabler,
-  getGameVersionSync, getManagementType, serializePluginsFile, deserializePluginsFile
+  getGameVersionSync, getManagementType, serializePluginsFile, deserializePluginsFile,
+  resolveNativePlugins
 } from '../util';
 
 import { migrateTestFiles } from './testFileHandler';
@@ -76,7 +77,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     this.noCollectionGeneration = undefined;
     this.usageInstructions = (() => {
       const gameVersion = getGameVersionSync(api);
-      const needsEnabler = semver.satisfies(gameVersion, PLUGIN_ENABLER_CONSTRAINT);
+      const needsEnabler = semver.satisfies(gameVersion, CONSTRAINT_PLUGIN_ENABLER);
       return needsEnabler ? (
         <InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />
       ) : (
@@ -97,7 +98,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       return Promise.resolve();
     }
     await fs.ensureDirWritableAsync(path.dirname(PLUGINS_TXT));
-    return serializePluginsFile(loadOrder);
+    return serializePluginsFile(this.mApi, loadOrder);
   }
 
   public async deserializeLoadOrder(): Promise<types.LoadOrder> {
@@ -201,9 +202,10 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       loadOrder.push(loEntry);
     }
 
+    const nativePlugins = await resolveNativePlugins(this.mApi);
     let nativeIdx = 0;
     const nextNativeIdx = () => nativeIdx++;
-    for (const plugin of ALL_NATIVE_PLUGINS) {
+    for (const plugin of nativePlugins) {
       // Make sure the native plugin is deployed to the game's data folder.
       let idx = plugins.findIndex(entry => path.basename(entry.filePath.toLowerCase()) === plugin);
       if (idx === -1) {
