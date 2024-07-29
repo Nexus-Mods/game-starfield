@@ -15,6 +15,11 @@ export async function migrateExtension(api: types.IExtensionApi) {
     return Promise.resolve();
   }
 
+  const enablePlugins = await requiresPluginEnabler(api);
+  if (!enablePlugins) {
+    api.store.dispatch(setPluginsEnabler(false));
+  }
+
   const currentVersion = util.getSafe(state, ['settings', 'starfield', 'migrationVersion'], '0.0.0');
   const newVersion = await getExtensionVersion();
   if (semver.gt('0.8.0', currentVersion)) {
@@ -31,10 +36,6 @@ export async function migrateExtension(api: types.IExtensionApi) {
 }
 
 export async function migrate080(api: types.IExtensionApi, version: string) {
-  const enablePlugins = await requiresPluginEnabler(api);
-  if (!enablePlugins) {
-    api.store.dispatch(setPluginsEnabler(false));
-  }
   const notificationId = 'starfield-update-notif-0.8.0';
   const t = api.translate;
   api.sendNotification({
@@ -68,11 +69,6 @@ export async function migrate080(api: types.IExtensionApi, version: string) {
 }
 
 export async function migrate070(api: types.IExtensionApi, version: string) {
-  const enablePlugins = await requiresPluginEnabler(api);
-  if (!enablePlugins) {
-    api.store.dispatch(setPluginsEnabler(false));
-  }
-
   const notificationId = 'starfield-update-notif-0.7.0';
   const t = api.translate;
   api.sendNotification({
