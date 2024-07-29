@@ -4,18 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.8.5] - 2024-07-25
+## [0.8.5] - 2024-07-29
 
 - Fixed hanging sort activity if LOOT is unavailable
 - Refactored plugin enabler requirement check on migration
-
-## 0.8.4 - 2024-07-24
-
-- Added settings option to switch between regular drag and drop and automatic sorting using LOOT.
-- Added Sort via LOOT button to the FBLO action bar to allow sorting and dnd.
-- Added Starfield save parser tool
-- Added Save Games page
-- Vortex will now now attempt to ascertain LO using Starfield.ccc file (if it exists)
+- Switch between the load order management methods, Drag and Drop (Default) or Rules-based (Classic).
+- Added Sort via LOOT button to the Drag and Drop action bar to allow sorting.
+- Added Save Games page using new Starfield Save Tool
+- Vortex will now now attempt to ascertain LO using `Starfield.ccc` file (if it exists)
 
 ## [0.7.1] - 2024-06-12
 
