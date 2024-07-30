@@ -485,10 +485,14 @@ export const resolveNativePlugins = async (api: types.IExtensionApi): Promise<st
   try {
     await fs.statAsync(cccFilePath);
     const data = await fs.readFileAsync(cccFilePath, 'utf8');
-    const lines = data.split('\r\n').filter(plugin => plugin !== '').map(l => l.toLowerCase());
+    const lines: string[] = data.split('\r\n').filter(plugin => plugin !== '').map(l => l.toLowerCase());
     for (const native of defaultNatives) {
       if (!lines.includes(native)) {
-        lines.push(native);
+        if (native === NATIVE_PLUGINS[0]) {
+          lines.unshift(native);
+        } else {
+          lines.push(native);
+        }
       }
     }
     return lines;
