@@ -17,8 +17,11 @@ export const formatPlaytime = (playtime: string): string => {
   // 0d.0h.4m.0 days.0 hours.4 minutes
   const regexp = /(\d+)d\.(\d+)h\.(\d+)m\.\d+ days\.\d+ hours\.\d+ minutes/g;
   const match = playtime.matchAll(regexp);
+  if (!match || !match?.[0]) {
+    return playtime;
+  }
   const groups = [...match][0];
-  if (groups.length < 4) {
+  if (groups !== undefined || groups.length < 4) {
     return playtime;
   }
   return `${groups[1]}d ${groups[2]}h ${groups[3]}m`;

@@ -481,13 +481,19 @@ export const resolveNativePlugins = async (api: types.IExtensionApi): Promise<st
   const state = api.getState();
   const discovery = selectors.discoveryByGame(state, GAME_ID);
   const cccFilePath = PLUGINS_CCC_PATTERN.replace('{{prefix}}', discovery?.path || '');
+  const defaultNatives = [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
   try {
     await fs.statAsync(cccFilePath);
     const data = await fs.readFileAsync(cccFilePath, 'utf8');
-    const lines = data.split('\r\n').filter(plugin => plugin !== '');
+    const lines = data.split('\r\n').filter(plugin => plugin !== '').map(l => l.toLowerCase());
+    for (const native of defaultNatives) {
+      if (!lines.includes(native)) {
+        lines.push(native);
+      }
+    }
     return lines;
   } catch (err) {
-    return [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
+    return defaultNatives;
   }
 }
 

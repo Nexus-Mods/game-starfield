@@ -1,5 +1,4 @@
 import path from 'path';
-import { resolveNativePlugins } from './util';
 import { util } from 'vortex-api';
 
 export const DEBUG_ENABLED = false;
