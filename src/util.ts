@@ -485,7 +485,7 @@ export const resolveNativePlugins = async (api: types.IExtensionApi): Promise<st
     await fs.statAsync(cccFilePath);
     const data = await fs.readFileAsync(cccFilePath, 'utf8');
     const lines = data.split('\r\n').filter(plugin => plugin !== '');
-    return lines;
+    return lines.map(l => l.toLowerCase());
   } catch (err) {
     return [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
   }
