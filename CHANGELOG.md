@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.8.8] - 2024-08-xx
+
+- Improved error logging for failed ASI INI merges
+
 ## [0.8.7] - 2024-07-30
 
 - Fixed native plugins added to plugins.txt file when Starfield.ccc is present
