@@ -519,9 +519,14 @@ export async function lootSort(api: types.IExtensionApi) {
         isInvalid: false,
       },
     });
-    const onSortCallback = async (sorted: string[]) => {
+    const onSortCallback = async (err: Error, result: string[]) => {
+      if (err) {
+        api.showErrorNotification('LOOT sort failed', err.message);
+        api.dismissNotification('starfield-fblo-loot-sorting');
+        return;
+      }
       api.dismissNotification('starfield-fblo-loot-sorting');
-      serializePluginsFile(api, sorted.map(toLOEntry));
+      serializePluginsFile(api, result.map(toLOEntry));
       forceRefresh(api);
     };
     if (api.ext.lootSortAsync !== undefined) {

@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.8.8] - 2024-08-xx
 
 - Improved error logging for failed ASI INI merges
+- Improved error handling of LOOT errors
 
 ## [0.8.7] - 2024-07-30
 
