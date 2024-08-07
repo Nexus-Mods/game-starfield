@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Improved error logging for failed ASI INI merges
 - Improved error handling of LOOT errors
+- Fixed potential attempts to write invalid mod entries to plugins file
 
 ## [0.8.7] - 2024-07-30
 
