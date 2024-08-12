@@ -24,11 +24,9 @@ import {
   forceRefresh,
   getGameVersionAsync,
   getGameVersionSync,
-  serializePluginsFile,
   lootSortingAllowed,
   resolvePluginsFilePath,
   lootSort,
-  switchToLoot,
 } from './util';
 import { toggleJunction, setup } from './setup';
 import { raiseJunctionDialog, testFolderJunction, testLooseFiles, testDeprecatedFomod, testPluginsEnabler } from './tests';

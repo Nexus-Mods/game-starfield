@@ -3,7 +3,7 @@ import path from 'path';
 import { parse, stringify } from 'ini-comments';
 import { GAME_ID, ASI_MOD_INI_NAME } from '../common';
 import { sanitizeIni, deepMerge } from '../util';
-import { fs, types } from 'vortex-api';
+import { fs, log, types } from 'vortex-api';
 
 export function testASIMergeIni(game: types.IGame, discovery:
                              types.IDiscoveryResult): types.IMergeFilter | undefined {
@@ -34,6 +34,7 @@ export async function mergeASIIni(filePath: string, mergeDir: string): Promise<v
     });
     return Promise.resolve();
   } catch (err) {
+    log('error', 'Error merging INI', { message: err.message, filePath, mergeDir });
     return Promise.reject(err);
   }
 }
