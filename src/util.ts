@@ -526,7 +526,7 @@ export async function lootSort(api: types.IExtensionApi) {
     });
     const onSortCallback = async (err: Error, result: string[]) => {
       if (err) {
-        api.showErrorNotification('LOOT sort failed', err.message);
+        api.showErrorNotification('LOOT sort failed', err);
         api.dismissNotification('starfield-fblo-loot-sorting');
         return;
       }
