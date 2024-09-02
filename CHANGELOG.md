@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.10.0] - 2024-09-02
+
+- Add support for latest save game version that was added in the August update
+
 ## [1.9.1] - 2024-08-14
 
 - Fixed inability to report _some_ loot sorting errors
@@ -191,6 +195,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Initial release for basic mod support
 
+[1.10.0]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.10.0
 [1.9.1]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.9.1
 [1.9.0]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v1.9.0
 [0.8.8]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.8.8
