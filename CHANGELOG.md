@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.10.1] - 2024-09-30
+
+- Added ability to resolve native plugins through regexp patterns
+
 ## [1.10.0] - 2024-09-02
 
 - Add support for latest save game version that was added in the August update

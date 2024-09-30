@@ -31,7 +31,15 @@ export const CONSTRAINT_LOOT_FUNCTIONALITY = '^1.12.0';
 
 // This is the order we expect the native plugins to be arranged.
 export const NATIVE_PLUGINS = ['starfield.esm', 'blueprintships-starfield.esm', 'oldmars.esm', 'constellation.esm'];
-export const NATIVE_MID_PLUGINS = ['sfbgs003.esm', 'sfbgs006.esm', 'sfbgs007.esm', 'sfbgs008.esm'];
+export const NATIVE_MID_PLUGINS = ['sfbgs003.esm', 'sfbgs004.esm', 'sfbgs005.esm', 'sfbgs006.esm', 'sfbgs007.esm', 'sfbgs008.esm'];
+
+export const isNativePlugin = (fileName: string) => {
+  const regex = new RegExp(`^sfbgs[0-9]{3}.esm$`, 'i');
+  if (fileName.toLowerCase().match(regex)?.[0]) {
+    return true;
+  }
+  return false;
+}
 
 export const DATA_SUBFOLDERS = [
   'Meshes',
