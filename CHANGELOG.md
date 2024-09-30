@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [1.10.1] - 2024-09-30
 
 - Added ability to resolve native plugins through regexp patterns
+- Added Shattered Space DLC plugin
 
 ## [1.10.0] - 2024-09-02
 
