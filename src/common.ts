@@ -30,7 +30,7 @@ export const CONSTRAINT_LOOT_FUNCTIONALITY = '^1.12.0';
 //#endregion
 
 // This is the order we expect the native plugins to be arranged.
-export const NATIVE_PLUGINS = ['starfield.esm', 'blueprintships-starfield.esm', 'oldmars.esm', 'constellation.esm'];
+export const NATIVE_PLUGINS = ['starfield.esm', 'shatteredspace.esm', 'blueprintships-starfield.esm', 'oldmars.esm', 'constellation.esm'];
 export const NATIVE_MID_PLUGINS = ['sfbgs003.esm', 'sfbgs004.esm', 'sfbgs005.esm', 'sfbgs006.esm', 'sfbgs007.esm', 'sfbgs008.esm'];
 
 export const isNativePlugin = (fileName: string) => {
