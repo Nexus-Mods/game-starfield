@@ -8,6 +8,7 @@ import {
   CONSTRAINT_LOOT_FUNCTIONALITY, DEBUG_ENABLED, DEBUG_APP_VERSION,
   PLUGINS_CCC_PATTERN, NATIVE_PLUGINS, NATIVE_MID_PLUGINS,
   DATA_PLUGINS,
+  isNativePlugin,
 } from './common';
 import turbowalk, { IWalkOptions, IEntry } from 'turbowalk';
 import { parseStringPromise } from 'xml2js';
@@ -486,7 +487,19 @@ export const resolveNativePlugins = async (api: types.IExtensionApi): Promise<st
   const state = api.getState();
   const discovery = selectors.discoveryByGame(state, GAME_ID);
   const cccFilePath = PLUGINS_CCC_PATTERN.replace('{{prefix}}', discovery?.path || '');
-  const defaultNatives = [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS);
+  const dataPath = path.join(discovery.path, 'Data');
+  let matched = [];
+  if (path.isAbsolute(dataPath)) {
+    const dirContents = await fs.readdirAsync(dataPath);
+    const filtered = dirContents.filter(file => DATA_PLUGINS.includes(path.extname(file.toLowerCase())));
+    matched = filtered.reduce((accum, file) => {
+      if (isNativePlugin(file)) {
+        accum.push(file.toLowerCase());
+      }
+      return accum;
+    }, []);
+  }
+  const defaultNatives = Array.from(new Set<string>([].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS, matched)));
   try {
     await fs.statAsync(cccFilePath);
     const data = await fs.readFileAsync(cccFilePath, 'utf8');
