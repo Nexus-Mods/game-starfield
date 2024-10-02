@@ -34,7 +34,7 @@ export const NATIVE_PLUGINS = ['starfield.esm', 'shatteredspace.esm', 'blueprint
 export const NATIVE_MID_PLUGINS = ['sfbgs003.esm', 'sfbgs004.esm', 'sfbgs005.esm', 'sfbgs006.esm', 'sfbgs007.esm', 'sfbgs008.esm'];
 
 export const isNativePlugin = (fileName: string) => {
-  const regex = new RegExp(`^sfbgs[0-9]{3}.esm$`, 'i');
+  const regex = new RegExp(`^sfbgs00[0-8].esm$`, 'i');
   if (fileName.toLowerCase().match(regex)?.[0]) {
     return true;
   }
