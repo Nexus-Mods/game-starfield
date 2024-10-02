@@ -205,6 +205,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Initial release for basic mod support
 
+[1.10.2]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.10.2
 [1.10.1]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.10.1
 [1.10.0]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.10.0
 [1.9.1]: https://github.com/Nexus-Mods/game-starfield/releases/tag/v0.9.1
