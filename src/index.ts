@@ -52,6 +52,8 @@ import {
   ASI_LOADER_BACKUP,
   PLUGINS_BACKUP,
   CONSTRAINT_PLUGIN_ENABLER,
+  NATIVE_PLUGINS,
+  NATIVE_MID_PLUGINS,
 } from './common';
 
 import SavePage from './views/Saves/pages/SavePage';
@@ -141,6 +143,7 @@ function main(context: types.IExtensionContext) {
       steamAppId: parseInt(STEAMAPP_ID),
       stopPatterns: getStopPatterns(),
       dataModType: MOD_TYPE_DATAPATH,
+      nativePlugins: [].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS),
     },
   });
 

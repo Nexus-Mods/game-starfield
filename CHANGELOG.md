@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.10.2] - 2024-09-30
+
+- Fixed CC plugins being detected as native.
+- Minor fix to the deprecated FOMOD warning text.
+
 ## [1.10.1] - 2024-09-30
 
 - Added ability to resolve native plugins through regexp patterns

@@ -245,7 +245,7 @@ const fomodInvalidLongText = (t: types.TFunction, invalidNum: number) =>
   t(
     'Vortex detected {{num}} FOMODs which are using the deprecated Vortex plugin option. ' +
     'This option is no longer required and will cause the FOMODs to deploy incorrectly. ' +
-    'Vortex will attempt to fix the FOMODs for you and it is recommended to inform the mod author to change his configuration file and remove the Vortex flag. ' +
+    'Vortex will attempt to fix the FOMODs for you and it is recommended to inform the mod author to change their configuration file and remove the Vortex flag. ' +
     'Alternatively you can re-install any affected FOMODs manually and select the MO2 plugin option instead.',
     { replace: { num: invalidNum } }
   );
@@ -277,7 +277,7 @@ async function invalidFomodDeployTest(api: types.IExtensionApi, invalidFomods: t
   const showDialog = () => {
     return api.showDialog(
       'info',
-      'Deprecated Fomods',
+      'Deprecated FOMODs',
       {
         text: fomodInvalidLongText(t, invalidFomods.length),
       },
