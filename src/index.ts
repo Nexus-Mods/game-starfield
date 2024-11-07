@@ -179,27 +179,15 @@ function main(context: types.IExtensionContext) {
 
   context.registerInstaller('starfield-sfse-installer', 25, testSFSESupported as any, (files) => installSFSE(context.api, files) as any);
   context.registerInstaller('starfield-asi-mod-installer', 20, testASIModSupported as any, (files) => installASIMod(context.api, files) as any);
-  context.registerInstaller('starfield-asi-loader-installer', 25, testASILoaderSupported as any, (files) => installASILoader(context.api, files) as any);
+  context.registerInstaller('starfield-asi-loader-installer', 25,
+    (files, gameId) => testASILoaderSupported(context.api, files, gameId) as any,
+    (files) => installASILoader(context.api, files) as any);
 
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Settings Folder', openSettingsPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('mod-icons', 500, 'open-ext', {}, 'Open Game Application Data Folder', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
   context.registerAction('fb-load-order-icons', 150, 'open-ext', {}, 'View Plugins File', openAppDataPath, (gameId?: string[]) => isStarfield(context, gameId));
-  context.registerAction(
-    'fb-load-order-icons',
-    500,
-    'remove',
-    {},
-    'Reset Plugins File',
-    () => removePluginsWrap(context.api),
-    (gameId?: string[]) => isStarfield(context, gameId)
-  );
-  context.registerAction(
-    'fb-load-order-icons',
-    600,
-    'loot-sort',
-    {},
-    'Sort via LOOT',
-    () => {
+  context.registerAction('fb-load-order-icons', 500, 'remove', {}, 'Reset Plugins File', () => removePluginsWrap(context.api), (gameId?: string[]) => isStarfield(context, gameId));
+  context.registerAction('fb-load-order-icons', 600, 'loot-sort', {}, 'Sort via LOOT', () => {
       lootSort(context.api)
     },
     (gameId?: string[]) => isStarfield(context, gameId) && lootSortingAllowed(context.api)
