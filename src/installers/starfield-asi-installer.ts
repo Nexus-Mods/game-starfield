@@ -12,15 +12,17 @@ export async function testASILoaderSupported(api: types.IExtensionApi, files: st
   }
   let supported = findAsiLoader(files) !== undefined;
   const t = api.translate;
-  await api.showDialog('question', 'Install Injector/Loader', {
-    bbcode: t('The mod you are installing appears to be an ASI Loader or another type of code Injector.{{bl}}'
-      + 'Due to the modding pattern for "{{gameName}}". Vortex can\'t discern if this is the Game Pass ASI Loader '
-      + 'or some other type of code injection/loading library.{{bl}}'
-      + 'Please select the correct option.', { replace: { gameName: 'Starfield', bl: '[br][/br][br][/br]' } }),
-  },[
-    { label: 'A Code Injector', action: () => { supported = false } },
-    { label: 'Game Pass ASI Loader', action: () => { supported = true }}
-  ],'sf-is-asi-loader-notif');
+  if (supported) {
+    await api.showDialog('question', 'Install Injector/Loader', {
+      bbcode: t('The mod you are installing appears to be an ASI Loader or another type of code Injector.{{bl}}'
+        + 'Due to the modding pattern for "{{gameName}}". Vortex can\'t discern if this is the Game Pass ASI Loader '
+        + 'or some other type of code injection/loading library.{{bl}}'
+        + 'Please select the correct option.', { replace: { gameName: 'Starfield', bl: '[br][/br][br][/br]' } }),
+    },[
+      { label: 'A Code Injector', action: () => { supported = false } },
+      { label: 'Game Pass ASI Loader', action: () => { supported = true }}
+    ],'sf-is-asi-loader-notif');
+  }
   return Promise.resolve({
     supported,
     requiredFiles: [],
