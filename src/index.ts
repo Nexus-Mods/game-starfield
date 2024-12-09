@@ -122,6 +122,12 @@ const removePluginsWrap = (api: types.IExtensionApi) => {
   );
 };
 
+const isCorrectGame = (api: types.IExtensionApi, profileId: string) => {
+  const state = api.getState();
+  const profile = selectors.profileById(state, profileId);
+  return profile?.gameId === GAME_ID;
+};
+
 function main(context: types.IExtensionContext) {
   context.registerReducer(['settings', 'starfield'], settingsReducer);
   // register a whole game, basic metadata and folder paths
@@ -249,9 +255,7 @@ async function onGameModeActivated(api: types.IExtensionApi) {
 }
 
 async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, deployment: types.IDeploymentManifest): Promise<void> {
-  const state = api.getState();
-  const gameId = selectors.profileById(state, profileId)?.gameId;
-  if (gameId !== GAME_ID) {
+  if (!isCorrectGame(api, profileId)) {
     return Promise.resolve();
   }
   await testDeprecatedFomod(api, false);
@@ -261,19 +265,24 @@ async function onDidDeployEvent(api: types.IExtensionApi, profileId: string, dep
 }
 
 async function onWillPurgeEvent(api: types.IExtensionApi, profileId: string): Promise<void> {
+  if (!isCorrectGame(api, profileId)) {
+    return Promise.resolve();
+  }
   const pluginsPath = await resolvePluginsFilePath(api);
   return fs.copyAsync(pluginsPath, PLUGINS_BACKUP, { overwrite: true }).catch((err) => null);
 }
 
 async function onDidPurgeEvent(api: types.IExtensionApi, profileId: string): Promise<void> {
+  if (!isCorrectGame(api, profileId)) {
+    return Promise.resolve();
+  }
   return linkAsiLoader(api, ASI_LOADER_BACKUP, TARGET_ASI_LOADER_NAME);
 }
 
 async function onWillDeployEvent(api: types.IExtensionApi, profileId: any, deployment: types.IDeploymentManifest): Promise<void> {
   const state = api.getState();
   const pluginEnabler = util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
-  const profile = selectors.activeProfile(state);
-  if (profile?.gameId !== GAME_ID || pluginEnabler === false) {
+  if (!isCorrectGame(api, profileId) || pluginEnabler === false) {
     return Promise.resolve();
   }
   const discovery = selectors.discoveryByGame(state, GAME_ID);
