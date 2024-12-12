@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.10.3 - 2024-11-07
+## [1.10.4] - 2024-12-09
+
+- Fixed deployment event handlers executing while other games are managed
+
+## [1.10.3] - 2024-11-07
 - Fixed engine injectors (SFSE excluded) being erroneously flagged as the Game Pass ASI Loader
 
 ## [1.10.2] - 2024-09-30
