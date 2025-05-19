@@ -544,8 +544,10 @@ export async function lootSort(api: types.IExtensionApi) {
         return;
       }
       api.dismissNotification('starfield-fblo-loot-sorting');
-      serializePluginsFile(api, result.map(toLOEntry));
-      forceRefresh(api);
+      const nativePlugins = await resolveNativePlugins(api);
+      const filtered = result.filter(plugin =>  !nativePlugins.includes(plugin.toLowerCase()));
+      serializePluginsFile(api, filtered.map(toLOEntry));
+      // forceRefresh(api);
     };
     if (api.ext.lootSortAsync !== undefined) {
       const dataPath = getDataPath(api, { id: GAME_ID } as any);

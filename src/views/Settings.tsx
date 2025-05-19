@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ControlLabel, DropdownButton, FormGroup, Panel, MenuItem, HelpBlock } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector, useStore } from 'react-redux';
-import { FlexLayout, MainContext, More, Toggle, selectors, types, util } from 'vortex-api';
+import { MainContext, More, Toggle, selectors, types, util } from 'vortex-api';
 
 import { setIgnoreSaveGameVersion, setLoadOrderManagementType, setPluginsEnabler } from '../actions/settings';
 
