@@ -173,7 +173,7 @@ function main(context: types.IExtensionContext) {
         return semver.satisfies(version, CONSTRAINT_PLUGIN_ENABLER);
       },
       allowLootSorting: () => lootSortingAllowed(context.api),
-      sort: () => lootSort(context.api),
+      sort: () => lootSort(context.api).then(() => forceRefresh(context.api)),
     }),
     () => selectors.activeGameId(context.api.getState()) === GAME_ID,
     150

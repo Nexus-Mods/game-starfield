@@ -30,14 +30,14 @@ export const PLUGIN_REQUIREMENTS: PluginRequirements = {
       modId: 106,
       userFacingName: 'Starfield Script Extender',
       modUrl: 'https://www.nexusmods.com/starfield/mods/106?tab=files',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, '', SFSE_EXE),
+      findMod: (api: types.IExtensionApi) => findModByFile(api, SFSE_EXE, ''),
     },
     {
       fileName: PLUGINS_ENABLER_FILENAME + DLL_EXT,
       modType: MOD_TYPE_DATAPATH,
       modId: 4157,
       modUrl: 'https://www.nexusmods.com/starfield/mods/4157?tab=files',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, MOD_TYPE_DATAPATH, PLUGINS_ENABLER_FILENAME + DLL_EXT),
+      findMod: (api: types.IExtensionApi) => findModByFile(api, PLUGINS_ENABLER_FILENAME + DLL_EXT, MOD_TYPE_DATAPATH),
       fileFilter: (file: string) => file.toLowerCase().includes('sfse')
     }
   ],
@@ -47,14 +47,14 @@ export const PLUGIN_REQUIREMENTS: PluginRequirements = {
       modType: '',
       userFacingName: 'Ultimate ASI Loader',
       githubUrl: 'https://api.github.com/repos/ThirteenAG/Ultimate-ASI-Loader',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, '', TARGET_ASI_LOADER_NAME),
+      findMod: (api: types.IExtensionApi) => findModByFile(api, TARGET_ASI_LOADER_NAME, ''),
     },
     {
       fileName: PLUGINS_ENABLER_FILENAME + ASI_EXT,
       modType: MOD_TYPE_ASI_MOD,
       modId: 4157,
       modUrl: 'https://www.nexusmods.com/starfield/mods/4157?tab=files',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME + ASI_EXT),
+      findMod: (api: types.IExtensionApi) => findModByFile(api, PLUGINS_ENABLER_FILENAME + ASI_EXT, MOD_TYPE_ASI_MOD),
       fileFilter: (file: string) => file.toLowerCase().includes('gamepass'),
     }
   ],
@@ -98,7 +98,8 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       return Promise.resolve();
     }
     await fs.ensureDirWritableAsync(path.dirname(PLUGINS_TXT));
-    return serializePluginsFile(this.mApi, loadOrder);
+    return serializePluginsFile(this.mApi, loadOrder)
+      .then(() => forceRefresh(this.mApi));
   }
 
   public async deserializeLoadOrder(): Promise<types.LoadOrder> {
@@ -132,7 +133,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
       const testFiles = await migrateTestFiles(this.mApi);
       if (testFiles.length > 0) {
         for (const file of testFiles) {
-          const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, file);
+          const mod = await findModByFile(this.mApi, file);
           const invalid = !mod && !isInDataFolder(file);
           const loEntry = {
             enabled: !invalid,
@@ -161,7 +162,7 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
         continue;
       }
       const name = plugin.replace(/\#|\*/g, '');
-      const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, name);
+      const mod = await findModByFile(this.mApi, name);
       const invalid = deploymentNeeded
         ? false
         : mod !== undefined
@@ -189,10 +190,10 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
     for (const plugin of plugins) {
       const pluginName = path.basename(plugin.filePath);
-      if (loadOrder.find(entry => entry.name === pluginName)) {
+      if (loadOrder.find(entry => entry.name.toLowerCase() === pluginName.toLowerCase())) {
         continue;
       }
-      const mod = await findModByFile(this.mApi, MOD_TYPE_DATAPATH, pluginName);
+      const mod = await findModByFile(this.mApi, pluginName);
       const loEntry: types.ILoadOrderEntry = {
         enabled: true,
         id: pluginName,
