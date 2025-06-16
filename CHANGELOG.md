@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.10.5] - 2025-06-16
+
+- Fixes inability to correctly sort via loot in Vortex 1.14
+
 ## [1.10.4] - 2024-12-09
 
 - Fixed deployment event handlers executing while other games are managed
