@@ -556,7 +556,11 @@ export async function lootSort(api: types.IExtensionApi) {
       }
       api.dismissNotification('starfield-fblo-loot-sorting');
       const nativePlugins = await resolveNativePlugins(api);
-      const filtered = result.filter(plugin =>  !nativePlugins.includes(plugin.toLowerCase()));
+      const filtered = result.filter(plugin => !nativePlugins.includes(plugin.toLowerCase()));
+      if (filtered.length === 0) {
+        api.showErrorNotification('No plugins to sort', 'LOOT did not find any plugins to sort.');
+        return;
+      }
       serializePluginsFile(api, filtered.map(toLOEntry));
       // forceRefresh(api);
     };
