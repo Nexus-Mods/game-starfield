@@ -3,20 +3,23 @@ name: Publish to Nexus Mods
 on:
   workflow_dispatch:
     inputs:
-          version:
-            description: 'Release version - package.json version will be used by default'
-            required: false
-
+      version:
+        description: 'Release version - package.json version will be used by default'
+        required: false
 
 permissions:
   contents: read
+
+concurrency:
+  group: publish-nexus
+  cancel-in-progress: false
 
 jobs:
   build:
     name: Build Project
     runs-on: ubuntu-latest
 
-    outputs: 
+    outputs:
       version: ${{ steps.meta.outputs.version }}
       zip_name: ${{ steps.meta.outputs.zip_name }}
 
@@ -32,20 +35,27 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      
+
       - name: Compute build metadata
         id: meta
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         shell: bash
         run: |
           PKG_VERSION="$(node -p "require('./package.json').version")"
-          INPUT_VERSION="${{ github.event.inputs.version }}"
+
           if [ -n "$INPUT_VERSION" ]; then
             VERSION="$INPUT_VERSION"
           else
             VERSION="$PKG_VERSION"
           fi
 
-          ZIP_NAME="Starfield.zip"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
+            echo "::error::Invalid version format: $VERSION (expected semver)"
+            exit 1
+          fi
+
+          ZIP_NAME="Starfield-${VERSION}.zip"
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
@@ -59,7 +69,7 @@ jobs:
       - name: Verify dist exists
         run: |
           test -d dist
-          echo "dist folder found ✅"
+          echo "dist folder found"
 
       - name: Zip dist
         run: |
@@ -74,15 +84,13 @@ jobs:
           name: Starfield
           path: ${{ steps.meta.outputs.zip_name }}
           if-no-files-found: error
+
   upload:
     name: Upload to Nexus Mods
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      
       - name: Get Extension Artifact
         uses: actions/download-artifact@v6
         with:
@@ -93,8 +101,6 @@ jobs:
         with:
           api_key: ${{ secrets.NEXUSMODS_API_KEY }}
           file_group_id: ${{ vars.NEXUSMODS_FILE_GROUP_ID }}
-          display_name: Starfield Support for Vortex         
+          display_name: Starfield Support for Vortex
           filename: ${{ needs.build.outputs.zip_name }}
-          version: ${{ github.event.inputs.version || needs.build.outputs.version }}
-
-          
+          version: ${{ needs.build.outputs.version }}
