@@ -45,7 +45,7 @@ jobs:
             VERSION="$PKG_VERSION"
           fi
 
-          ZIP_NAME="Bethesda Import.zip"
+          ZIP_NAME="Starfield.zip"
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
