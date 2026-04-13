@@ -1,64 +1,91 @@
 /* eslint-disable */
-import React from 'react';
-import path from 'path';
-import semver from 'semver';
-import { fs, selectors, types, util } from 'vortex-api';
+import React from "react";
+import path from "path";
+import semver from "semver";
+import { fs, selectors, types, util } from "vortex-api";
 
-import { IPluginRequirement } from '../types';
+import { IPluginRequirement } from "../types";
 import {
-  GAME_ID, PLUGINS_TXT, MOD_TYPE_ASI_MOD, PLUGINS_ENABLER_FILENAME,
-  DLL_EXT, ASI_EXT, MOD_TYPE_DATAPATH, SFSE_EXE, TARGET_ASI_LOADER_NAME, DATA_PLUGINS,
+  GAME_ID,
+  PLUGINS_TXT,
+  MOD_TYPE_ASI_MOD,
+  PLUGINS_ENABLER_FILENAME,
+  DLL_EXT,
+  ASI_EXT,
+  MOD_TYPE_DATAPATH,
+  SFSE_EXE,
+  TARGET_ASI_LOADER_NAME,
+  DATA_PLUGINS,
   CONSTRAINT_PLUGIN_ENABLER,
-} from '../common';
-import { download } from '../downloader';
-import { walkPath, findModByFile, forceRefresh, requiresPluginEnabler,
-  getGameVersionSync, getManagementType, serializePluginsFile, deserializePluginsFile,
-  resolveNativePlugins
-} from '../util';
+} from "../common";
+import { download } from "../downloader";
+import {
+  walkPath,
+  findModByFile,
+  forceRefresh,
+  requiresPluginEnabler,
+  getGameVersionSync,
+  getManagementType,
+  serializePluginsFile,
+  deserializePluginsFile,
+  resolveNativePlugins,
+  resolveBlueprintPlugins,
+} from "../util";
 
-import { migrateTestFiles } from './testFileHandler';
-import { setPluginsEnabler } from '../actions/settings';
-import { InfoPanel } from '../views/InfoPanel';
-import { InfoPanelCK } from '../views/InfoPanelCK';
+import { migrateTestFiles } from "./testFileHandler";
+import { setPluginsEnabler } from "../actions/settings";
+import { InfoPanel } from "../views/InfoPanel";
+import { InfoPanelCK } from "../views/InfoPanelCK";
 
 type PluginRequirements = { [gameStore: string]: IPluginRequirement[] };
 export const PLUGIN_REQUIREMENTS: PluginRequirements = {
   steam: [
     {
       fileName: SFSE_EXE,
-      modType: '',
+      modType: "",
       modId: 106,
-      userFacingName: 'Starfield Script Extender',
-      modUrl: 'https://www.nexusmods.com/starfield/mods/106?tab=files',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, SFSE_EXE, ''),
+      userFacingName: "Starfield Script Extender",
+      modUrl: "https://www.nexusmods.com/starfield/mods/106?tab=files",
+      findMod: (api: types.IExtensionApi) => findModByFile(api, SFSE_EXE, ""),
     },
     {
       fileName: PLUGINS_ENABLER_FILENAME + DLL_EXT,
       modType: MOD_TYPE_DATAPATH,
       modId: 4157,
-      modUrl: 'https://www.nexusmods.com/starfield/mods/4157?tab=files',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, PLUGINS_ENABLER_FILENAME + DLL_EXT, MOD_TYPE_DATAPATH),
-      fileFilter: (file: string) => file.toLowerCase().includes('sfse')
-    }
+      modUrl: "https://www.nexusmods.com/starfield/mods/4157?tab=files",
+      findMod: (api: types.IExtensionApi) =>
+        findModByFile(
+          api,
+          PLUGINS_ENABLER_FILENAME + DLL_EXT,
+          MOD_TYPE_DATAPATH,
+        ),
+      fileFilter: (file: string) => file.toLowerCase().includes("sfse"),
+    },
   ],
   xbox: [
     {
       fileName: TARGET_ASI_LOADER_NAME,
-      modType: '',
-      userFacingName: 'Ultimate ASI Loader',
-      githubUrl: 'https://api.github.com/repos/ThirteenAG/Ultimate-ASI-Loader',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, TARGET_ASI_LOADER_NAME, ''),
+      modType: "",
+      userFacingName: "Ultimate ASI Loader",
+      githubUrl: "https://api.github.com/repos/ThirteenAG/Ultimate-ASI-Loader",
+      findMod: (api: types.IExtensionApi) =>
+        findModByFile(api, TARGET_ASI_LOADER_NAME, ""),
     },
     {
       fileName: PLUGINS_ENABLER_FILENAME + ASI_EXT,
       modType: MOD_TYPE_ASI_MOD,
       modId: 4157,
-      modUrl: 'https://www.nexusmods.com/starfield/mods/4157?tab=files',
-      findMod: (api: types.IExtensionApi) => findModByFile(api, PLUGINS_ENABLER_FILENAME + ASI_EXT, MOD_TYPE_ASI_MOD),
-      fileFilter: (file: string) => file.toLowerCase().includes('gamepass'),
-    }
+      modUrl: "https://www.nexusmods.com/starfield/mods/4157?tab=files",
+      findMod: (api: types.IExtensionApi) =>
+        findModByFile(
+          api,
+          PLUGINS_ENABLER_FILENAME + ASI_EXT,
+          MOD_TYPE_ASI_MOD,
+        ),
+      fileFilter: (file: string) => file.toLowerCase().includes("gamepass"),
+    },
   ],
-}
+};
 
 class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
   public gameId: string;
@@ -77,7 +104,10 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     this.noCollectionGeneration = undefined;
     this.usageInstructions = (() => {
       const gameVersion = getGameVersionSync(api);
-      const needsEnabler = semver.satisfies(gameVersion, CONSTRAINT_PLUGIN_ENABLER);
+      const needsEnabler = semver.satisfies(
+        gameVersion,
+        CONSTRAINT_PLUGIN_ENABLER,
+      );
       return needsEnabler ? (
         <InfoPanel onInstallPluginsEnabler={this.mOnInstallPluginsEnabler} />
       ) : (
@@ -93,13 +123,17 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     this.mOnInstallPluginsEnabler = this.onInstallPluginsEnabler.bind(this);
   }
 
-  public async serializeLoadOrder(loadOrder: types.LoadOrder, prev: types.LoadOrder): Promise<void> {
+  public async serializeLoadOrder(
+    loadOrder: types.LoadOrder,
+    prev: types.LoadOrder,
+  ): Promise<void> {
     if (!this.isLOManagedByVortex()) {
       return Promise.resolve();
     }
     await fs.ensureDirWritableAsync(path.dirname(PLUGINS_TXT));
-    return serializePluginsFile(this.mApi, loadOrder)
-      .then(() => forceRefresh(this.mApi));
+    return serializePluginsFile(this.mApi, loadOrder).then(() =>
+      forceRefresh(this.mApi),
+    );
   }
 
   public async deserializeLoadOrder(): Promise<types.LoadOrder> {
@@ -119,13 +153,21 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     // TODO: merge the test file migration with the deserialized LO - having these separate is a bit messy.
 
     // Find out which plugins are actually deployed to the data folder.
-    const fileEntries = await walkPath(path.join(dataPath, 'Data'), { recurse: false });
-    const plugins = fileEntries.filter(file => DATA_PLUGINS.includes(path.extname(file.filePath)));
-    const isInDataFolder = (plugin: string) => plugins.some(file => path.basename(file.filePath).toLowerCase() === plugin.toLowerCase());
+    const fileEntries = await walkPath(path.join(dataPath, "Data"), {
+      recurse: false,
+    });
+    const plugins = fileEntries.filter((file) =>
+      DATA_PLUGINS.includes(path.extname(file.filePath)),
+    );
+    const isInDataFolder = (plugin: string) =>
+      plugins.some(
+        (file) =>
+          path.basename(file.filePath).toLowerCase() === plugin.toLowerCase(),
+      );
     const isModEnabled = (modId: string) => {
       const state = this.mApi.getState();
       const profile = selectors.activeProfile(state);
-      return util.getSafe(profile, ['modState', modId, 'enabled'], false);
+      return util.getSafe(profile, ["modState", modId, "enabled"], false);
     };
 
     const pluginEnablerRequired = await requiresPluginEnabler(this.mApi);
@@ -139,12 +181,16 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
             enabled: !invalid,
             id: file,
             name: file,
-            modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
+            modId: !!mod?.id
+              ? isModEnabled(mod.id)
+                ? mod.id
+                : undefined
+              : undefined,
             locked: invalid,
             data: {
               isInvalid: invalid,
-            }
-          }
+            },
+          };
           if (invalid) {
             invalidEntries.push(loEntry);
           } else {
@@ -155,30 +201,41 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     }
 
     const currentLO = await deserializePluginsFile();
-    const deploymentNeeded = util.getSafe(this.mApi.getState(), ['persistent', 'deployment', 'needToDeploy', GAME_ID], false);
+    const deploymentNeeded = util.getSafe(
+      this.mApi.getState(),
+      ["persistent", "deployment", "needToDeploy", GAME_ID],
+      false,
+    );
     for (const plugin of currentLO) {
-      if (plugin.startsWith('#') && !DATA_PLUGINS.includes(path.extname(plugin.trim().slice(1)))) {
+      if (
+        plugin.startsWith("#") &&
+        !DATA_PLUGINS.includes(path.extname(plugin.trim().slice(1)))
+      ) {
         // Only esm, esp, esl
         continue;
       }
-      const name = plugin.replace(/\#|\*/g, '');
+      const name = plugin.replace(/\#|\*/g, "");
       const mod = await findModByFile(this.mApi, name);
       const invalid = deploymentNeeded
         ? false
         : mod !== undefined
           ? isModEnabled(mod.id) && !isInDataFolder(name)
           : !isInDataFolder(name);
-      const enabled = plugin.startsWith('*');
+      const enabled = plugin.startsWith("*");
       const loEntry: types.ILoadOrderEntry = {
         enabled: enabled && !invalid,
         id: name,
         name: name,
-        modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
+        modId: !!mod?.id
+          ? isModEnabled(mod.id)
+            ? mod.id
+            : undefined
+          : undefined,
         locked: invalid,
         data: {
           isInvalid: invalid,
-        }
-      }
+        },
+      };
       if (invalid) {
         invalidEntries.push(loEntry);
       } else {
@@ -190,7 +247,11 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
     for (const plugin of plugins) {
       const pluginName = path.basename(plugin.filePath);
-      if (loadOrder.find(entry => entry.name.toLowerCase() === pluginName.toLowerCase())) {
+      if (
+        loadOrder.find(
+          (entry) => entry.name.toLowerCase() === pluginName.toLowerCase(),
+        )
+      ) {
         continue;
       }
       const mod = await findModByFile(this.mApi, pluginName);
@@ -198,8 +259,12 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
         enabled: true,
         id: pluginName,
         name: pluginName,
-        modId: !!mod?.id ? isModEnabled(mod.id) ? mod.id : undefined : undefined,
-      }
+        modId: !!mod?.id
+          ? isModEnabled(mod.id)
+            ? mod.id
+            : undefined
+          : undefined,
+      };
       loadOrder.push(loEntry);
     }
 
@@ -208,23 +273,63 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
     const nextNativeIdx = () => nativeIdx++;
     for (const plugin of nativePlugins) {
       // Make sure the native plugin is deployed to the game's data folder.
-      let idx = plugins.findIndex(entry => path.basename(entry.filePath.toLowerCase()) === plugin);
+      let idx = plugins.findIndex(
+        (entry) => path.basename(entry.filePath.toLowerCase()) === plugin,
+      );
       if (idx === -1) {
         continue;
       }
 
       // At this point we know that the native plugin is deployed to the data folder.
-      idx = loadOrder.findIndex(entry => entry.name.toLowerCase() === plugin);
+      idx = loadOrder.findIndex((entry) => entry.name.toLowerCase() === plugin);
       let nativePlugin: types.ILoadOrderEntry[] = loadOrder.splice(idx, 1);
       nativePlugin[0].locked = true;
       loadOrder.splice(nextNativeIdx(), 0, nativePlugin[0]);
+    }
+
+    // Blueprint plugins (Starfield) must be pinned to the END of the load
+    // order, after all non-Blueprint entries. The game force-loads them in
+    // that position regardless of what we write to plugins.txt, so surfacing
+    // any other position in the UI is just lying to the user. See APP-263.
+    const blueprintSet = await resolveBlueprintPlugins(this.mApi);
+    if (blueprintSet.size > 0) {
+      const blueprintEntries: types.ILoadOrderEntry[] = [];
+      for (let i = loadOrder.length - 1; i >= 0; i--) {
+        if (blueprintSet.has(loadOrder[i].name.toLowerCase())) {
+          const [entry] = loadOrder.splice(i, 1);
+          entry.locked = true; // non-draggable
+          entry.enabled = true; // force-loaded by the engine
+          blueprintEntries.push(entry);
+        }
+      }
+      // Relative order among Blueprint plugins follows the load order of
+      // their parent .esm via the BlueprintShips-{parent}.esm naming
+      // convention. Parents not found in the current load order sort last.
+      const parentIndex = new Map<string, number>();
+      loadOrder.forEach((entry, idx) => {
+        parentIndex.set(entry.name.toLowerCase(), idx);
+      });
+      const parentRank = (blueprintName: string): number => {
+        const match = blueprintName
+          .toLowerCase()
+          .match(/^blueprintships-(.+\.esm)$/);
+        if (match === null) {
+          return Number.MAX_SAFE_INTEGER;
+        }
+        return parentIndex.get(match[1]) ?? Number.MAX_SAFE_INTEGER;
+      };
+      blueprintEntries.sort((a, b) => parentRank(a.name) - parentRank(b.name));
+      loadOrder.push(...blueprintEntries);
     }
 
     const result = [].concat(loadOrder);
     return Promise.resolve(result);
   }
 
-  public async validate(prev: types.LoadOrder, current: types.LoadOrder): Promise<types.IValidationResult> {
+  public async validate(
+    prev: types.LoadOrder,
+    current: types.LoadOrder,
+  ): Promise<types.IValidationResult> {
     // if (!this.isLOManagedByVortex()) {
     //   return Promise.resolve(undefined);
     // }
@@ -251,33 +356,37 @@ class StarFieldLoadOrder implements types.ILoadOrderGameInfo {
 
   public async onFixInvalidPlugins(): Promise<void> {
     const deserialzed = await this.deserializeLoadOrder();
-    const valid = deserialzed.filter(entry => entry.data?.isInvalid !== true);
+    const valid = deserialzed.filter((entry) => entry.data?.isInvalid !== true);
     await this.serializeLoadOrder(valid, []);
     return Promise.resolve();
   }
 
   public condition(): boolean {
-    return (getManagementType(this.mApi) === 'dnd');
+    return getManagementType(this.mApi) === "dnd";
   }
 
   private async onInstallPluginsEnabler(): Promise<void> {
     const discovery = selectors.discoveryByGame(this.mApi.getState(), GAME_ID);
     // Default to the steam store if we can't figure out the store.
-    const gameStore = !!discovery?.store ? discovery.store : 'steam';
+    const gameStore = !!discovery?.store ? discovery.store : "steam";
     const requiredMods = PLUGIN_REQUIREMENTS[gameStore];
     try {
       await download(this.mApi, requiredMods);
       this.mApi.store.dispatch(setPluginsEnabler(true));
       forceRefresh(this.mApi);
     } catch (err) {
-      this.mApi.showErrorNotification('Failed to download required mods.', err);
+      this.mApi.showErrorNotification("Failed to download required mods.", err);
     }
   }
 
   private async isLOManagedByVortex(): Promise<boolean> {
     const state = this.mApi.getState();
     const needsEnabler = await requiresPluginEnabler(this.mApi);
-    const enablerStatus = util.getSafe(state, ['settings', 'starfield', 'pluginEnabler'], false);
+    const enablerStatus = util.getSafe(
+      state,
+      ["settings", "starfield", "pluginEnabler"],
+      false,
+    );
     return needsEnabler ? enablerStatus : true;
   }
 }
