@@ -58,17 +58,6 @@ export const NATIVE_MID_PLUGINS = [
   "sfbgs050.esm", // Terran Armada (APP-260)
 ];
 
-// SFBGS is a Bethesda-reserved namespace for Starfield DLC/Creation Club
-// plugins; three hex digits covers the known scheme (003-008, 00D, 047, 050)
-// and future DLC following the same pattern without needing code changes.
-export const isNativePlugin = (fileName: string) => {
-  const regex = new RegExp(`^sfbgs[0-9a-f]{3}\\.esm$`, "i");
-  if (fileName.toLowerCase().match(regex)?.[0]) {
-    return true;
-  }
-  return false;
-};
-
 export const DATA_SUBFOLDERS = [
   "Meshes",
   "Textures",
