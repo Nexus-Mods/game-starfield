@@ -39,11 +39,12 @@ export const CONSTRAINT_LOOT_FUNCTIONALITY = ">=1.12.0";
 // This is the order we expect the native plugins to be arranged.
 export const NATIVE_PLUGINS = [
   "starfield.esm",
-  "shatteredspace.esm",
-  "blueprintships-starfield.esm",
-  "blueprintships-sfbgs050.esm", // Terran Armada (APP-260)
-  "oldmars.esm",
   "constellation.esm",
+  "oldmars.esm",
+  "shatteredspace.esm",
+  // Blueprint plugins - listed here to be shown as "Native"
+  "blueprintships-starfield.esm", 
+  "blueprintships-sfbgs050.esm", // Terran Armada (APP-260)
 ];
 export const NATIVE_MID_PLUGINS = [
   "sfbgs003.esm",
