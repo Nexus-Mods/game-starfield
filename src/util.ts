@@ -737,22 +737,9 @@ export const resolveNativePlugins = async (
     "{{prefix}}",
     discovery?.path || "",
   );
-  const dataPath = path.join(discovery.path, "Data");
-  let matched = [];
-  if (path.isAbsolute(dataPath)) {
-    const dirContents = await fs.readdirAsync(dataPath);
-    const filtered = dirContents.filter((file) =>
-      DATA_PLUGINS.includes(path.extname(file.toLowerCase())),
-    );
-    matched = filtered.reduce((accum, file) => {
-      if (isNativePlugin(file)) {
-        accum.push(file.toLowerCase());
-      }
-      return accum;
-    }, []);
-  }
+
   const defaultNatives = Array.from(
-    new Set<string>([].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS, matched)),
+    new Set<string>([].concat(NATIVE_PLUGINS, NATIVE_MID_PLUGINS)),
   );
   try {
     await fs.statAsync(cccFilePath);

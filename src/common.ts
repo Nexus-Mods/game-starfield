@@ -39,11 +39,12 @@ export const CONSTRAINT_LOOT_FUNCTIONALITY = ">=1.12.0";
 // This is the order we expect the native plugins to be arranged.
 export const NATIVE_PLUGINS = [
   "starfield.esm",
-  "shatteredspace.esm",
-  "blueprintships-starfield.esm",
-  "blueprintships-sfbgs050.esm", // Terran Armada (APP-260)
-  "oldmars.esm",
   "constellation.esm",
+  "oldmars.esm",
+  "shatteredspace.esm",
+  // Blueprint plugins - listed here to be shown as "Native"
+  "blueprintships-starfield.esm", 
+  "blueprintships-sfbgs050.esm", // Terran Armada (APP-260)
 ];
 export const NATIVE_MID_PLUGINS = [
   "sfbgs003.esm",
@@ -56,17 +57,6 @@ export const NATIVE_MID_PLUGINS = [
   "sfbgs047.esm", // Moon Jumper (APP-260)
   "sfbgs050.esm", // Terran Armada (APP-260)
 ];
-
-// SFBGS is a Bethesda-reserved namespace for Starfield DLC/Creation Club
-// plugins; three hex digits covers the known scheme (003-008, 00D, 047, 050)
-// and future DLC following the same pattern without needing code changes.
-export const isNativePlugin = (fileName: string) => {
-  const regex = new RegExp(`^sfbgs[0-9a-f]{3}\\.esm$`, "i");
-  if (fileName.toLowerCase().match(regex)?.[0]) {
-    return true;
-  }
-  return false;
-};
 
 export const DATA_SUBFOLDERS = [
   "Meshes",
