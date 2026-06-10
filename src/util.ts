@@ -713,7 +713,7 @@ export const resolveBlueprintPlugins = async (
       continue;
     }
     try {
-      if (isBlueprint(path.join(dataPath, file))) {
+      if (await isBlueprint(path.join(dataPath, file))) {
         result.add(file.toLowerCase());
       }
     } catch (err) {
