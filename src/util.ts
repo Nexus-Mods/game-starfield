@@ -155,13 +155,7 @@ export const getLatestBackupPath = async (dirPath: string) => {
   return path.join(dirPath, latestBack);
 };
 
-export const isStarfield = (
-  context: types.IExtensionContext,
-  gameId: string | string[],
-) => {
-  if (gameId !== undefined) {
-    return gameId === GAME_ID;
-  }
+export const isStarfield = (context: types.IExtensionContext) => {
   const state = context.api.getState();
   const gameMode = selectors.activeGameId(state);
   return gameMode === GAME_ID;

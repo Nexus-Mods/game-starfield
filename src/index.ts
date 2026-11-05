@@ -238,7 +238,7 @@ function main(context: types.IExtensionContext) {
     {},
     "View Plugins File",
     openAppDataPath,
-    (gameId?: string[]) => isStarfield(context, gameId),
+    () => isStarfield(context),
   );
   context.registerAction(
     "fb-load-order-icons",
@@ -247,7 +247,7 @@ function main(context: types.IExtensionContext) {
     {},
     "Reset Plugins File",
     () => removePluginsWrap(context.api),
-    (gameId?: string[]) => isStarfield(context, gameId),
+    () => isStarfield(context),
   );
   context.registerAction(
     "fb-load-order-icons",
@@ -258,8 +258,7 @@ function main(context: types.IExtensionContext) {
     () => {
       lootSort(context.api);
     },
-    (gameId?: string[]) =>
-      isStarfield(context, gameId) && lootSortingAllowed(context.api),
+    () => isStarfield(context) && lootSortingAllowed(context.api),
   );
 
   context.registerLoadOrder(new StarFieldLoadOrder(context.api));

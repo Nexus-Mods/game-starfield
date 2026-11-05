@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.10.11] - 2026-11-05
+
+- Fixed "Sort via LOOT", "View Plugins File" and "Reset Plugins File" missing from the Load Order page in Vortex 2.10.0
+
 ## [1.10.5] - 2025-06-16
 
 - Fixes inability to correctly sort via loot in Vortex 1.14
